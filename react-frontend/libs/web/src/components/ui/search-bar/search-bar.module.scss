@@ -1,0 +1,51 @@
+.container {
+  padding: 9px 8px 8px 8px;
+
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  border: 0px;
+  border-radius: 20px;
+
+  background-color: var(--comment-background);
+  line-height: 0.9375rem;
+
+  // transition: width var(--fast-speed) ease, margin-left var(--fast-speed) ease;
+
+  .icon {
+    margin-top: 1px;
+    margin-left: 4px;
+
+    // transition: margin-left var(--fast-speed) ease;
+  }
+
+  .icon svg {
+    color: var(--secondary-icon);
+
+    width: 16px;
+    height: 16px;
+
+    // transition: width var(--fast-speed) ease, height var(--fast-speed) ease, filter var(--fast-speed) ease, margin-top var(--fast-speed) ease;
+  }
+
+  input {
+    height: 100%;
+    width: 100%;
+
+    padding-left: 1ch;
+    margin-top: -3px;
+
+    font-family: "Segoe UI Historic", "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: var(--primary-text);
+
+    background-color: transparent;
+    border: 0px;
+  }
+
+  input:focus {
+    outline: none;
+  }
+}

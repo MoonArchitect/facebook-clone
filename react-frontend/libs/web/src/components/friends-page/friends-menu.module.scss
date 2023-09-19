@@ -1,0 +1,185 @@
+.leftSlideEnter {
+  position: absolute;
+  transform: translateX(-110%);
+}
+
+.leftSlideEnterActive {
+  transform: translateX(0%);
+  // transition: transform 15000ms ease;
+  transition: transform var(--fast-speed) ease;
+}
+
+.leftSlideExit {
+  transform: translateX(0%);
+  position: absolute;
+}
+
+.leftSlideExitActive {
+  transform: translateX(-110%);
+  // transition: transform 15000ms ease;
+  transition: transform var(--fast-speed) ease;
+}
+
+.rightSlideEnter {
+  position: absolute;
+  transform: translateX(110%);
+}
+
+.rightSlideEnterActive {
+  transform: translateX(0%);
+  // transition: transform 15000ms ease;
+  transition: transform var(--fast-speed) ease;
+}
+
+.rightSlideExit {
+  transform: translateX(0%);
+  position: absolute;
+}
+
+.rightSlideExitActive {
+  transform: translateX(110%);
+  // transition: transform 15000ms ease;
+  transition: transform var(--fast-speed) ease;
+}
+
+.friends-tab-menu-page {
+  width: 100%;
+}
+
+.friendsTabMenuItem {
+  height: 48px;
+  min-width: auto;
+
+  display: flex;
+  align-items: center;
+
+  padding: 2px;
+  margin-left: 6px;
+  margin-right: 6px;
+
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  color: var(--primary-text);
+
+  border-radius: var(--border-radius);
+
+  transition-delay: 25ms;
+  transition: background-color var(--fast-speed) ease;
+
+  &:hover {
+    transition: none;
+    background-color: var(--primary-highlight);
+  }
+
+  span {
+    padding-left: 0.75rem;
+
+    font-size: 1.0625rem;
+    font-weight: 500;
+  }
+}
+
+.pageLink {
+  width: fit-content;
+
+  font-size: 0.8125rem;
+  font-weight: 400;
+  color: var(--secondary-text);
+  text-decoration: none;
+
+  cursor: pointer;
+  user-select: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.pageNavigation {
+  display: flex;
+  align-items: center;
+
+  margin-top: 16px;
+  margin-left: 12px;
+  margin-bottom: 12px;
+
+  a {
+    display: flex;
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+
+    padding: 8px;
+    border-radius: 50%;
+
+    cursor: pointer;
+    user-select: none;
+
+    color: var(--secondary-text);
+    transition: background-color var(--fast-speed) ease;
+  }
+
+  svg:hover {
+    background-color: var(--primary-highlight);
+  }
+}
+
+.titleContainer {
+  display: flex;
+  flex-direction: column;
+
+  margin-left: 12px;
+}
+
+.iconButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px;
+  margin-left: 4px;
+
+  border-radius: 50%;
+  background-color: var(--secondary-button-background);
+
+  i {
+    filter: var(--theme-image-filter);
+  }
+}
+
+.iconRight {
+  background-color: transparent;
+  margin-left: auto;
+  margin-right: 4px;
+  padding: 0px;
+
+  svg {
+    fill: currentColor;
+    padding: 0px;
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.friendsTabMenuItemActivated {
+  background-color: var(--background-deemphasized);
+
+  .iconButton {
+    background-color: var(--accent);
+
+    i {
+      filter: invert(1);
+    }
+  }
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.75rem;
+  font-family: var(--segoeui);
+}

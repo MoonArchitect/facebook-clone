@@ -1,0 +1,119 @@
+.container {
+  width: 420px;
+  pointer-events: auto;
+
+  display: flex;
+
+  position: relative;
+  /* overflow: hidden; */
+
+  margin: 0;
+  padding: 0;
+
+  list-style: none;
+
+  @media only screen and (max-width: 1300px) {
+    width: 30vw;
+    max-width: 330px;
+    margin-right: 120px;
+  }
+
+  @media only screen and (max-width: 720px) {
+    display: none;
+  }
+}
+
+.linkButton {
+  background-color: var(--primary);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  flex: 1;
+  margin: 4px;
+
+  border-radius: 10px;
+  color: var(--secondary-icon);
+
+  transition: background-color var(--fast-speed) ease;
+
+  &:hover {
+    background-color: var(--primary-highlight);
+    cursor: pointer;
+  }
+
+  svg {
+    --button-size: 28px;
+
+    width: var(--button-size);
+    height: var(--button-size);
+  }
+}
+
+.highlightedLink {
+  color: var(--accent);
+
+  &:hover {
+    background-color: var(--primary);
+  }
+}
+
+/* extract everything into -menu-highlight, use -off -on prefixes to toggle scaleY */
+.highlightBar {
+  position: absolute;
+
+  height: 3px;
+  width: 124px;
+
+  margin-top: 55px;
+
+  border-radius: 2px;
+  background-color: var(--accent);
+
+  transform-origin: bottom;
+  transform: scaleY(0);
+
+  transition: transform 100ms ease;
+
+  @media only screen and (max-width: 1300px) {
+    width: 10vw;
+    max-width: 330px;
+  }
+
+  &.show {
+    transform: scaleY(1);
+  }
+}
+
+.hint {
+  z-index: 1;
+  pointer-events: none;
+
+  position: absolute;
+  margin-top: 96px;
+  padding: 8px 13px 9px 13px;
+
+  color: rgb(228, 230, 235);
+  font-size: 0.8125rem;
+  font-weight: 400;
+  white-space: nowrap;
+
+  border-radius: 8px;
+
+  box-shadow: 0 2px 4px 1px rgba(0, 0, 0, 0.4);
+  background-color: var(--tooltip-bg);
+  filter: opacity(0);
+
+  transition: filter 200ms ease;
+  transition-delay: 20ms;
+
+  &.show {
+    z-index: 2;
+
+    filter: opacity(1);
+    transition: filter 100ms ease;
+    transition-delay: 350ms;
+  }
+}

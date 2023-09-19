@@ -1,0 +1,5 @@
+{
+  "buildCommand": "yarn web:build",
+  "framework": "nextjs",
+  "outputDirectory": "../../dist/apps/web/.next"
+}

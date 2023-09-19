@@ -1,0 +1,71 @@
+import clsx from "clsx"
+import { ReactNode, useRef, useState } from "react"
+import { CSSTransition } from "react-transition-group"
+
+import { useClickOutside } from "../../../../hooks"
+
+import styles from "./nav-items.module.scss"
+
+export const NavItem = ({
+  icon,
+  children,
+  hintMessage = "",
+  shiftLeft = false,
+}: {
+  icon: ReactNode
+  children?: ReactNode
+  hintMessage?: string
+  shiftLeft?: boolean
+}) => {
+  const [isHovered, setIsHovered] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const navItemRef = useRef<HTMLLIElement>(null)
+
+  useClickOutside(navItemRef, () => {
+    setIsOpen(false)
+  })
+
+  return (
+    <li className={styles.navItem} ref={navItemRef}>
+      <div
+        className={clsx(styles.iconButton, isOpen && styles.iconButtonActive)}
+        onClick={() => {
+          setIsOpen(!isOpen)
+          setIsHovered(false)
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {icon}
+      </div>
+
+      {children && (
+        <CSSTransition
+          in={isOpen}
+          timeout={150}
+          classNames={{
+            enter: styles.navItemContentEnter,
+            enterActive: styles.navItemContentEnterActive,
+            exit: styles.navItemContentExit,
+            exitActive: styles.navItemContentExitActive,
+          }}
+          unmountOnExit
+        >
+          {children}
+        </CSSTransition>
+      )}
+
+      {hintMessage !== "" && (
+        <div
+          className={clsx(
+            styles.navItemHint,
+            isHovered && styles.navItemHintShow,
+            shiftLeft && styles.navItemShiftLeft
+          )}
+        >
+          {hintMessage}
+        </div>
+      )}
+    </li>
+  )
+}

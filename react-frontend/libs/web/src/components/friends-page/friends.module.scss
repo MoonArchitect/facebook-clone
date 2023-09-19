@@ -1,0 +1,116 @@
+.friendsTabMenu {
+  width: 360px;
+  height: calc(100vh - var(--nav-size));
+  position: relative;
+
+  background-color: var(--primary);
+
+  border-right: 1px solid rgba(0, 0, 0, 0.13);
+  box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.07);
+
+  overflow: hidden;
+}
+
+.menuPage {
+  width: 100%;
+}
+
+.menuInfo {
+  display: flex;
+  align-items: center;
+
+  margin-top: 10px;
+  margin-bottom: 12px;
+  margin-left: 16px;
+  margin-right: 16px;
+}
+
+.menuSettings {
+  display: flex;
+  align-items: center;
+
+  margin-left: auto;
+  padding: 8px;
+
+  cursor: pointer;
+
+  border-radius: 50%;
+  background-color: var(--secondary-button-background);
+  transition: filter var(--fast-speed) ease;
+  filter: brightness(1);
+
+  &:hover {
+    filter: brightness(var(--brightness-highlight));
+  }
+
+  svg {
+    /* fill: currentColor; */
+    width: 20px;
+    height: 20px;
+  }
+}
+
+.menuTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.75rem;
+  font-family: var(--segoeui);
+
+  color: var(--primary-text);
+}
+
+.menuSearch {
+  margin-left: 16px;
+  margin-right: 16px;
+  margin-bottom: 16px;
+  padding: 9px 8px 8px 8px;
+
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+
+  border: 0px;
+  border-radius: 20px;
+
+  background-color: var(--comment-background);
+  line-height: 0.9375rem;
+
+  transition: width var(--fast-speed) ease, margin-left var(--fast-speed) ease;
+}
+
+.menuSearchIcon {
+  margin-top: 1px;
+  margin-left: 4px;
+
+  transition: margin-left var(--fast-speed) ease;
+
+  svg {
+    color: var(--secondary-icon);
+
+    width: 16px;
+    height: 16px;
+
+    transition: width var(--fast-speed) ease, height var(--fast-speed) ease,
+      filter var(--fast-speed) ease, margin-top var(--fast-speed) ease;
+  }
+}
+
+.menuSearchInput {
+  height: 100%;
+  width: 100%;
+
+  padding-left: 1ch;
+  margin-top: -3px;
+
+  font-family: "Segoe UI Historic", "Segoe UI", Helvetica, Arial, sans-serif;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--primary-text);
+
+  background-color: transparent;
+  border: 0px;
+
+  &:focus {
+    outline: none;
+  }
+}

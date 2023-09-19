@@ -1,0 +1,133 @@
+.groupsTabContainer {
+  display: flex;
+  justify-content: center;
+
+  .feed {
+    margin-right: auto;
+
+    .recentActivity {
+      padding-top: 24px;
+      padding-left: 32px;
+      margin-bottom: -8px;
+
+      color: var(--secondary-text);
+      font-size: 0.9375rem;
+    }
+  }
+
+  .groupsMenu {
+    position: sticky;
+    top: var(--nav-size);
+
+    height: calc(100vh - var(--nav-size));
+    width: 360px;
+
+    background-color: var(--primary);
+    margin-right: auto;
+
+    .titleBlock {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+
+      margin-top: 8px;
+      margin-left: 16px;
+      margin-right: 16px;
+
+      .title {
+        margin-right: auto;
+
+        line-height: 1.75rem;
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: "Segoe UI", "Segoe UI Historic", Helvetica, Arial,
+          sans-serif;
+      }
+    }
+
+    .searchContainer {
+      margin-top: 4px;
+      margin-left: 16px;
+      margin-right: 16px;
+    }
+
+    .navigationBlock {
+      padding-top: 12px;
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    .createNewGroupButton {
+      height: 36px;
+
+      margin-top: 8px;
+      margin-bottom: 16px;
+      margin-left: 16px;
+      margin-right: 16px;
+
+      text-align: center;
+      text-justify: distribute;
+      line-height: 36px;
+
+      cursor: pointer;
+      user-select: none;
+
+      border-radius: 8px;
+      color: var(--primary-deemphasized-button-text);
+      background-color: var(--primary-deemphasized-button-background);
+
+      transition: filter var(--fast-speed);
+
+      &:hover {
+        filter: brightness(0.9);
+      }
+    }
+  }
+
+  .groupLink {
+    display: flex;
+
+    margin-left: 12px;
+    margin-right: 12px;
+    padding: 8px 8px 8px 8px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+    user-select: none;
+    transition: background-color var(--fastest-speed) ease;
+
+    &:hover {
+      background-color: var(--secondary-button-background);
+    }
+
+    img,
+    svg {
+      width: 60px;
+      height: 60px;
+      border-radius: 8px;
+    }
+
+    .info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+
+      margin-left: 12px;
+
+      .name {
+        font-size: 0.9375rem;
+      }
+
+      .additionalInfo {
+        margin-top: 4px;
+        font-size: 0.8125rem;
+        font-weight: 400;
+
+        line-height: 0.8125rem;
+
+        color: var(--secondary-text);
+      }
+    }
+  }
+}

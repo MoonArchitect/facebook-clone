@@ -1,0 +1,14 @@
+/.idea/*
+/.vscode/*
+
+rsa_key
+node_modules
+dist
+tmp
+
+# System Files
+.DS_Store
+Thumbs.db
+
+# Next.js
+.next

@@ -1,0 +1,37 @@
+.slideLeftEnter {
+  position: absolute;
+  transform: translateX(-110%);
+}
+
+.slideLeftEnterActive {
+  transform: translateX(0%);
+  transition: transform var(--fast-speed) ease;
+}
+
+.slideLeftExit {
+  position: absolute;
+}
+
+.slideLeftExitActive {
+  transform: translateX(-110%);
+  transition: transform var(--fast-speed) ease;
+}
+
+.slideRightEnter {
+  position: absolute;
+  transform: translateX(110%);
+}
+
+.slideRightEnterActive {
+  transform: translateX(0%);
+  transition: transform var(--fast-speed) ease;
+}
+
+.slideRightExit {
+  position: absolute;
+}
+
+.slideRightExitActive {
+  transform: translateX(110%);
+  transition: transform var(--fast-speed) ease;
+}

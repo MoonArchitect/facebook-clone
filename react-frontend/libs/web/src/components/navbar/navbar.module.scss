@@ -1,0 +1,34 @@
+.container {
+  top: 0px;
+  position: sticky;
+
+  height: var(--nav-size);
+
+  z-index: 10;
+}
+
+.layer_1 {
+  position: absolute;
+  pointer-events: none;
+
+  height: var(--nav-size);
+  width: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+
+  background-color: transparent;
+}
+
+.layer_2 {
+  height: var(--nav-size);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: stretch;
+
+  background-color: var(--primary);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.13);
+  box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.05);
+}

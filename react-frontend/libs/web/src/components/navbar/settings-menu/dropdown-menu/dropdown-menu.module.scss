@@ -1,0 +1,27 @@
+.dropdown {
+  position: absolute;
+  width: 340px;
+  top: calc(var(--nav-size) - 3px);
+  
+  padding: 7px;
+  overflow: hidden;
+
+  
+  border-radius: 10px;
+  border-left: 1px solid rgba(0, 0, 0, 0.18);
+  border-right: 1px solid rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 20px 4px rgba(0, 0, 0, 0.18);
+  
+  background-color: var(--primary); 
+  transform: translateX(-45%);
+
+  transition: height var(--normal-speed) ease;
+}
+
+.menu {
+  position: absolute;
+  width: inherit;
+}
+
+
+

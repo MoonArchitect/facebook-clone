@@ -1,0 +1,17 @@
+.container {
+  margin: 12px;
+  margin-left: 16px;
+  margin-top: 0px;
+
+  font-weight: 400;
+  font-size: 0.9375rem;
+
+  div:first-child {
+    margin-top: 0px;
+  }
+}
+
+.paragraph {
+  font-family: var(--segoeui);
+  margin-top: 6px;
+}

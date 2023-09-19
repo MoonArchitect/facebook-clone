@@ -1,0 +1,117 @@
+html {
+  overflow-y: scroll;
+}
+
+.notransition * {
+  -webkit-transition: none !important; 
+  -moz-transition: none !important; 
+  -o-transition: none !important; 
+  -ms-transition: none !important; 
+  transition: none !important; 
+  /* transition: background-color 120ms ease 0ms, text-color 120ms ease 0ms !important;  */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+
+  background-color: var(--bg);
+  color: var(--primary-text);
+
+  font-family: "Segoe UI Semibold", "Segoe UI", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+
+:root {
+  font-size: 16px;
+  overflow-x: hidden;
+
+  /* fonts */
+  --segoeui-semibold: "Segoe UI Semibold", "Segoe UI", Helvetica, Arial, sans-serif;
+  --segoeui: "Segoe UI", "Segoe UI Semibold", Helvetica, Arial, sans-serif;
+
+
+  /* sizes */
+  --nav-size: 56px;
+  --nav-button-size: 40px;
+  --border-radius: 8px;
+
+
+  /* animation speeds */
+  --fastest-speed: 100ms;
+  --fast-speed: 150ms; 
+  --normal-speed: 250ms;
+}
+
+
+.bright-theme {
+  /* colors (Bright Mode) */
+  --bg: #f0f2f5;
+
+  --primary:  #ffffff;
+  --primary-highlight: #f2f2f2;
+  --accent: #1876f2;
+
+  --primary-text: #050505;
+  --secondary-text: #65676B;
+  --primary-deemphasized-button-text: #1877F2;
+  
+  --secondary-icon: #65676B;
+  --hover: rgba(0, 0, 0, 0.05);
+
+  --comment-background: #F0F2F5;
+
+  --button-color: #050505;
+  --active-button-color: #e7f3ff;
+  --secondary-button-background: #E4E6EB;
+  --background-deemphasized: #F0F2F5;
+  --primary-deemphasized-button-background: #E7F3FF;
+  
+  --tooltip-bg: rgb(57, 57, 58);
+  --divider: #ced0d4;
+  --brightness-highlight: 0.95;
+  --theme-image-filter: none;
+  --nav-menu-scrollbar-color: rgb(188, 192, 196);
+}
+
+.dark-theme {
+  /* colors (Dark Mode) */
+  --bg: #18191A;
+
+  --primary:  #242526;
+  --primary-highlight: rgba(255, 255, 255, 0.1);
+  --accent: hsl(214, 100%, 59%);
+
+  --primary-text: #E4E6EB;
+  --secondary-text: #B0B3B8;
+  --primary-deemphasized-button-text: #2D88FF;
+  
+  --secondary-icon: #B0B3B8;
+  --hover: rgba(255, 255, 255, 0.1);
+
+  --comment-background: #3A3B3C;
+
+  --button-color: #E4E6EB;
+  --active-button-color: rgba(45, 136, 255, 0.2);
+  --secondary-button-background: rgba(255,255,255,.1);
+  --background-deemphasized: rgba(255,255,255,0.1);
+  --primary-deemphasized-button-background: rgba(45, 136, 255, 0.2);
+  
+  --tooltip-bg: rgb(57, 57, 58);
+  --divider: #3E4042;
+  --brightness-highlight: 0.8;
+  --theme-image-filter: invert(0.95);
+  --nav-menu-scrollbar-color: rgb(108, 112, 116);
+}
+
+
+::selection {
+  color: white;
+  background: #3390ff;
+}

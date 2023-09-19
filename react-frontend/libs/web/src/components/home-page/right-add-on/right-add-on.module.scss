@@ -1,0 +1,99 @@
+.rightAddonContainer {
+  top: var(--nav-size);
+  position: sticky;
+
+  height: 100%;
+  width: 100%;
+  max-width: 350px;
+
+  .content {
+    margin-left: 8px;
+    margin-top: 28px;
+    color: var(--secondary-text);
+    font-weight: 600;
+    font-size: 1.0625rem;
+
+    .sponsoredSection {
+      margin-left: 10px;
+    }
+
+    .separator {
+      height: 1px;
+      margin-left: 10px;
+      margin-top: 16px;
+      background-color: var(--divider);
+    }
+
+    .groupConversations {
+      margin-top: 12px;
+      margin-left: 10px;
+    }
+
+    .createNewGroup {
+      display: flex;
+      align-items: center;
+
+      margin-top: 8px;
+      padding-top: 8px;
+      padding-bottom: 8px;
+
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color var(--fast-speed) ease;
+
+      &:hover {
+        background-color: var(--hover);
+
+        .icon {
+          filter: brightness(0.95);
+        }
+      }
+
+      .icon {
+        width: fit-content;
+        height: fit-content;
+        margin-left: 8px;
+
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        border-radius: 20px;
+        color: var(--button-color);
+
+        background-color: var(--secondary-button-background);
+        transition: filter var(--fast-speed) ease;
+
+        & svg {
+          width: 20px;
+          height: 20px;
+
+          padding: 8px;
+
+          & path {
+            stroke-width: 35;
+            stroke: var(--secondary-button-background);
+          }
+        }
+      }
+
+      .title {
+        margin-left: 12px;
+
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--primary-text);
+
+        user-select: none;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .rightAddonContainer {
+    display: none;
+  }
+}

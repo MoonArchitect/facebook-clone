@@ -1,0 +1,10 @@
+.hashtag {
+  cursor: pointer;
+  color: var(--accent);
+
+  width: fit-content;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}

@@ -1,0 +1,18 @@
+db:
+  postgresURL: postgresql://postgres:mysecretpassword@0.0.0.0:5432/postgres
+  maxConnections: 50
+
+server:
+  port: 8080
+  readTimeoutSeconds: 10
+  writeTimeoutSeconds: 10
+  maxHeaderBytes: 1048576 # 1mb
+
+auth:
+  cookieDomain: fp-demo.com
+  maxAgeSeconds: 86400 # 24 hours
+  rsaKeyFile: rsa_key
+  argon2Time: 1
+  argon2Memory: 65536 # 64MB
+  argon2Threads: 4
+  argon2KeyLength: 64
