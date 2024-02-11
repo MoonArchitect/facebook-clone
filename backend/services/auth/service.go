@@ -7,6 +7,7 @@ import (
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/pem"
+	"fb-clone/libs/auth_validator"
 	"fb-clone/libs/config"
 	"fb-clone/postgresql/repositories"
 	"fmt"
@@ -24,12 +25,14 @@ const AuthCookieName = "auth_v0"
 type authService struct {
 	signingKey            *rsa.PrivateKey
 	credentialsRepository repositories.CredentialsRepository
+	authValidator         auth_validator.AuthValidator
 }
 
 type AuthService interface {
 	Signin(ctx context.Context, email, password string) (string, error)
 	CreateCredentials(ctx context.Context, email, password, uid string) (string, error)
 	ValidateToken(token string) (string, error)
+	GetPublicKey() (rsa.PublicKey, error)
 }
 
 func NewAuthService(credentialsRepository repositories.CredentialsRepository) (AuthService, error) {
@@ -44,9 +47,14 @@ func NewAuthService(credentialsRepository repositories.CredentialsRepository) (A
 		log.Fatalf("Failed to parse private auth key: %v", err)
 	}
 
+	authValidator := auth_validator.NewAuthValidator(signingKey.PublicKey)
+	// this is done to avoid code duplication of validating a token, but feels a bit wierd to have a seperate lib for that (maybe I can just move package in this folder)
+	// also, this authValidator is also taking publicKey that has reference to bigInt, that should never be modified
+
 	return &authService{
 		signingKey,
 		credentialsRepository,
+		authValidator,
 	}, nil
 }
 
@@ -119,38 +127,18 @@ func (err CustomError) Error() string {
 	return string(err.ClientError)
 }
 
+// https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/
+// I should read more articles so that only non-obvious exploits are allowed...
 func (s authService) ValidateToken(tokenString string) (string, error) {
-	fmt.Println(tokenString)
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
-		}
+	return s.authValidator.ValidateToken(tokenString)
+}
 
-		return &s.signingKey.PublicKey, nil
-	})
+func (s authService) GetPublicKey() (rsa.PublicKey, error) {
+	E := s.signingKey.PublicKey.E
+	N := *s.signingKey.PublicKey.N // copy bigint N to return deepcopy of PublicKey
 
-	if err != nil {
-		return "", fmt.Errorf("validating token: %w", err)
-	}
-
-	if !token.Valid {
-		return "", fmt.Errorf("token invalid")
-	}
-
-	claims, ok := token.Claims.(jwt.RegisteredClaims)
-	if !ok {
-		return "", fmt.Errorf("claims is not RegisteredClaims type")
-	}
-
-	uid := claims.Subject
-	if uid == "" {
-		return "", fmt.Errorf("did not find sub claim")
-	}
-
-	eat := claims.ExpiresAt
-	if eat.Before(time.Now()) {
-		return "", fmt.Errorf("token is expired")
-	}
-
-	return uid, nil
+	return rsa.PublicKey{
+		N: &N,
+		E: E,
+	}, nil
 }

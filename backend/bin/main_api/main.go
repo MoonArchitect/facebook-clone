@@ -45,7 +45,7 @@ func main() {
 
 	// Services
 	userService := user.NewUserService(userRepository, profileRepository, friendshipRepository)
-	authService, err := auth.NewAuthService(credentialsRepository)
+	authService, err := auth.NewAuthService(credentialsRepository) // TODO: auth service should be a separate binary
 	if err != nil {
 		panic(err)
 	}
@@ -55,7 +55,7 @@ func main() {
 	authController := controllers.NewAuthController(authService, userService)
 
 	// middleware
-	authRequired := middleware.BasicAuth(authService)
+	authRequired := middleware.BasicAuth(authService) // TODO: this should use authValidator locally instead of separate service
 
 	// Router
 	router := gin.Default()
@@ -73,17 +73,17 @@ func main() {
 	// api.POST("/profiles/update/banner", authRequired, profileController.GetMe)
 	// api.POST("/profiles/update/thumbnail", authRequired, profileController.GetMe)
 	api.GET("/profiles/me", authRequired, profileController.GetMe)
-	api.POST("/profiles/me", authRequired, profileController.UpdateMe)
+	api.PATCH("/profiles/me", authRequired, profileController.UpdateMe)
 	api.GET("/profiles/get", profileController.GetProfile)
 
 	// api.GET("/posts", profileController.GetProfile)
-	api.POST("/posts", profileController.GetProfile)
-	api.POST("/comment", profileController.GetProfile)
+	// api.POST("/posts", profileController.GetProfile)
+	// api.POST("/comment", profileController.GetProfile)
 	// api.POST("/reply", profileController.GetProfile)
 	api.GET("/user/friends", profileController.GetProfile)
-	api.GET("/friends/requests", profileController.GetProfile)
-	api.GET("/feed", profileController.GetProfile)
-	api.GET("/user/feed", profileController.GetProfile)
+	// api.GET("/friends/requests", profileController.GetProfile)
+	// api.GET("/feed", profileController.GetProfile)
+	// api.GET("/user/feed", profileController.GetProfile)
 
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", config.Cfg.Server.Port),
@@ -102,7 +102,3 @@ func main() {
 
 // if profile is private only friends can view that profile
 // if public or areFriends(userID, friendID)
-
-// Fullstack facebook clone
-// Frontend is done with React, NextJS,
-// Backend is writtent in Go, PostgreSQL for db, Redis for cache at various stages

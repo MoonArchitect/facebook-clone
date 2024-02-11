@@ -60,9 +60,7 @@ func (s userService) GetUserProfileByID(ctx context.Context, uid string, request
 		return nil, err
 	}
 
-	apiProfile := ApiUserProfile{
-		Name: profile.Name,
-	}
+	apiProfile := getApiProfile(profile)
 
 	return &apiProfile, nil
 }
@@ -87,21 +85,19 @@ func (s userService) GetUserProfileByUsername(ctx context.Context, username stri
 		}
 	}
 
-	thumbnailURL := "cdn.domain.com/pu/" + profile.ThumbnailID
-	if !profile.Public {
-		thumbnailURL = "cdn.domain.com/pr/" + profile.ThumbnailID + "?signaure="
-	}
-
-	apiProfile := ApiUserProfile{
-		Name:         profile.Name,
-		ThumbnailURL: thumbnailURL,
-	}
+	apiProfile := getApiProfile(profile)
 
 	return &apiProfile, nil
 }
 
-// func GetApiProfile(p repositories.Profile) ApiUserProfile {
-// 	return ApiUserProfile{
-// 		Name: p.Name,
-// 	}
-// }
+func getApiProfile(p *repositories.Profile) ApiUserProfile {
+	thumbnailURL := "cdn.domain.com/pu/" + p.ThumbnailID
+	if !p.Public { // TODO: asset service?
+		thumbnailURL = "cdn.domain.com/pr/" + p.ThumbnailID + "?signaure="
+	}
+
+	return ApiUserProfile{
+		Name:         p.Name,
+		ThumbnailURL: thumbnailURL,
+	}
+}
