@@ -3,7 +3,7 @@ import { ReactElement } from "react"
 import { ReactComponent as CogIcon } from "@facebook-clone/assets/icons/cog.svg"
 import { ReactComponent as CompassIcon } from "@facebook-clone/assets/icons/compass.svg"
 import { ReactComponent as NewsFeedIcon } from "@facebook-clone/assets/icons/newsfeed.svg"
-import { ReactComponent as ReactIcon } from "@facebook-clone/assets/icons/react-logo.svg"
+import { ReactComponent as ReactIcon } from "@facebook-clone/assets/icons/react_logo.svg"
 
 import { Feed } from "../feed/feed"
 import { LineDivider, MenuButton, NavigationButton, SearchBar } from "../ui"

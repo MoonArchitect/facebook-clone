@@ -17,9 +17,6 @@ const nextConfig = {
     // See: https://github.com/gregberge/svgr
     svgr: true,
   },
-  experimental: {
-    appDir: true,
-  },
 }
 
 module.exports = withNx(nextConfig)
