@@ -58,7 +58,10 @@ func main() {
 	authRequired := middleware.BasicAuth(authService) // TODO: this should use authValidator locally instead of separate service
 
 	// Router
-	router := gin.Default()
+	if config.Cfg.Env == "prod" {
+		gin.SetMode(gin.ReleaseMode)
+	}
+	router := gin.New()
 
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())

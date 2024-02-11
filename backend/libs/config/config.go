@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"gopkg.in/yaml.v3"
@@ -9,7 +10,8 @@ import (
 var Cfg ConfigType
 
 type ConfigType struct {
-	DB struct {
+	Env string `yaml:"env"`
+	DB  struct {
 		PostgresURL    string `yaml:"postgresURL"`
 		MaxConnections int32  `yaml:"maxConnections"`
 	} `yaml:"db"`
@@ -34,13 +36,20 @@ const configEnvKey = "cfg"
 
 func ParseConfig() error {
 	configPath := os.Getenv(configEnvKey)
-	raw, err := os.ReadFile(configPath)
+	if configPath == "" {
+		return fmt.Errorf("config path is not provided")
+	}
+
+	raw, err := os.Open(configPath)
 	if err != nil {
 		return err
 	}
 
 	var newCfg ConfigType
-	err = yaml.Unmarshal(raw, &newCfg)
+	dec := yaml.NewDecoder(raw)
+	dec.KnownFields(true)
+	err = dec.Decode(&newCfg)
+	// TODO: still nede to make sure all config values are present, find better config solution
 	if err != nil {
 		return err
 	}
