@@ -9,10 +9,11 @@ interface DropdownItemProps {
   leftIcon?: ReactNode
   rightIcon?: ReactNode
   goToMenu?: number
+  onClick?: () => void
 }
 
 export const DropdownItem = (props: PropsWithChildren<DropdownItemProps>) => {
-  const { children, leftIcon, rightIcon, goToMenu } = props
+  const { children, leftIcon, rightIcon, goToMenu, onClick } = props
 
   const { activeId, setActiveId, setPreviousId } = useContext(MenuContext)
 
@@ -20,8 +21,10 @@ export const DropdownItem = (props: PropsWithChildren<DropdownItemProps>) => {
     if (goToMenu !== undefined) {
       setPreviousId(activeId)
       setActiveId(goToMenu)
+    } else {
+      onClick?.()
     }
-  }, [activeId, goToMenu, setActiveId, setPreviousId])
+  }, [activeId, goToMenu, onClick, setActiveId, setPreviousId])
 
   return (
     <div className={commonStyles.menuItem} onClick={handleClick}>

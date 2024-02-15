@@ -13,8 +13,8 @@ export const enum FriendTabs {
   Requests = 1,
   Suggestions = 2,
   List = 3,
-  Birthdays = 0,
-  Friendlist = 4,
+  // Birthdays = 4, // does not have a separate menu tab
+  Friendlist = 5,
 }
 
 interface FriendsMenuPageProps {

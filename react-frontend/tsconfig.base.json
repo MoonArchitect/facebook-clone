@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@facebook-clone/assets/*": ["libs/assets/*"],
-      "@facebook-clone/web/*": ["libs/web/src/*"]
+      "@facebook-clone/web/*": ["libs/web/src/*"],
+      "@facebook-clone/api_client/*": ["libs/api_client/*"]
     },
     "forceConsistentCasingInFileNames": true,
     "incremental": true,

@@ -10,7 +10,7 @@ server:
   maxHeaderBytes: 1048576 # 1mb
 
 auth:
-  cookieDomain: fp-demo.com
+  cookieDomain: localhost
   maxAgeSeconds: 86400 # 24 hours
   rsaKeyFile: rsa_key
   argon2Time: 1

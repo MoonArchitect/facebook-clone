@@ -4,6 +4,7 @@ import (
 	"context"
 	"fb-clone/postgresql/repositories"
 	"fmt"
+	"time"
 )
 
 type userService struct {
@@ -36,12 +37,13 @@ func (s userService) CreateNewUser(ctx context.Context, email string) (string, e
 	err = s.profileRepository.CreateProfile(ctx, repositories.Profile{
 		Id:          uid,
 		Name:        "",
-		Username:    "",
+		Username:    fmt.Sprintf("%v", time.Now().Unix()),
 		ThumbnailID: "",
 		BannerID:    "",
 		Public:      false,
 	})
 	if err != nil {
+		// TODO: could use the same transaction for both repos
 		// TODO delete user/auth? or retry. definetly log
 		// or user/auth is created separately from profile, if user does not have a profile (ie. registration process is not complete) then prompt them with profile creation
 		return "", err
@@ -98,6 +100,8 @@ func getApiProfile(p *repositories.Profile) ApiUserProfile {
 
 	return ApiUserProfile{
 		Name:         p.Name,
+		Username:     p.Username,
+		BannerURL:    p.BannerID,
 		ThumbnailURL: thumbnailURL,
 	}
 }

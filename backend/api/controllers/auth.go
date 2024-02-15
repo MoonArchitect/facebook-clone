@@ -1,7 +1,9 @@
 package controllers
 
 import (
+	"errors"
 	"fb-clone/libs/config"
+	"fb-clone/postgresql/repositories"
 	"fb-clone/services/auth"
 	"fb-clone/services/user"
 	"net/http"
@@ -28,8 +30,8 @@ func NewAuthController(authService auth.AuthService, userService user.UserServic
 }
 
 type EmailPassword struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 func (c authController) Signin(ctx *gin.Context) {
@@ -56,7 +58,10 @@ func (c authController) Signup(ctx *gin.Context) {
 	}
 
 	uid, err := c.userService.CreateNewUser(ctx, ep.Email)
-	if err != nil {
+	if errors.Is(err, repositories.EmailAlreadyRegistered) {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	} else if err != nil {
 		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}

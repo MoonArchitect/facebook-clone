@@ -64,6 +64,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.20.2",
+    "axios": "^0.28.0",
     "clsx": "2.1.0",
     "core-js": "^3.35.1",
     "next": "14.1.0",

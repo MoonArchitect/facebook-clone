@@ -13,8 +13,43 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/go-errors/errors"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+// for local testing only
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "http://localhost:3000")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
+}
+
+func ErrorStackLogger() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Next()
+
+		if c.Writer.Status() >= 500 {
+			for _, err := range c.Errors {
+				var sErr *errors.Error
+				if ok := errors.As(err.Err, &sErr); ok {
+					fmt.Println(sErr.ErrorStack())
+				} else {
+					fmt.Printf("Error without stack: %v", err)
+				}
+			}
+		}
+	}
+}
 
 func main() {
 	fmt.Println("Parsing config")
@@ -35,6 +70,13 @@ func main() {
 	db, err := pgxpool.NewWithConfig(ctx, pgxCfg)
 	if err != nil {
 		panic(err)
+	}
+
+	// check connection
+	err = db.Ping(ctx)
+	if err != nil {
+		// TODO: some retry logice maybe?
+		panic(fmt.Errorf("couldn't ping db %w", err))
 	}
 
 	// Repositories
@@ -63,15 +105,17 @@ func main() {
 	}
 	router := gin.New()
 
+	router.Use(ErrorStackLogger())
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
+	router.Use(CORSMiddleware())
 
 	api := router.Group("/api/v1")
 
 	// TODO better auth middleware
-	api.GET("/auth/signin", authController.Signin)
-	api.GET("/auth/signout", authRequired, authController.Signout)
-	api.GET("/auth/signup", authController.Signup)
+	api.POST("/auth/signin", authController.Signin)
+	api.POST("/auth/signout", authRequired, authController.Signout)
+	api.POST("/auth/signup", authController.Signup)
 
 	// api.POST("/profiles/update/banner", authRequired, profileController.GetMe)
 	// api.POST("/profiles/update/thumbnail", authRequired, profileController.GetMe)

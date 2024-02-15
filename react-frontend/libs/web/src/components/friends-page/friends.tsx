@@ -33,7 +33,7 @@ export const MenuTab = () => {
     if (pathname?.includes("requests")) target = FriendTabs.Requests
     if (pathname?.includes("suggestions")) target = FriendTabs.Suggestions
     if (pathname?.includes("list")) target = FriendTabs.List
-    if (pathname?.includes("birthdays")) target = FriendTabs.Birthdays
+    if (pathname?.includes("birthdays")) target = FriendTabs.Default
     if (pathname?.includes("friendlist")) target = FriendTabs.Friendlist
 
     if (target !== activeId) {
@@ -43,7 +43,7 @@ export const MenuTab = () => {
 
   return (
     <div className={styles.friendsTabMenu} ref={dropdownRef}>
-      <FriendsMenuPage id={0} activeId={activeId}>
+      <FriendsMenuPage id={FriendTabs.Default} activeId={activeId}>
         <div className={styles.menuPage}>
           <div className={styles.menuInfo}>
             <div className={styles.menuTitle}>Friends</div>
@@ -97,20 +97,20 @@ export const MenuTab = () => {
         </div>
       </FriendsMenuPage>
 
-      <FriendsMenuPage id={1} activeId={activeId}>
+      <FriendsMenuPage id={FriendTabs.Requests} activeId={activeId}>
         <div className={styles.menuPage}>
           <MenuPageTitle title="Friend Requests" href="/friends" />
           <LineDivider />
         </div>
       </FriendsMenuPage>
 
-      <FriendsMenuPage id={2} activeId={activeId}>
+      <FriendsMenuPage id={FriendTabs.Suggestions} activeId={activeId}>
         <div className={styles.menuPage}>
           <MenuPageTitle title="Suggestions" href="/friends" />
         </div>
       </FriendsMenuPage>
 
-      <FriendsMenuPage id={3} activeId={activeId}>
+      <FriendsMenuPage id={FriendTabs.List} activeId={activeId}>
         <div className={styles.menuPage}>
           <MenuPageTitle title="All friends" href="/friends" />
           <div className={styles.menuSearch}>
@@ -138,7 +138,7 @@ export const MenuTab = () => {
         </div>
       </FriendsMenuPage>
 
-      <FriendsMenuPage id={4} activeId={activeId}>
+      <FriendsMenuPage id={FriendTabs.Friendlist} activeId={activeId}>
         <div className={styles.menuPage}>
           <MenuPageTitle title="Custom Lists" href="/friends" />
         </div>

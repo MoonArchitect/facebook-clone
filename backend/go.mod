@@ -7,6 +7,7 @@ require (
 	github.com/georgysavva/scany/v2 v2.0.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang-jwt/jwt/v5 v5.0.0
+	github.com/go-errors/errors v1.5.1
 	github.com/jackc/pgx/v5 v5.4.3
 	golang.org/x/crypto v0.9.0
 	gopkg.in/yaml.v3 v3.0.1

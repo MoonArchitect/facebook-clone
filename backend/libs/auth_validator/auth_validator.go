@@ -24,7 +24,7 @@ func NewAuthValidator(publicKey rsa.PublicKey) AuthValidator {
 
 func (s authValidator) ValidateToken(tokenString string) (string, error) {
 	fmt.Println(tokenString)
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
@@ -33,14 +33,14 @@ func (s authValidator) ValidateToken(tokenString string) (string, error) {
 	})
 
 	if err != nil {
-		return "", fmt.Errorf("validating token: %w", err)
+		return "", fmt.Errorf("failed to parse token: %w", err)
 	}
 
 	if !token.Valid {
 		return "", fmt.Errorf("token invalid")
 	}
 
-	claims, ok := token.Claims.(jwt.RegisteredClaims)
+	claims, ok := token.Claims.(*jwt.RegisteredClaims)
 	if !ok {
 		return "", fmt.Errorf("claims is not RegisteredClaims type")
 	}
