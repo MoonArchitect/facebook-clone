@@ -25,6 +25,7 @@ export const OptionsItem = (props: OptionsItemProps) => {
 
   const [option, setOption] = useState("")
 
+  // TODO: unify user option store so that ui state and user settings are the same thing
   const handleOptionChange = useCallback(
     (optionValue: string) => {
       localStorage.setItem(`option-${optionId}`, optionValue)
