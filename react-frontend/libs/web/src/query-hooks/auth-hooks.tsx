@@ -25,6 +25,7 @@ export const useSignoutMutation = () => {
       mutationFn: mainAPI.signOut,
       onSuccess: () => {
         sessionSignOutCallback()
+        // TODO: clear server options and local storage on logout
       }
     },
   )

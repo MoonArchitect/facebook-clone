@@ -1,8 +1,10 @@
+"use client"
+
 import Modal from "react-modal"
 
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 import { useSigninMutation } from "@facebook-clone/web/query-hooks/auth-hooks"
-import { FormEvent, useCallback } from "react"
+import { FormEvent, useCallback, useMemo } from "react"
 
 import clsx from "clsx"
 import { useGlobalModal } from "../global-modals"
@@ -33,8 +35,15 @@ export const SignInModal = (props: SignInModalProps) => {
     close()
   }, [showSignupModal, close])
 
+  const modalAppElement = useMemo(() => typeof window !== 'undefined' && document.getElementById('root') || undefined, [])
+
   return (
-    <Modal className={styles.modalContainer} isOpen={isOpen} overlayClassName={styles.modalOverlay} >
+    <Modal
+      className={styles.modalContainer}
+      isOpen={isOpen}
+      overlayClassName={styles.modalOverlay}
+      appElement={modalAppElement}
+    >
       <form className={styles.container} onSubmit={(e) => handleSubmit(e)}>
         <div className={styles.legend}>
           <div className={styles.text}>

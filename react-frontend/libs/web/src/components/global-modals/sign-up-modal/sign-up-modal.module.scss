@@ -10,20 +10,22 @@
     
     display: grid;
 
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: var(--modal-overlay-color);
 }
 
 .container {
     display: flex;
     flex-direction: column;
     
-    width: 460px;
+    width: 440px;
     max-width: 80vw;
-    padding: 10px 16px;
+    padding: 32px 24px;
     
     color: var(--primary-text);
     background-color: var(--bg);
-    border-radius: 16px;
+    border-radius: 8px;
+
+    box-shadow: 0px 0px 16px 1px rgb(0 0 0 / 20%);
 }
 
 .legend {
@@ -46,9 +48,9 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 24px;
-        height: 24px;
-        padding: 2px;
+        width: 28px;
+        height: 28px;
+        padding: 6px;
         outline: none;
         border: none;
         cursor: pointer;
@@ -111,9 +113,9 @@
 
     border-radius: 8px;
     border: none;
-    background-color: var(--accent);
+    background-color: var(--green-accent);
 
-    color: var(--primary-text);
+    color: white;
     font-weight: 600;
     font-size: 1.25rem;
     cursor: pointer;

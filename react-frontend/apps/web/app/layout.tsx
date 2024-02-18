@@ -10,6 +10,7 @@ import { GlobalTheme } from "@facebook-clone/web/components/utils/server-options
 import { SessionContextProvider } from "@facebook-clone/web/components/utils/session-context"
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query'
 import axios from "axios"
+import clsx from "clsx"
 import { cookies } from "next/headers"
 import { cache } from 'react'
 import "./global.css"
@@ -48,7 +49,7 @@ export default async function IndexLayout(props: PropsWithChildren) {
       <TanstackQueryClientProvider>
         <HydrationBoundary state={dehydratedState}>
           <SessionContextProvider authCookieExists={authCookieExists}>
-            <body className={theme === GlobalTheme.BrightTheme ? "bright-theme" : "dark-theme"}>
+            <body className={clsx(theme === GlobalTheme.BrightTheme ? "bright-theme" : "dark-theme")} id="root">
               <GlobalModals>
                 <Navbar />
                 {children}
