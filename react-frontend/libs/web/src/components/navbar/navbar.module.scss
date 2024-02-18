@@ -32,3 +32,38 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.13);
   box-shadow: 0 2px 5px 1px rgba(0, 0, 0, 0.05);
 }
+
+
+
+.signinComponent {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: 12px;
+
+  button {
+    margin: 12px 8px;
+    width: 150px;
+    border-radius: 6px;
+    outline: none;
+    border: none;
+
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--primary-text);
+    cursor: pointer;
+
+    transition: opacity ease var(--fast-speed);
+
+    &:hover {
+      opacity: var(--brightness-highlight)
+    }
+  }
+
+  .signinButton {
+    background-color: var(--accent);
+  }
+
+  .createAccountButton {
+    background-color: var(--green-accent);
+  }
+}

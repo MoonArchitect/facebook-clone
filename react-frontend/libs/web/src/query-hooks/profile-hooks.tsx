@@ -1,15 +1,6 @@
 import { APIUserProfileResponse, mainAPI } from "@facebook-clone/api_client/main_api";
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
-
-// TODO: sensible config
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: Infinity,
-    },
-  },
-})
 
 export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
   {
@@ -22,6 +13,6 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
         return false
       return true
     },
-  },
-  queryClient
+    refetchInterval: 5 * 60 * 1000
+  }
 )

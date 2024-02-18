@@ -93,10 +93,10 @@ func (s userService) GetUserProfileByUsername(ctx context.Context, username stri
 }
 
 func getApiProfile(p *repositories.Profile) ApiUserProfile {
-	thumbnailURL := "cdn.domain.com/pu/" + p.ThumbnailID
-	if !p.Public { // TODO: asset service?
-		thumbnailURL = "cdn.domain.com/pr/" + p.ThumbnailID + "?signaure="
-	}
+	thumbnailURL := "https://test-facebook-public.s3.ap-southeast-1.amazonaws.com/" + p.ThumbnailID
+	// if !p.Public { // TODO: asset service?
+	// 	thumbnailURL = "cdn.domain.com/pr/" + p.ThumbnailID + "?signaure="
+	// }
 
 	return ApiUserProfile{
 		Name:         p.Name,

@@ -1,27 +1,19 @@
 import clsx from "clsx"
-import Image from "next/image"
 import Link from "next/link"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 
-import UserProfilePicture from "@facebook-clone/assets/images/profile-picture.png"
-
-import { useClickOutside } from "../../../../hooks"
-
+import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-hooks"
 import styles from "./nav-items.module.scss"
 
 export const MiniProfileNavItem = () => {
-  const [isOpen, setIsOpen] = useState(false)
   const navItemRef = useRef(null)
-
-  useClickOutside(navItemRef, () => {
-    setIsOpen(false)
-  })
+  const {data} = useMeQuery()
 
   return (
     <li className={clsx(styles.navItem, styles.hideNavItemAt500)} ref={navItemRef}>
-      <Link href="profile/" className={styles.miniProfile} onClick={() => setIsOpen(!isOpen)}>
-        <Image src={UserProfilePicture} alt="" />
-        <span>Name</span>
+      <Link href="profile/" className={styles.miniProfile}>
+        <img src={data?.thumbnailURL ?? ""} alt="profile thumbnail" />
+        <span>{data?.name ?? "not available"}</span>
       </Link>
     </li>
   )

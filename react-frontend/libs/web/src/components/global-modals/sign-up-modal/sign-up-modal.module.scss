@@ -1,0 +1,130 @@
+.modalContainer {
+    outline: none;
+    margin: auto;
+}
+
+.modalOverlay {
+    z-index: 100;
+    position: fixed;
+    inset: 0;
+    
+    display: grid;
+
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    
+    width: 460px;
+    max-width: 80vw;
+    padding: 10px 16px;
+    
+    color: var(--primary-text);
+    background-color: var(--bg);
+    border-radius: 16px;
+}
+
+.legend {
+    display: flex;
+    justify-content: space-between;
+
+    .text {
+        h1 {
+            margin: 0;
+        }
+
+        p {
+            font-size: smaller;
+            margin: 4px 0;
+            color: var(--secondary-text);
+        }
+    }
+
+    .closeButton {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        padding: 2px;
+        outline: none;
+        border: none;
+        cursor: pointer;
+
+        border-radius: 4px;
+        background-color: var(--bg);
+        
+        svg {
+            width: 20px;
+            height: 20px;
+            rotate: 45deg;
+            color: var(--button-color);
+        }
+
+        &:hover {
+            background-color: var(--hover);
+        }
+    }
+}
+
+.row {
+    margin: 8px 0;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+
+    .textInput {
+        flex: 1;
+        border: none;
+        padding: 8px 12px;
+
+        color: var(--primary-text);
+        font-size: 1rem;
+        font-weight: 700;
+
+        background-color: var(--primary);
+        border-radius: 6px;
+
+        &:focus {
+            outline: none;
+        }
+    }
+}
+
+.smallText {
+    margin: 4px 0;
+    padding: 0;
+    
+    color: var(--secondary-text);
+    font-size: smaller;
+}
+
+.submitButton {
+    width: 60%;
+    height: 42px;
+    align-self: center;
+    margin-top: 12px;
+    margin-bottom: 16px;
+
+    border-radius: 8px;
+    border: none;
+    background-color: var(--accent);
+
+    color: var(--primary-text);
+    font-weight: 600;
+    font-size: 1.25rem;
+    cursor: pointer;
+
+    &:hover {
+        filter: brightness(var(--brightness-highlight));
+    }
+}
+
+.lineDivider {
+    height: 0.8px;
+    margin: 6px 0;
+    background-color: var(--divider);
+}

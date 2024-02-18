@@ -57,6 +57,7 @@ code {
   --primary:  #ffffff;
   --primary-highlight: #f2f2f2;
   --accent: #1876f2;
+  --green-accent: #1dad4f;
 
   --primary-text: #050505;
   --secondary-text: #65676B;
@@ -87,6 +88,7 @@ code {
   --primary:  #242526;
   --primary-highlight: rgba(255, 255, 255, 0.1);
   --accent: hsl(214, 100%, 59%);
+  --green-accent: #1dad4f;
 
   --primary-text: #E4E6EB;
   --secondary-text: #B0B3B8;

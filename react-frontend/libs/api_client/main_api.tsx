@@ -1,9 +1,9 @@
 import axios from 'axios'
 
+// TODO: check if this is shared between all users on server side
 const mainAPIClient = axios.create({
   baseURL: 'http://localhost:8080/api/v1',
-  timeout: 1000,
-  // headers: {'X-Custom-Header': 'foobar'}
+  timeout: 5000,
   withCredentials: true
 })
 

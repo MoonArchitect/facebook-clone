@@ -1,17 +1,17 @@
 import clsx from "clsx"
-import Image from "next/image"
 import Link from "next/link"
 
-import UserProfilePicture from "@facebook-clone/assets/images/profile-picture.png"
-
+import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-hooks"
 import commonStyles from "./common-item-styles.module.scss"
 
 export const MiniProfile = () => {
+  const {data} = useMeQuery()
+
   return (
     <Link href="profile/" className={clsx(commonStyles.menuItem, commonStyles.menuMiniProfile)}>
-      <Image src={UserProfilePicture} alt="" />
+      <img src={data?.thumbnailURL ?? ""} alt="" />
       <div>
-        <span>Your Name</span>
+        <span>{data?.name ?? "not available"}</span>
         <br />
         <span className={commonStyles.subTitle}>See your profile</span>
       </div>

@@ -1,4 +1,6 @@
-import { useRouter } from "next/navigation"
+"use client"
+
+import { redirect } from "next/navigation"
 import { PropsWithChildren, ReactNode } from "react"
 import { useSession } from "./session-context"
 
@@ -10,11 +12,12 @@ type RequireLoggedinProps = {
 export const RequireAuthenticated = (props: PropsWithChildren<RequireLoggedinProps>) => {
   const {children, fallbackComponent, redirectPath} = props
   const { state: {isLoggedIn} } = useSession()
-  const {push} = useRouter()
+  // const {push} = useRouter()
 
   if (!isLoggedIn) {
     if (redirectPath) {
-      push(redirectPath)
+      // push(redirectPath)
+      redirect(redirectPath)
     }
 
     return fallbackComponent ?? null

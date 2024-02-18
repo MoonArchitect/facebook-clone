@@ -1,11 +1,11 @@
-import Image from "next/image"
 import { useState } from "react"
 
 import { ReactComponent as ChevronIcon } from "@facebook-clone/assets/icons/chevron.svg"
-import UserProfilePicture from "@facebook-clone/assets/images/profile-picture.png"
 
 import { NavigationButton } from "../../ui"
 
+import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-hooks"
+import { RequireAuthenticated } from "../../utils/require-auth"
 import styles from "./navigation-menu.module.scss"
 
 const WelcomeIcon = <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yl/r/GavNGH1v5-z.png" alt="" />
@@ -18,6 +18,15 @@ const EmotionalIcon = <img src="https://static.xx.fbcdn.net/rsrc.php/v3/y5/r/GyZ
 const FavoritesIcon = <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yP/r/Zy9sJGThmCS.png" alt="" />
 const MessengerIcon = <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yq/r/YF1bztyGuX-.png" alt="" />
 
+const UserProfileNavigationButton = () => {
+  const {data} = useMeQuery()
+  return (
+    <RequireAuthenticated>
+      <NavigationButton icon={<img src={data?.thumbnailURL ?? ""} alt="Your profile" />} title={data?.name ?? "not available"} />
+    </RequireAuthenticated>
+  )
+}
+
 export const NavigationMenu = () => {
   const [isExpanded, setIsExpanded] = useState(false)
 
@@ -25,7 +34,7 @@ export const NavigationMenu = () => {
     <div className={styles.container}>
       <div className={styles.content}>
         <div className={styles.buttonsList}>
-          <NavigationButton icon={<Image src={UserProfilePicture} alt="Your profile image" />} title="Your Name" />
+          <UserProfileNavigationButton />
           <NavigationButton icon={MessengerIcon} title="Find Friends" />
           <NavigationButton icon={WelcomeIcon} title="Welcome" />
           <NavigationButton icon={COVIDIcon} title="Groups" />
