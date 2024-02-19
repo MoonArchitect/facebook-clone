@@ -40,6 +40,7 @@ export const SignInModal = (props: SignInModalProps) => {
   return (
     <Modal
       className={styles.modalContainer}
+      onRequestClose={() => close()}
       isOpen={isOpen}
       overlayClassName={styles.modalOverlay}
       appElement={modalAppElement}

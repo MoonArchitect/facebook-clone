@@ -35,6 +35,7 @@ export const SignUpModal = (props: SignUpModalProps) => {
   return (
     <Modal
       className={styles.modalContainer}
+      onRequestClose={() => close()}
       isOpen={isOpen}
       overlayClassName={styles.modalOverlay}
       appElement={modalAppElement ?? undefined}
