@@ -51,11 +51,12 @@
     font-weight: 600;
     color: white;
     cursor: pointer;
+    font-family: var(--segoeui-semibold);
 
     transition: opacity ease var(--fast-speed);
 
     &:hover {
-      opacity: var(--brightness-highlight)
+      filter: brightness(var(--brightness-highlight));
     }
   }
 

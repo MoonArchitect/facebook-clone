@@ -1,3 +1,5 @@
+"use client"
+
 // import { getApp } from "firebase/app";
 // import { getFirestore, collection, getDocs, QueryDocumentSnapshot, CollectionReference, query, orderBy } from 'firebase/firestore';
 // Interfaces for Firebase
@@ -52,6 +54,10 @@ export const Feed = () => {
   // )
   return (
     <div className={styles.container}>
+      <Post />
+      <Post />
+      <Post />
+      <Post />
       <Post />
     </div>
   )

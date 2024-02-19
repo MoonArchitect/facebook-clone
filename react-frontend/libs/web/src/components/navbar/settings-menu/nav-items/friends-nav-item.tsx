@@ -11,7 +11,7 @@ export const FindFriendsNavItem = () => {
   const href = "/friends"
 
   const pathname = usePathname()
-  const isActive = useMemo(() => pathname?.includes(href), [pathname, href])
+  const isActive = useMemo(() => pathname === href, [pathname, href])
 
   return (
     <li

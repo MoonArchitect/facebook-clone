@@ -108,7 +108,7 @@
     user-select: none;
 
     &:hover {
-        opacity: var(--brightness-highlight);
+        filter: brightness(var(--brightness-highlight));
     }
 }
 

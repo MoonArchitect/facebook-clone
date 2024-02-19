@@ -78,7 +78,7 @@
 
   transition: background-color var(--fast-speed) ease;
 
-  &hover {
+  &:hover {
     background-color: var(--primary-highlight);
   }
 

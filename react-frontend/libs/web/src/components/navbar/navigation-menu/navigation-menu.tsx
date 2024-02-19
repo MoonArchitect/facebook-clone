@@ -27,7 +27,7 @@ const NavigationTab = (props: NavigationTabProps) => {
 
   const pathname = usePathname()
   const isActive = useMemo(
-    () => (exactPathMatch ? pathname === href : pathname?.includes(href)),
+    () => (exactPathMatch ? pathname === href : pathname?.endsWith(href)),
     [exactPathMatch, pathname, href]
   )
 
@@ -65,6 +65,7 @@ export const NavigationMenu = () => {
       <NavigationTab
         hintMessage="Friends"
         href="/friends"
+        exactPathMatch
         iconOff={<UnfilledFriendsIcon />}
         iconOn={<FriendsIcon />}
       />
