@@ -179,6 +179,10 @@
     }
 }
 
+.hiddenInput {
+    display: none;
+}
+
 .lineDivider {
     height: 0.8px;
     width: 100%;
@@ -197,62 +201,157 @@
 }
 
 .linkButton {
-    background-color: var(--primary);
-  
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: relative;
-    padding: 20px 14px;
+  background-color: var(--primary);
 
-  
-    border-radius: 10px;
-    color: var(--secondary-icon);
-    text-decoration: none;
-    font-weight: 600;
-    font-size: 0.9rem;
-    font-family: var(--segoeui-semibold);
-  
-    transition: background-color var(--fast-speed) ease;
-  
-    &:hover {
-      background-color: var(--primary-highlight);
-      cursor: pointer;
-    }
-  
-    svg {
-      --button-size: 28px;
-  
-      width: var(--button-size);
-      height: var(--button-size);
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  padding: 20px 14px;
+
+
+  border-radius: 10px;
+  color: var(--secondary-icon);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  font-family: var(--segoeui-semibold);
+
+  transition: background-color var(--fast-speed) ease;
+
+  &:hover {
+    background-color: var(--primary-highlight);
+    cursor: pointer;
   }
-  
-  .highlightedLink {
-    color: var(--accent);
-  
-    &:hover {
-      background-color: var(--primary);
-    }
+
+  svg {
+    --button-size: 28px;
+
+    width: var(--button-size);
+    height: var(--button-size);
   }
+}
   
-  .highlightBar {
-    position: absolute;
+.highlightedLink {
+  color: var(--accent);
+
+  &:hover {
+    background-color: var(--primary);
+  }
+}
   
-    height: 3px;
-    width: 100%;
-  
-    margin-top: 34px;
-  
-    border-radius: 2px;
-    background-color: var(--accent);
-  
-    transform-origin: bottom;
-    transform: scaleY(0);
-  
-    transition: transform 100ms ease;
-  
-    &.show {
+.highlightBar {
+  position: absolute;
+
+  height: 3px;
+  width: 100%;
+
+  margin-top: 34px;
+
+  border-radius: 2px;
+  background-color: var(--accent);
+
+  transform-origin: bottom;
+  transform: scaleY(0);
+
+  transition: transform 100ms ease;
+
+  &.show {
       transform: scaleY(1);
+  }
+}
+
+.modal {
+  width: 600px;
+  min-height: 400px;
+  outline: none;
+  margin: auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  background-color: var(--primary);
+  border-radius: 16px;
+
+  .title {
+    color: var(--primary-text);
+    margin: 16px 0;
+    padding: 0 0 16px 0;
+    font-size: 1.25rem;
+    border-bottom: 1px var(--divider) solid;
+    text-align: center;
+    width: 100%;
+  }
+
+  .imageRegionContainer {
+    position: relative;
+
+    .imagePreview {
+      width: 100%;
+      height: 420px;
+      margin: 0 0 16px 0;
+      object-fit: contain;
+    }
+
+    .imageRegion {
+      position: absolute;
+      width: 100%;
+      height: 420px;
+      top: 0;
+
+      background: radial-gradient(transparent 70.71%, rgba(0,0,0,50%) 70.9%)
     }
   }
+
+  .buttonsContainer {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+    justify-content: flex-end;
+
+    border-top: 1px solid var(--divider);
+
+    button {
+      border-radius: 4px;
+      width: 128px;
+      border: none;
+      outline: none;
+      color: var(--primary-text);
+      cursor: pointer;
+      font-weight: 700;
+      font-family: var(--segoeui-semibold);
+      font-size: 0.9rem;
+      padding: 8px 12px;
+      margin: 16px 0 32px 0;
+    }
+
+    .cancel {
+      background-color: var(--primary);
+
+      transition: background-color ease var(--fast-speed);
+      &:hover {
+        background-color: var(--primary-highlight);
+      }
+    }
+
+    .save {
+      background-color: var(--accent);
+      transition: filter ease var(--fast-speed);
+      margin-right: 32px;
+      &:hover {
+        filter: brightness(1.15);
+      }
+    }
+  }
+}
+
+.modalOverlay {
+  z-index: 100;
+  position: fixed;
+  inset: 0;
+  
+  display: grid;
+
+  background-color: var(--modal-overlay-color);
+}
