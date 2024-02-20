@@ -11,7 +11,7 @@ export const MiniProfileNavItem = () => {
 
   return (
     <li className={clsx(styles.navItem, styles.hideNavItemAt500)} ref={navItemRef}>
-      <Link href="profile/" className={styles.miniProfile}>
+      <Link href="/profile" className={styles.miniProfile}>
         <img src={data?.thumbnailURL ?? ""} alt="profile thumbnail" />
         <span>{data?.name ?? "not available"}</span>
       </Link>

@@ -8,7 +8,7 @@ export const MiniProfile = () => {
   const {data} = useMeQuery()
 
   return (
-    <Link href="profile/" className={clsx(commonStyles.menuItem, commonStyles.menuMiniProfile)}>
+    <Link href="/profile" className={clsx(commonStyles.menuItem, commonStyles.menuMiniProfile)}>
       <img src={data?.thumbnailURL ?? ""} alt="" />
       <div>
         <span>{data?.name ?? "not available"}</span>
