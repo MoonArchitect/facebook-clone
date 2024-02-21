@@ -24,6 +24,8 @@ type ProfileRepository interface {
 	CreateProfile(ctx context.Context, p Profile) error
 	GetByID(ctx context.Context, uid string) (*Profile, error)
 	GetByUsername(ctx context.Context, username string) (*Profile, error)
+	EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error
+	EditProfileCover(ctx context.Context, uid, coverID string) error
 }
 
 type profileRepository struct {
@@ -111,4 +113,42 @@ func (r profileRepository) GetByUsername(ctx context.Context, username string) (
 	}
 
 	return &res, nil
+}
+
+func (r profileRepository) EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error {
+	sql, args, err := sq.
+		Update(profilesTable).
+		Set("thumbnail_id", thumbnailID).
+		Where(squirrel.Eq{"id": uid}).
+		ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to create update query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update: %w", err)
+	}
+
+	return nil
+}
+
+func (r profileRepository) EditProfileCover(ctx context.Context, uid, coverID string) error {
+	sql, args, err := sq.
+		Update(profilesTable).
+		Set("banner_id", coverID).
+		Where(squirrel.Eq{"id": uid}).
+		ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to create update query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update: %w", err)
+	}
+
+	return nil
 }

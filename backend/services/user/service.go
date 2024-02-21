@@ -18,6 +18,8 @@ type UserService interface {
 	// UpdateProfile(ctx context.Context, name, username string, public bool) (string, error)
 	GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*ApiUserProfile, error)
 	GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*ApiUserProfile, error)
+	EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error
+	EditProfileCover(ctx context.Context, uid, coverID string) error
 }
 
 func NewUserService(userRepository repositories.UserRepository, profileRepository repositories.ProfileRepository, friendshipRepository repositories.FriendshipRepository) UserService {
@@ -92,16 +94,12 @@ func (s userService) GetUserProfileByUsername(ctx context.Context, username stri
 	return &apiProfile, nil
 }
 
-func getApiProfile(p *repositories.Profile) ApiUserProfile {
-	thumbnailURL := "https://test-facebook-public.s3.ap-southeast-1.amazonaws.com/" + p.ThumbnailID
-	// if !p.Public { // TODO: asset service?
-	// 	thumbnailURL = "cdn.domain.com/pr/" + p.ThumbnailID + "?signaure="
-	// }
+func (s userService) EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error {
+	err := s.profileRepository.EditProfileThumbnail(ctx, uid, thumbnailID)
+	return err
+}
 
-	return ApiUserProfile{
-		Name:         p.Name,
-		Username:     p.Username,
-		BannerURL:    p.BannerID,
-		ThumbnailURL: thumbnailURL,
-	}
+func (s userService) EditProfileCover(ctx context.Context, uid, coverID string) error {
+	err := s.profileRepository.EditProfileCover(ctx, uid, coverID)
+	return err
 }

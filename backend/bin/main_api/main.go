@@ -12,6 +12,9 @@ import (
 	"net/http"
 	"time"
 
+	awsConfig "github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/gin-gonic/gin"
 	"github.com/go-errors/errors"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -79,6 +82,15 @@ func main() {
 		panic(fmt.Errorf("couldn't ping db %w", err))
 	}
 
+	// aws setup
+	aws, err := awsConfig.LoadDefaultConfig(ctx, awsConfig.WithRegion("ap-southeast-1"))
+	if err != nil {
+		panic(err)
+	}
+
+	s3Clint := s3.NewFromConfig(aws)           // TODO: setup config
+	s3Uploader := manager.NewUploader(s3Clint) // TODO: setup config
+
 	// Repositories
 	credentialsRepository := repositories.NewCredentialsRepository(db)
 	userRepository := repositories.NewUserRepository(db)
@@ -94,6 +106,7 @@ func main() {
 
 	// Controllers
 	profileController := controllers.NewProfileController(userService)
+	assetsController := controllers.NewAssetsController(userService, s3Uploader)
 	authController := controllers.NewAuthController(authService, userService)
 
 	// middleware
@@ -131,6 +144,10 @@ func main() {
 	// api.GET("/friends/requests", profileController.GetProfile)
 	// api.GET("/feed", profileController.GetProfile)
 	// api.GET("/user/feed", profileController.GetProfile)
+
+	assetAPI := router.Group("/asset_api/v1")
+	assetAPI.POST("/profile/thumbnail", authRequired, assetsController.UploadProfileThumbnail)
+	assetAPI.POST("/profile/cover", authRequired, assetsController.UploadProfileCover)
 
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", config.Cfg.Server.Port),

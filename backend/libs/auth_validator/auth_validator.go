@@ -23,7 +23,6 @@ func NewAuthValidator(publicKey rsa.PublicKey) AuthValidator {
 }
 
 func (s authValidator) ValidateToken(tokenString string) (string, error) {
-	fmt.Println(tokenString)
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodRSA); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])

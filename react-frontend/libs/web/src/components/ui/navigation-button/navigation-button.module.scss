@@ -8,6 +8,8 @@
   padding: 8px;
 
   border-radius: 8px;
+  text-decoration: none;
+  color: var(--primary-text);
 
   transition-delay: 25ms;
   transition: background-color 150ms ease;
@@ -16,6 +18,7 @@
     transition: none;
     background-color: var(--secondary-button-background);
   }
+
 
   .icon {
     width: 36px;

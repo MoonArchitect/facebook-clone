@@ -30,6 +30,9 @@ type ConfigType struct {
 		Argon2Threads   uint8  `yaml:"argon2Threads"`
 		Argon2KeyLength uint32 `yaml:"argon2KeyLength"`
 	} `yaml:"auth"`
+	Aws struct {
+		S3 string `yaml:"s3"`
+	} `yaml:"aws"`
 }
 
 const configEnvKey = "cfg"

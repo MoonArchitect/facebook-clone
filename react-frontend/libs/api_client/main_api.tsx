@@ -7,6 +7,13 @@ const mainAPIClient = axios.create({
   withCredentials: true
 })
 
+const assetsAPIClient = axios.create({
+  baseURL: 'http://localhost:8080/asset_api/v1',
+  timeout: 5000,
+  withCredentials: true
+})
+
+
 export type SignInRequestData = {
   email: string
   password: string
@@ -38,4 +45,13 @@ export const mainAPI = {
     const resp = await mainAPIClient.get<APIUserProfileResponse>("/profiles/me")
     return resp.data
   }
+}
+
+export const assetsAPI = {
+  uploadProfileCover: async (data: Blob) => {
+    await assetsAPIClient.post("/profile/cover", data, {headers: {"Content-Type": data.type}})
+  },
+  uploadProfileThumbnail: async (data: Blob) => {
+    await assetsAPIClient.post("/profile/thumbnail", data, {headers: {"Content-Type": data.type}})
+  },
 }

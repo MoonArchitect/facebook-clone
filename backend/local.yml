@@ -17,3 +17,6 @@ auth:
   argon2Memory: 65536 # 64MB
   argon2Threads: 4
   argon2KeyLength: 64
+
+aws:
+  s3: test-facebook-public

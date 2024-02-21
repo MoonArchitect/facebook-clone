@@ -32,7 +32,8 @@ export const useSession = () => {
       refetchMeQuery()
         .then(() => setState({isLoggedIn: true}))
         .catch(() => console.error("Failed to refetchMeQuery in signin callback"))
-    }
+    },
+    refetchUserData: refetchMeQuery,
   }
 }
 

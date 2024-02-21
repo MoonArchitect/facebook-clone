@@ -22,7 +22,7 @@ const UserProfileNavigationButton = () => {
   const {data} = useMeQuery()
   return (
     <RequireAuthenticated>
-      <NavigationButton icon={<img src={data?.thumbnailURL ?? ""} alt="Your profile" />} title={data?.name ?? "not available"} />
+      <NavigationButton href="/profile" icon={<img src={data?.thumbnailURL ?? ""} alt="Your profile" />} title={data?.name ?? "not available"} />
     </RequireAuthenticated>
   )
 }

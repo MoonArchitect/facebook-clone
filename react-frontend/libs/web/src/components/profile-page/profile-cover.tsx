@@ -10,6 +10,7 @@ import { ReactComponent as ChevronIcon } from "@facebook-clone/assets/icons/chev
 import { ReactComponent as CogIcon } from "@facebook-clone/assets/icons/cog.svg"
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
+import { useUploadProfileCover, useUploadProfileThumbnail } from "@facebook-clone/web/query-hooks/asset-hooks"
 import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-hooks"
 import ReactModal from "react-modal"
 import styles from "./profile-cover.module.scss"
@@ -20,16 +21,18 @@ const maxImageSize = 5 * 1024 * 1024 // 5 MB
 type ImagePreviewStateType = {
   isOpen: boolean
   url: string
-  aspectRatio: number
+  target: 'thumbnail' | 'cover'
 }
 
 export const ProfileCover = () => {
   const {data} = useMeQuery()
   const coverImageUploadRef = useRef<HTMLInputElement>(null)
+  const {mutateAsync: uploadProfileCover} = useUploadProfileCover()
+  const {mutateAsync: uploadProfileThumbnail} = useUploadProfileThumbnail()
 
   // ugly but works
   const [imagePreviewState, setImagePreviewState] = useState<ImagePreviewStateType>({
-    aspectRatio: 1,
+    target: 'cover',
     isOpen: false,
     url: ""
   })
@@ -37,8 +40,15 @@ export const ProfileCover = () => {
 
   const selectNewCoverImage = useCallback((e: MouseEvent<HTMLDivElement> | MouseEvent<HTMLButtonElement>) => {
     coverImageUploadRef.current?.click()
+    setImagePreviewState({...imagePreviewState, target: "cover"})
     e.stopPropagation()
-  }, [])
+  }, [imagePreviewState])
+
+  const selectNewThumbnailImage = useCallback((e: MouseEvent<HTMLDivElement> | MouseEvent<HTMLButtonElement>) => {
+    coverImageUploadRef.current?.click()
+    setImagePreviewState({...imagePreviewState, target: "thumbnail"})
+    e.stopPropagation()
+  }, [imagePreviewState])
 
   const onCoverImageChangeCallback = useCallback((e: FormEvent<HTMLInputElement>) => {
     const files = e.currentTarget.files
@@ -58,11 +68,11 @@ export const ProfileCover = () => {
     const fileURL = URL.createObjectURL(file)
     console.log("setImagePreviewState")
     setImagePreviewState({
-      aspectRatio: 1,
+      ...imagePreviewState,
       isOpen: true,
       url: fileURL,
     })
-  }, [setImagePreviewState])
+  }, [imagePreviewState, setImagePreviewState])
 
   const closeModalCallback = useCallback(() => {
     URL.revokeObjectURL(imagePreviewState.url)
@@ -73,7 +83,13 @@ export const ProfileCover = () => {
       console.error("couldnot reset file selection")
   }, [imagePreviewState, setImagePreviewState])
 
-  const uploadImageCallback = () => 1
+  const uploadImageCallback = useCallback(async () => {
+    const blob = await fetch(imagePreviewState.url).then(r => r.blob());
+    if (imagePreviewState.target === 'cover')
+      await uploadProfileCover(blob).then(() => closeModalCallback())
+    else
+      await uploadProfileThumbnail(blob).then(() => closeModalCallback())
+  }, [imagePreviewState, uploadProfileCover, uploadProfileThumbnail, closeModalCallback])
 
   return (
     <div className={styles.container}>
@@ -103,12 +119,13 @@ export const ProfileCover = () => {
         onChangeCapture={onCoverImageChangeCallback}
       />
 
-      <div className={styles.coverImage} onClick={selectNewCoverImage}>
+      <div className={styles.coverImage} onClick={selectNewCoverImage} >
+        <img src={data?.bannerURL} alt="profile cover"/>
         <button className={styles.coverImageButton} onClick={selectNewCoverImage}><CameraIcon/> Add Cover Photo</button>
       </div>
       <div className={styles.infoContainer}>
-        <div className={styles.thumbnailContainer} onClick={selectNewCoverImage}>
-          <img className={styles.profileThumbnail} onClick={selectNewCoverImage} src={data?.thumbnailURL} alt="profile thumbnail"></img>
+        <div className={styles.thumbnailContainer} onClick={selectNewThumbnailImage}>
+          <img className={styles.profileThumbnail} onClick={selectNewThumbnailImage} src={data?.thumbnailURL} alt="profile thumbnail"></img>
           <CameraIcon/>
         </div>
         <div className={styles.nameContainer}>
