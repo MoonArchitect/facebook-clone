@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.27.1
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.16.3
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.50.2
+	github.com/davidbyttow/govips/v2 v2.13.0
 	github.com/georgysavva/scany/v2 v2.1.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-errors/errors v1.5.1
@@ -62,6 +63,7 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.7.0 // indirect
+	golang.org/x/image v0.15.0 // indirect
 	golang.org/x/net v0.21.0 // indirect
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/sys v0.17.0 // indirect
