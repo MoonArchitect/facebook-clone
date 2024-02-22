@@ -1,0 +1,23 @@
+services:
+  main_api:
+    build:
+      context: .
+      dockerfile: bin/main_api/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/src:ro
+      - ~/.aws/credentials:/root/.aws/credentials:ro
+  postgres_db:
+    image: postgres:latest
+    environment:
+      - POSTGRES_PASSWORD=mysecretpassword
+      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/lib/postgresql/15/bin
+      - PGDATA=/var/lib/postgresql/data
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db-data:

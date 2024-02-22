@@ -1,6 +1,6 @@
 env: local
 db:
-  postgresURL: postgresql://postgres:mysecretpassword@0.0.0.0:5432/postgres
+  postgresURL: postgresql://postgres:mysecretpassword@postgres_db:5432/postgres
   maxConnections: 50
 
 server:
