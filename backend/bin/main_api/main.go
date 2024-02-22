@@ -55,6 +55,7 @@ func ErrorStackLogger() gin.HandlerFunc {
 }
 
 func main() {
+	fmt.Printf("\n\n--------------------- Starting at %v ---------------------\n", time.Now())
 	fmt.Println("Parsing config")
 	err := config.ParseConfig()
 	if err != nil {
