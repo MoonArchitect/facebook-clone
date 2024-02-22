@@ -50,14 +50,21 @@ func (c authController) Signin(ctx *gin.Context) {
 	ctx.SetCookie(auth.AuthCookieName, token, config.Cfg.Auth.MaxAgeSeconds, "/", config.Cfg.Auth.CookieDomain, true, true)
 }
 
+type SignUpRequest struct {
+	Email     string `json:"email" binding:"required"`
+	Password  string `json:"password" binding:"required"`
+	FirstName string `json:"firstName" binding:"required"`
+	LastName  string `json:"lastName" binding:"required"`
+}
+
 func (c authController) Signup(ctx *gin.Context) {
-	var ep EmailPassword
+	var ep SignUpRequest
 	if err := ctx.BindJSON(&ep); err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	uid, err := c.userService.CreateNewUser(ctx, ep.Email)
+	uid, err := c.userService.CreateNewUser(ctx, ep.Email, ep.FirstName, ep.FirstName)
 	if errors.Is(err, repositories.EmailAlreadyRegistered) {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return

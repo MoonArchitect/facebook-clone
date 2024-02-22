@@ -328,7 +328,6 @@
       width: 128px;
       border: none;
       outline: none;
-      color: var(--primary-text);
       cursor: pointer;
       font-weight: 700;
       font-family: var(--segoeui-semibold);
@@ -339,6 +338,7 @@
 
     .cancel {
       background-color: var(--primary);
+      color: var(--primary-text);
 
       transition: background-color ease var(--fast-speed);
       &:hover {
@@ -347,6 +347,7 @@
     }
 
     .save {
+      color: white;
       background-color: var(--accent);
       transition: filter ease var(--fast-speed);
       margin-right: 32px;

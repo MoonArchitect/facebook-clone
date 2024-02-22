@@ -22,6 +22,8 @@ export type SignInRequestData = {
 export type SignUpRequestData = {
   email: string
   password: string
+  firstName: string
+  lastName: string
 }
 
 export type APIUserProfileResponse = {

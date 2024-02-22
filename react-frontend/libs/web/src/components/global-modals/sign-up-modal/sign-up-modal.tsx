@@ -19,15 +19,15 @@ export const SignUpModal = (props: SignUpModalProps) => {
   const handleSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const firstname = form.get("firstname")?.toString();
-    const surname = form.get("surname")?.toString();
+    const firstName = form.get("firstname")?.toString();
+    const lastName = form.get("surname")?.toString();
     const email = form.get("email")?.toString();
     const password = form.get("password")?.toString();
 
-    console.log({ firstname, surname, email, password });
+    // console.log({ firstName, lastName, email, password });
 
-    if (email && password)
-      signupMutation({email, password}, {onSuccess: close})
+    if (email && password && firstName && lastName)
+      signupMutation({email, password, firstName, lastName}, {onSuccess: close})
   }, [close, signupMutation])
 
   const modalAppElement = useMemo(() => typeof window !== 'undefined' && document.getElementById('root') || undefined, [])

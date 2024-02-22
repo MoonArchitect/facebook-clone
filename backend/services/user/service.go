@@ -14,7 +14,7 @@ type userService struct {
 }
 
 type UserService interface {
-	CreateNewUser(ctx context.Context, email string) (string, error)
+	CreateNewUser(ctx context.Context, email, firstName, lastName string) (string, error)
 	// UpdateProfile(ctx context.Context, name, username string, public bool) (string, error)
 	GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*ApiUserProfile, error)
 	GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*ApiUserProfile, error)
@@ -30,7 +30,7 @@ func NewUserService(userRepository repositories.UserRepository, profileRepositor
 	}
 }
 
-func (s userService) CreateNewUser(ctx context.Context, email string) (string, error) {
+func (s userService) CreateNewUser(ctx context.Context, email, firstName, lastName string) (string, error) {
 	uid, err := s.userRepository.CreateUser(ctx, email)
 	if err != nil {
 		return "", err
@@ -38,11 +38,11 @@ func (s userService) CreateNewUser(ctx context.Context, email string) (string, e
 
 	err = s.profileRepository.CreateProfile(ctx, repositories.Profile{
 		Id:          uid,
-		Name:        "",
-		Username:    fmt.Sprintf("%v", time.Now().Unix()),
-		ThumbnailID: "",
+		Name:        fmt.Sprintf("%v %v", firstName, lastName),
+		Username:    fmt.Sprintf("%v_%v_%v", firstName, lastName, time.Now().Unix()),
+		ThumbnailID: "default-profile-pic.webp",
 		BannerID:    "",
-		Public:      false,
+		Public:      true,
 	})
 	if err != nil {
 		// TODO: could use the same transaction for both repos

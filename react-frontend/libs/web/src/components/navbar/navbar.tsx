@@ -6,6 +6,7 @@ import { SettingsMenu } from "./settings-menu/settings-menu"
 
 import { useGlobalModal } from "../global-modals/global-modals"
 import { RequireAuthenticated } from "../utils/require-auth"
+
 import styles from "./navbar.module.scss"
 
 export const Navbar = () => {

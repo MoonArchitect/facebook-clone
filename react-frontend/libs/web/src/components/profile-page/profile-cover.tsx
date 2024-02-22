@@ -120,12 +120,12 @@ export const ProfileCover = () => {
       />
 
       <div className={styles.coverImage} onClick={selectNewCoverImage} >
-        <img src={data?.bannerURL} alt="profile cover"/>
+        {data?.bannerURL && <img src={data.bannerURL} alt={"profile cover"}/>}
         <button className={styles.coverImageButton} onClick={selectNewCoverImage}><CameraIcon/> Add Cover Photo</button>
       </div>
       <div className={styles.infoContainer}>
         <div className={styles.thumbnailContainer} onClick={selectNewThumbnailImage}>
-          <img className={styles.profileThumbnail} onClick={selectNewThumbnailImage} src={data?.thumbnailURL} alt="profile thumbnail"></img>
+          <img className={styles.profileThumbnail} onClick={selectNewThumbnailImage} src={data?.thumbnailURL} alt={"profile thumbnail"}></img>
           <CameraIcon/>
         </div>
         <div className={styles.nameContainer}>
