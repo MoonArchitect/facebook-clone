@@ -1,0 +1,59 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  height: fit-content;
+  padding: 4px;
+
+  border-radius: 8px;
+  background-color: var(--primary);
+
+  box-shadow: 0 1px 2px 0px rgba(56, 58, 62, 0.333);
+
+  .firstRow {
+    display: flex;
+    align-items: center;
+
+    .thumbnailContainer {
+      height: 38.5px;
+      padding: 8px;
+    }
+
+    .createButton {
+      flex-grow: 1;
+      margin-right: 12px;
+      padding: 10px 12px;
+      
+     user-select: none;
+      cursor: pointer;
+
+      color: var(--secondary-text);
+      background-color: var(--comment-background);
+      border-radius: 32px;
+
+      transition: filter ease var(--fast-speed);
+
+      &:hover {
+        filter: brightness(1.15);
+      }
+    }
+  }
+
+  .secondRow {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin: 8px 16px;
+
+    color: var(--secondary-text);
+    font-size: 0.7rem;
+  }
+}
+
+// ugly af, but whatever, it's temporary
+.iconImage {
+  width: 24px;
+  border-radius: 0%!important;
+  padding: 5px;
+}

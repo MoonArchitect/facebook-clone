@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import Link from "next/link"
 
-import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-hooks"
+import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import commonStyles from "./common-item-styles.module.scss"
 
 export const MiniProfile = () => {

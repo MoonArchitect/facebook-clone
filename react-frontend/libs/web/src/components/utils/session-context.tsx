@@ -1,6 +1,6 @@
 "use client"
 
-import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-hooks"
+import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react"
 
 export type SessionType = {

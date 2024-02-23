@@ -2,7 +2,7 @@ import clsx from "clsx"
 import Link from "next/link"
 import { useRef } from "react"
 
-import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-hooks"
+import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import styles from "./nav-items.module.scss"
 
 export const MiniProfileNavItem = () => {

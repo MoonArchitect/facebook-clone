@@ -7,14 +7,15 @@ interface NavigationButtonProps {
   title: string
   icon: ReactElement
   href?: string
+  justifyCenter?: boolean
   onClick?: MouseEventHandler
 }
 
 export const NavigationButton = (props: NavigationButtonProps) => {
-  const { title, icon, href="", onClick } = props
+  const { title, icon, href="", justifyCenter, onClick } = props
 
   return (
-    <Link href={href} className={styles.navigationButton} onClick={onClick}>
+    <Link href={href} className={styles.navigationButton} onClick={onClick} style={{justifyContent: justifyCenter ? "center" : "flex-start"}}>
       <div className={styles.icon}>
         {/* <img src={iconSrc} alt="" /> */}
         {icon}

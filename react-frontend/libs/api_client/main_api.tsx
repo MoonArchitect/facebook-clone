@@ -33,6 +33,10 @@ export type APIUserProfileResponse = {
   bannerURL:    string
 }
 
+export type CreatePostRequestData = {
+  text: string
+}
+
 export const mainAPI = {
   signIn: async (data: SignInRequestData) => {
     await mainAPIClient.post("/auth/signin", data)
@@ -46,7 +50,11 @@ export const mainAPI = {
   getMe: async () => {
     const resp = await mainAPIClient.get<APIUserProfileResponse>("/profiles/me")
     return resp.data
-  }
+  },
+  createPost: async (data: CreatePostRequestData) => {
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    await mainAPIClient.post("/posts", data)
+  },
 }
 
 export const assetsAPI = {

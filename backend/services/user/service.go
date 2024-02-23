@@ -4,6 +4,7 @@ import (
 	"context"
 	"fb-clone/postgresql/repositories"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -11,6 +12,7 @@ type userService struct {
 	friendshipRepository repositories.FriendshipRepository
 	userRepository       repositories.UserRepository
 	profileRepository    repositories.ProfileRepository
+	postsRepository      repositories.PostsRepository
 }
 
 type UserService interface {
@@ -20,13 +22,22 @@ type UserService interface {
 	GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*ApiUserProfile, error)
 	EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error
 	EditProfileCover(ctx context.Context, uid, coverID string) error
+
+	CreateUserPost(ctx context.Context, uid, text string) error
+	// GetUserPosts(ctx context.Context, uid string) error
 }
 
-func NewUserService(userRepository repositories.UserRepository, profileRepository repositories.ProfileRepository, friendshipRepository repositories.FriendshipRepository) UserService {
+func NewUserService(
+	userRepository repositories.UserRepository,
+	profileRepository repositories.ProfileRepository,
+	friendshipRepository repositories.FriendshipRepository,
+	postsRepository repositories.PostsRepository,
+) UserService {
 	return &userService{
 		friendshipRepository,
 		userRepository,
 		profileRepository,
+		postsRepository,
 	}
 }
 
@@ -52,6 +63,15 @@ func (s userService) CreateNewUser(ctx context.Context, email, firstName, lastNa
 	}
 
 	return uid, nil
+}
+
+func (s userService) CreateUserPost(ctx context.Context, uid, text string) error {
+	// sanitize text, etc.
+	text = strings.ToValidUTF8(text, "")
+	text = strings.TrimSpace(text)
+	text = strings.ReplaceAll(text, "\u00A0", "")
+
+	return s.postsRepository.CreatePost(ctx, uid, text)
 }
 
 func (s userService) GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*ApiUserProfile, error) {

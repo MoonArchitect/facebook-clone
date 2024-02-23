@@ -7,7 +7,7 @@ import { ReactComponent as LogoutIcon } from "@facebook-clone/assets/icons/logou
 import { DropdownItem, MiniProfile } from "../dropdown-items"
 import { DropdownMenuPage } from "./dropdown-page/dropdown-page"
 
-import { useSignoutMutation } from "@facebook-clone/web/query-hooks/auth-hooks"
+import { useSignoutMutation } from "@facebook-clone/web/query-hooks/auth-query-hooks"
 import styles from "../dropdown-menu.module.scss"
 
 export const DropdownHomePage = () => {

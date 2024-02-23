@@ -97,15 +97,17 @@ func main() {
 	userRepository := repositories.NewUserRepository(db)
 	profileRepository := repositories.NewProfileRepository(db)
 	friendshipRepository := repositories.NewFriendshipRepository(db)
+	postsRepository := repositories.NewPostsRepository(db)
 
 	// Services
-	userService := user.NewUserService(userRepository, profileRepository, friendshipRepository)
+	userService := user.NewUserService(userRepository, profileRepository, friendshipRepository, postsRepository)
 	authService, err := auth.NewAuthService(credentialsRepository) // TODO: auth service should be a separate binary
 	if err != nil {
 		panic(err)
 	}
 
 	// Controllers
+	postsController := controllers.NewPostsController(userService)
 	profileController := controllers.NewProfileController(userService)
 	assetsController := controllers.NewAssetsController(userService, s3Uploader)
 	authController := controllers.NewAuthController(authService, userService)
@@ -134,14 +136,14 @@ func main() {
 	// api.POST("/profiles/update/banner", authRequired, profileController.GetMe)
 	// api.POST("/profiles/update/thumbnail", authRequired, profileController.GetMe)
 	api.GET("/profiles/me", authRequired, profileController.GetMe)
-	api.PATCH("/profiles/me", authRequired, profileController.UpdateMe)
+	// api.PATCH("/profiles/me", authRequired, profileController.UpdateMe)
 	api.GET("/profiles/get", profileController.GetProfile)
 
 	// api.GET("/posts", profileController.GetProfile)
-	// api.POST("/posts", profileController.GetProfile)
+	api.POST("/posts", authRequired, postsController.CreatePost)
 	// api.POST("/comment", profileController.GetProfile)
 	// api.POST("/reply", profileController.GetProfile)
-	api.GET("/user/friends", profileController.GetProfile)
+	// api.GET("/user/friends", profileController.GetProfile)
 	// api.GET("/friends/requests", profileController.GetProfile)
 	// api.GET("/feed", profileController.GetProfile)
 	// api.GET("/user/feed", profileController.GetProfile)

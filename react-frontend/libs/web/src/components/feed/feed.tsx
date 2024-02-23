@@ -12,6 +12,7 @@
 // import { Post } from "./Post/Post"
 
 import { Post } from "../post/post"
+import { CreatePostSection } from "./create-post-section/create-post-section"
 
 import styles from "./feed.module.scss"
 
@@ -54,6 +55,7 @@ export const Feed = () => {
   // )
   return (
     <div className={styles.container}>
+      <CreatePostSection />
       <Post />
       <Post />
       <Post />

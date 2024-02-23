@@ -10,8 +10,8 @@ import { ReactComponent as ChevronIcon } from "@facebook-clone/assets/icons/chev
 import { ReactComponent as CogIcon } from "@facebook-clone/assets/icons/cog.svg"
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
-import { useUploadProfileCover, useUploadProfileThumbnail } from "@facebook-clone/web/query-hooks/asset-hooks"
-import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-hooks"
+import { useUploadProfileCover, useUploadProfileThumbnail } from "@facebook-clone/web/query-hooks/asset-query-hooks"
+import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import ReactModal from "react-modal"
 import styles from "./profile-cover.module.scss"
 

@@ -9,4 +9,5 @@ const (
 	userTable        = "users"
 	profilesTable    = "profiles"
 	friendshipsTable = "friendships"
+	postsTable       = "posts"
 )

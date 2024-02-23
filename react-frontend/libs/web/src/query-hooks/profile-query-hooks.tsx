@@ -1,5 +1,5 @@
-import { APIUserProfileResponse, mainAPI } from "@facebook-clone/api_client/main_api";
-import { useQuery } from "@tanstack/react-query";
+import { APIUserProfileResponse, CreatePostRequestData, mainAPI } from "@facebook-clone/api_client/main_api";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
@@ -14,5 +14,14 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
       return true
     },
     refetchInterval: 5 * 60 * 1000
+  }
+)
+
+export const useCreatePostMutation = () => useMutation<void, AxiosError, CreatePostRequestData>(
+  {
+    mutationKey: ["create-post"],
+    mutationFn: (data) => {
+      return mainAPI.createPost(data)
+    },
   }
 )
