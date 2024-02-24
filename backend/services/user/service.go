@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/go-errors/errors"
 )
 
 type userService struct {
@@ -24,6 +26,7 @@ type UserService interface {
 	EditProfileCover(ctx context.Context, uid, coverID string) error
 
 	CreateUserPost(ctx context.Context, uid, text string) error
+	GetHistoricUserPosts(ctx context.Context, uid string) ([]ApiPost, error)
 	// GetUserPosts(ctx context.Context, uid string) error
 }
 
@@ -87,6 +90,70 @@ func (s userService) GetUserProfileByID(ctx context.Context, uid string, request
 	apiProfile := getApiProfile(profile)
 
 	return &apiProfile, nil
+}
+
+func (s userService) GetHistoricUserPosts(ctx context.Context, uid string) ([]ApiPost, error) {
+	// if uid != *requesterUID {
+	// 	return nil, fmt.Errorf("Only the owner may access their account")
+	// }
+
+	dbPosts, err := s.postsRepository.GetUserPostsByDate(ctx, uid)
+	if err != nil {
+		return nil, err
+	}
+
+	apiPosts, err := s.getApiPosts(ctx, dbPosts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return apiPosts, nil
+}
+
+func (s userService) getApiPosts(ctx context.Context, dbPosts ...repositories.Post) ([]ApiPost, error) {
+	seenIds := map[string]struct{}{}
+	uniqueIds := []string{}
+	for _, p := range dbPosts {
+		_, ok := seenIds[p.OwnerId]
+		if !ok {
+			uniqueIds = append(uniqueIds, p.OwnerId)
+		}
+		seenIds[p.OwnerId] = struct{}{}
+	}
+
+	profiles, err := s.profileRepository.GetManyByID(ctx, uniqueIds)
+	if err != nil {
+		return nil, err
+	}
+
+	profilesMap := map[string]repositories.Profile{}
+	for _, p := range profiles {
+		profilesMap[p.Id] = p
+	}
+
+	apiPosts := make([]ApiPost, len(dbPosts))
+	for i, p := range dbPosts {
+		ownerProfile, ok := profilesMap[p.OwnerId]
+		if !ok {
+			return nil, errors.Errorf("failed to find associated profile with post's owner")
+		}
+
+		apiPosts[i] = ApiPost{
+			Id: p.Id,
+			Owner: MinUserInfo{
+				Name:        ownerProfile.Name,
+				ThumbnailID: ownerProfile.ThumbnailID,
+			},
+			PostText:   p.PostText,
+			PostImages: p.PostImages,
+			Comments:   []ApiComment{},
+			LikeCount:  111,
+			ShareCount: 101,
+			CreatedAt:  JSONTime(p.CreatedAt),
+		}
+	}
+
+	return apiPosts, nil
 }
 
 func (s userService) GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*ApiUserProfile, error) {

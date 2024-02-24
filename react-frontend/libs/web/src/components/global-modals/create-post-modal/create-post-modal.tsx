@@ -1,11 +1,11 @@
 "use client"
 
-
 import { FormEvent, useCallback, useMemo, useRef, useState } from "react"
 import Modal from "react-modal"
 
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
+import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import { useCreatePostMutation, useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import clsx from "clsx"
 import { ProfilePreview } from "../../ui/profile-preview/profile-preview"
@@ -26,7 +26,7 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
   const {data} = useMeQuery()
   const [isEmptyText, setIsEmptyText] = useState(true)
   const editableDivRef = useRef<HTMLDivElement>(null)
-  const {mutate: createPost, isPending} = useCreatePostMutation()
+  const {mutate: createPost, isPending} = useCreatePostMutation(data?.id ?? "unknown") // TODO fix this
 
   const updateIsEmptyText = useCallback((e: FormEvent<HTMLDivElement>) => {
     if (e.currentTarget.innerText === "" || e.currentTarget.innerText === "\n") {
@@ -71,7 +71,7 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
         <div className={styles.lineDivider} />
 
         <div className={styles.profilePreviewContainer}>
-          <ProfilePreview link="/profile" thumbnailURL={data?.thumbnailURL ?? ""} name={data?.name} />
+          <ProfilePreview link="/profile" thumbnailURL={getImageURLFromId(data?.thumbnailID)} name={data?.name} />
         </div>
 
         <div className={styles.inputContainer}>

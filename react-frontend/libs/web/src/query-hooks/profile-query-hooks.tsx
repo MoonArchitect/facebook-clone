@@ -1,5 +1,5 @@
-import { APIUserProfileResponse, CreatePostRequestData, mainAPI } from "@facebook-clone/api_client/main_api";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { APIPostData, APIUserProfileResponse, CreatePostRequestData, mainAPI } from "@facebook-clone/api_client/main_api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
@@ -17,11 +17,32 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
   }
 )
 
-export const useCreatePostMutation = () => useMutation<void, AxiosError, CreatePostRequestData>(
+export const queryKeys = {
+  getHistoricUserPosts: (userID: string) => ["get-historic-user-posts", userID]
+}
+
+export const useGetHistoricUserPostsQuery = (userID: string, enabled: boolean) => useQuery<APIPostData[], AxiosError>(
   {
-    mutationKey: ["create-post"],
-    mutationFn: (data) => {
-      return mainAPI.createPost(data)
+    queryKey: queryKeys.getHistoricUserPosts(userID),
+    queryFn: () => {
+      return mainAPI.getHistoricUserPosts({userID})
     },
+    enabled: enabled,
   }
 )
+
+export const useCreatePostMutation = (userID: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, AxiosError, CreatePostRequestData>(
+    {
+      mutationKey: ["create-post"],
+      mutationFn: (data) => {
+        return mainAPI.createPost(data)
+      },
+      onSuccess: (data, req) => {
+        queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
+      }
+    }
+  )
+}

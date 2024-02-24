@@ -15,6 +15,7 @@ type postsController struct {
 
 type PostsController interface {
 	CreatePost(ctx *gin.Context)
+	GetHistoricUserPosts(ctx *gin.Context)
 }
 
 func NewPostsController(userService user.UserService) PostsController {
@@ -48,4 +49,33 @@ func (pc postsController) CreatePost(ctx *gin.Context) {
 	}
 
 	ctx.Status(http.StatusOK)
+}
+
+type GetHistoricUserPostsRequest struct {
+	UserID string `form:"userID" binding:"required"`
+}
+
+func (pc postsController) GetHistoricUserPosts(ctx *gin.Context) {
+	uid := middleware.GetContextData(ctx).UID
+	if uid == nil {
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		return
+	}
+
+	var req GetHistoricUserPostsRequest
+	err := ctx.BindQuery(&req)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// check if user posts are private
+
+	posts, err := pc.userService.GetHistoricUserPosts(ctx, req.UserID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, posts)
 }

@@ -27,14 +27,42 @@ export type SignUpRequestData = {
 }
 
 export type APIUserProfileResponse = {
+  id:           string
   name:         string
   username:     string
-  thumbnailURL: string
-  bannerURL:    string
+  thumbnailID:  string
+  bannerID:     string
 }
 
 export type CreatePostRequestData = {
   text: string
+}
+
+export type GetHistricUserPostsData = {
+  userID: string
+}
+
+export type APICommentData = {
+  owner: APIMiniProfile
+  text: string
+  responds: APICommentData[] | null
+  createdAt: number
+}
+
+export type APIPostData = {
+  id: string
+  owner: APIMiniProfile
+  postText: string
+  postImages: string[] | null
+  comments: APICommentData[] | null
+  likeCount: number
+  shareCount: number
+  createdAt: number
+}
+
+export type APIMiniProfile = {
+  name: string
+  thumbnailID: string
 }
 
 export const mainAPI = {
@@ -52,8 +80,11 @@ export const mainAPI = {
     return resp.data
   },
   createPost: async (data: CreatePostRequestData) => {
-    await new Promise(resolve => setTimeout(resolve, 1000))
     await mainAPIClient.post("/posts", data)
+  },
+  getHistoricUserPosts: async (params: GetHistricUserPostsData) => {
+    const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params})
+    return resp.data
   },
 }
 
@@ -64,4 +95,11 @@ export const assetsAPI = {
   uploadProfileThumbnail: async (data: Blob) => {
     await assetsAPIClient.post("/profile/thumbnail", data, {headers: {"Content-Type": data.type}})
   },
+}
+
+export function getImageURLFromId(imageID?: string): string {
+  if (imageID === undefined)
+    return ""
+
+  return "https://test-facebook-public.s3.ap-southeast-1.amazonaws.com/" + imageID
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/Masterminds/squirrel"
+	"github.com/georgysavva/scany/v2/pgxscan"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -19,11 +21,15 @@ type Post struct {
 }
 
 type Comment struct {
-	Text string `json:"text"`
+	OwnerId   string    `json:"owner_id"`
+	Text      string    `json:"text"`
+	Responds  []Comment `json:"responds"`
+	CreatedAt time.Time `json:"created_at"`
 }
 
 type PostsRepository interface {
 	CreatePost(ctx context.Context, userID, text string) error
+	GetUserPostsByDate(ctx context.Context, userID string) ([]Post, error)
 }
 
 type postsRepository struct {
@@ -58,4 +64,30 @@ func (r postsRepository) CreatePost(ctx context.Context, userID, text string) er
 	}
 
 	return nil
+}
+
+func (r postsRepository) GetUserPostsByDate(ctx context.Context, userID string) ([]Post, error) {
+	sql, args, err := sq.
+		Select("*").
+		From(postsTable).
+		Where(squirrel.Eq{"owner_id": userID}).
+		OrderBy("created_at DESC").
+		ToSql()
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create select query: %w", err)
+	}
+
+	rows, err := r.dbPool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select: %w", err)
+	}
+
+	var res []Post
+	err = pgxscan.ScanAll(&res, rows)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan rows: %w", err)
+	}
+
+	return res, nil
 }

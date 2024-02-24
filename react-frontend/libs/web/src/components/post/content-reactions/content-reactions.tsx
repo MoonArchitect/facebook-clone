@@ -4,45 +4,49 @@ import { ReactComponent as LikeIcon } from "@facebook-clone/assets/icons/like.sv
 import { ReactComponent as ShareIcon } from "@facebook-clone/assets/icons/share.svg"
 
 import { LineDivider } from "../../ui"
-import { PostData } from "../post"
 
 import styles from "./content-reactions.module.scss"
 
 interface ContentReactionsProps {
-  readonly postData: PostData
+  isAvailable: boolean
+  numberOfComments?: number
+  reactionsCount?: number
+  sharesCount?: number
   commentVisibilityState: [boolean, (val: boolean) => void]
 }
 
 export const ContentReactions = (props: ContentReactionsProps) => {
-  const { postData, commentVisibilityState } = props
+  const { isAvailable, numberOfComments, reactionsCount, sharesCount, commentVisibilityState } = props
   const [commentVisibility, setCommentVisibility] = commentVisibilityState
 
   return (
     <>
       <div className={styles.container}>
-        <div className={styles.icon}>
-          <LikeFilledIcon />
+        <div className={styles.column}>
+          <div className={styles.icon}>
+            <LikeFilledIcon />
+          </div>
+          <div className={styles.number}>
+            {reactionsCount ? reactionsCount : "..."}
+          </div>
         </div>
-        <div className={styles.number}>
-          {postData ? postData.reactionsCount : "L ..."}
-        </div>
-        <div
-          className={styles.commentsNumber}
-          onClick={() => {
-            setCommentVisibility(!commentVisibility)
-          }}
-        >
-          {postData
-            ? postData.comments.length > 1 &&
-              `${postData.comments.length} Comments`
-            : "L ..."}
-        </div>
-        <div className={styles.sharesNumber}>
-          {postData ? postData.sharesCount : "L ..."}
+
+        <div className={styles.column}>
+          {numberOfComments !== undefined && numberOfComments > 1 && <div
+            className={styles.commentsNumber}
+            onClick={() => {
+              setCommentVisibility(!commentVisibility)
+            }}
+          >
+            {numberOfComments} Comments
+          </div>}
+          <div className={styles.sharesNumber}>
+            {sharesCount ? sharesCount : "..."} Shares
+          </div>
         </div>
       </div>
-      {postData && <LineDivider />}
-      {postData && (
+      {isAvailable && <LineDivider />}
+      {isAvailable && (
         <div className={styles.menu}>
           <div className={styles.button}>
             <LikeIcon /> &thinsp; Like

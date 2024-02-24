@@ -10,6 +10,7 @@ import { ReactComponent as ChevronIcon } from "@facebook-clone/assets/icons/chev
 import { ReactComponent as CogIcon } from "@facebook-clone/assets/icons/cog.svg"
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
+import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import { useUploadProfileCover, useUploadProfileThumbnail } from "@facebook-clone/web/query-hooks/asset-query-hooks"
 import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import ReactModal from "react-modal"
@@ -120,12 +121,12 @@ export const ProfileCover = () => {
       />
 
       <div className={styles.coverImage} onClick={selectNewCoverImage} >
-        {data?.bannerURL && <img src={data.bannerURL} alt={"profile cover"}/>}
+        {data?.bannerID && <img src={getImageURLFromId(data.bannerID)} alt={"profile cover"}/>}
         <button className={styles.coverImageButton} onClick={selectNewCoverImage}><CameraIcon/> Add Cover Photo</button>
       </div>
       <div className={styles.infoContainer}>
         <div className={styles.thumbnailContainer} onClick={selectNewThumbnailImage}>
-          <img className={styles.profileThumbnail} onClick={selectNewThumbnailImage} src={data?.thumbnailURL} alt={"profile thumbnail"}></img>
+          <img className={styles.profileThumbnail} onClick={selectNewThumbnailImage} src={getImageURLFromId(data?.thumbnailID)} alt={"profile thumbnail"}></img>
           <CameraIcon/>
         </div>
         <div className={styles.nameContainer}>

@@ -140,6 +140,7 @@ func main() {
 	api.GET("/profiles/get", profileController.GetProfile)
 
 	// api.GET("/posts", profileController.GetProfile)
+	api.GET("/profiles/posts", authRequired, postsController.GetHistoricUserPosts)
 	api.POST("/posts", authRequired, postsController.CreatePost)
 	// api.POST("/comment", profileController.GetProfile)
 	// api.POST("/reply", profileController.GetProfile)

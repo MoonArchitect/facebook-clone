@@ -1,29 +1,25 @@
-// import { IPostDocument, IUserDocument } from "Firebase/IFirebase"
-// import DefaultUserProfilePicture from "assets/images/profile-picture.png"
-
 import { ReactComponent as FlatMenuIcon } from "@facebook-clone/assets/icons/flat-menu.svg"
 import { ReactComponent as Globe2Icon } from "@facebook-clone/assets/icons/globe2.svg"
 
-import { CreatorData, PostData } from "../post"
 
+import { APIMiniProfile, getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import styles from "./content-origin.module.scss"
 
-interface ContentOriginProps {
-  postData: PostData
-  creatorData: CreatorData
+type ContentOriginProps = {
+  user: APIMiniProfile
+  dateCreated?: number
 }
 
 export const ContentOrigin = (props: ContentOriginProps) => {
-  const { postData, creatorData } = props
+  const { user, dateCreated } = props
 
-  // userIcon: "", userName: creatorData ? creatorData.name : "... loading ...", date: postData.date_created.toDate().toDateString()
   return (
     <div className={styles.container}>
-      <div className={styles.icon}>{/* <img src={DefaultUserProfilePicture} /> */}D</div>
+      <div className={styles.icon}><img src={getImageURLFromId(user.thumbnailID)} alt="profile thumbnail" /></div>
       <div className={styles.infoContainer}>
-        <div className={styles.links}>{creatorData ? creatorData.username : "Loading ..."}</div>
+        <div className={styles.links}>{user.name}</div>
         <div className={styles.info}>
-          <span className={styles.infoDate}>{postData ? postData.date_created.toDateString() : "Loading ..."}</span>
+          <span className={styles.infoDate}>{dateCreated ? new Date(dateCreated * 1000).toDateString() : "Loading ..."}</span>
           &thinsp;·&thinsp;
           <span className={styles.infoIcon}>
             <Globe2Icon />

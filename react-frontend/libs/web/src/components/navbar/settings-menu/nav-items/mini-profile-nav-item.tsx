@@ -2,6 +2,7 @@ import clsx from "clsx"
 import Link from "next/link"
 import { useRef } from "react"
 
+import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import styles from "./nav-items.module.scss"
 
@@ -12,7 +13,7 @@ export const MiniProfileNavItem = () => {
   return (
     <li className={clsx(styles.navItem, styles.hideNavItemAt500)} ref={navItemRef}>
       <Link href="/profile" className={styles.miniProfile}>
-        <img src={data?.thumbnailURL ?? ""} alt="profile thumbnail" />
+        <img src={getImageURLFromId(data?.thumbnailID)} alt="profile thumbnail" />
         <span>{data?.name ?? "not available"}</span>
       </Link>
     </li>
