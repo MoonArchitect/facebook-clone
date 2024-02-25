@@ -39,6 +39,7 @@ export const Post = (props: PostProps) => {
         postID={post.id}
         isAvailable={true}
         numberOfComments={post.comments?.length ?? 0}
+        likedByCurrentUser={post.likedByCurrentUser}
         reactionsCount={post.likeCount}
         sharesCount={post.shareCount}
         commentVisibilityState={[commentVisibility, setCommentVisibility]}

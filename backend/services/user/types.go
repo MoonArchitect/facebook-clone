@@ -32,14 +32,15 @@ type ApiComment struct {
 }
 
 type ApiPost struct {
-	Id         string       `json:"id"`
-	Owner      MinUserInfo  `json:"owner"`
-	PostText   string       `json:"postText"`
-	PostImages []string     `json:"postImages"`
-	LikeCount  int          `json:"likeCount"`
-	ShareCount int          `json:"shareCount"`
-	Comments   []ApiComment `json:"comments"`
-	CreatedAt  JSONTime     `json:"createdAt"`
+	Id                 string       `json:"id"`
+	Owner              MinUserInfo  `json:"owner"`
+	PostText           string       `json:"postText"`
+	PostImages         []string     `json:"postImages"`
+	LikedByCurrentUser bool         `json:"likedByCurrentUser"`
+	LikeCount          int          `json:"likeCount"`
+	ShareCount         int          `json:"shareCount"`
+	Comments           []ApiComment `json:"comments"`
+	CreatedAt          JSONTime     `json:"createdAt"`
 }
 
 type MinUserInfo struct {

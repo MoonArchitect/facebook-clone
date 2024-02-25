@@ -21,6 +21,7 @@ type PostLikesRepository interface {
 	IsPostLikedByUser(ctx context.Context, userID, postID string) (bool, error)
 	LikePost(ctx context.Context, userID, postID string) error
 	UnlikePost(ctx context.Context, userID, postID string) error
+	GetUserLikesForPosts(ctx context.Context, userID string, postIDs []string) ([]PostLike, error)
 }
 
 type postLikesRepository struct {
@@ -61,6 +62,34 @@ func (r postLikesRepository) IsPostLikedByUser(ctx context.Context, userID, post
 	}
 
 	return true, nil
+}
+
+func (r postLikesRepository) GetUserLikesForPosts(ctx context.Context, userID string, postIDs []string) ([]PostLike, error) {
+	sql, args, err := sq.
+		Select("*").
+		From(postLikesTable).
+		Where(squirrel.And{
+			squirrel.Eq{"user_id": userID},
+			squirrel.Eq{"post_id": postIDs},
+		}).
+		ToSql()
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create select query: %w", err)
+	}
+
+	rows, err := r.dbPool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select: %w", err)
+	}
+
+	var res []PostLike
+	err = pgxscan.ScanAll(&res, rows)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan rows: %w", err)
+	}
+
+	return res, nil
 }
 
 func (r postLikesRepository) LikePost(ctx context.Context, userID, postID string) error {

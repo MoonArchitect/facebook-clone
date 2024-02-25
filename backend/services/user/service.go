@@ -28,7 +28,7 @@ type UserService interface {
 
 	CreateUserPost(ctx context.Context, uid, text string) error
 	GetHistoricUserPosts(ctx context.Context, uid string) ([]ApiPost, error)
-	GetPost(ctx context.Context, postID string) (ApiPost, error)
+	GetPost(ctx context.Context, userID *string, postID string) (ApiPost, error)
 	LikePost(ctx context.Context, userID, postID string) error
 	SharePost(ctx context.Context, postID string) error
 }
@@ -107,7 +107,7 @@ func (s userService) GetHistoricUserPosts(ctx context.Context, uid string) ([]Ap
 		return nil, err
 	}
 
-	apiPosts, err := s.getApiPosts(ctx, dbPosts...)
+	apiPosts, err := s.getApiPosts(ctx, &uid, dbPosts...)
 	if err != nil {
 		return nil, err
 	}
@@ -115,13 +115,13 @@ func (s userService) GetHistoricUserPosts(ctx context.Context, uid string) ([]Ap
 	return apiPosts, nil
 }
 
-func (s userService) GetPost(ctx context.Context, postID string) (ApiPost, error) {
+func (s userService) GetPost(ctx context.Context, userID *string, postID string) (ApiPost, error) {
 	dbPost, err := s.postsRepository.GetPostByID(ctx, postID)
 	if err != nil {
 		return ApiPost{}, err
 	}
 
-	apiPosts, err := s.getApiPosts(ctx, dbPost) // TODO: more robust system for translating structs from db to API data
+	apiPosts, err := s.getApiPosts(ctx, userID, dbPost) // TODO: more robust system for translating structs from db to API data
 	if err != nil {
 		return ApiPost{}, err
 	}
@@ -170,18 +170,21 @@ func (s userService) SharePost(ctx context.Context, postID string) error {
 	return nil
 }
 
-func (s userService) getApiPosts(ctx context.Context, dbPosts ...repositories.Post) ([]ApiPost, error) {
+func (s userService) getApiPosts(ctx context.Context, userID *string, dbPosts ...repositories.Post) ([]ApiPost, error) {
 	seenIds := map[string]struct{}{}
-	uniqueIds := []string{}
+	uniqueUserIds := []string{}
+	postIds := []string{}
 	for _, p := range dbPosts {
+		postIds = append(postIds, p.Id)
+
 		_, ok := seenIds[p.OwnerId]
 		if !ok {
-			uniqueIds = append(uniqueIds, p.OwnerId)
+			uniqueUserIds = append(uniqueUserIds, p.OwnerId)
 		}
 		seenIds[p.OwnerId] = struct{}{}
 	}
 
-	profiles, err := s.profileRepository.GetManyByID(ctx, uniqueIds)
+	profiles, err := s.profileRepository.GetManyByID(ctx, uniqueUserIds)
 	if err != nil {
 		return nil, err
 	}
@@ -191,6 +194,18 @@ func (s userService) getApiPosts(ctx context.Context, dbPosts ...repositories.Po
 		profilesMap[p.Id] = p
 	}
 
+	postLikesMap := map[string]struct{}{}
+	if userID != nil {
+		postLikes, err := s.postLikesRepository.GetUserLikesForPosts(ctx, *userID, postIds)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, p := range postLikes {
+			postLikesMap[p.PostID] = struct{}{}
+		}
+	}
+
 	apiPosts := make([]ApiPost, len(dbPosts))
 	for i, p := range dbPosts {
 		ownerProfile, ok := profilesMap[p.OwnerId]
@@ -198,18 +213,21 @@ func (s userService) getApiPosts(ctx context.Context, dbPosts ...repositories.Po
 			return nil, errors.Errorf("failed to find associated profile with post's owner")
 		}
 
+		_, isLikedByUser := postLikesMap[p.Id]
+
 		apiPosts[i] = ApiPost{
 			Id: p.Id,
 			Owner: MinUserInfo{
 				Name:        ownerProfile.Name,
 				ThumbnailID: ownerProfile.ThumbnailID,
 			},
-			PostText:   p.PostText,
-			PostImages: p.PostImages,
-			Comments:   []ApiComment{},
-			LikeCount:  p.LikeCount,
-			ShareCount: p.ShareCount,
-			CreatedAt:  JSONTime(p.CreatedAt),
+			PostText:           p.PostText,
+			PostImages:         p.PostImages,
+			Comments:           []ApiComment{},
+			LikedByCurrentUser: isLikedByUser,
+			LikeCount:          p.LikeCount,
+			ShareCount:         p.ShareCount,
+			CreatedAt:          JSONTime(p.CreatedAt),
 		}
 	}
 

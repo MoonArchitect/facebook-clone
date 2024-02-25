@@ -28,10 +28,10 @@ func BasicAuth(authService auth.AuthService) gin.HandlerFunc {
 			return
 		}
 
-		ctx.Set(contextDataKey, ContextData{
-			UID: &uid,
-		})
-		// ctx.Set("uid", uid)
+		contextData := GetContextData(ctx)
+		contextData.UID = &uid
+
+		ctx.Set(contextDataKey, contextData)
 		ctx.Next()
 	}
 }

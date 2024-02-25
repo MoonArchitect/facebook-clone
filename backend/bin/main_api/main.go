@@ -115,6 +115,7 @@ func main() {
 
 	// middleware
 	authRequired := middleware.BasicAuth(authService) // TODO: this should use authValidator locally instead of separate service
+	getUserInfo := middleware.GetUserInfo(authService)
 
 	// Router
 	if config.Cfg.Env == "prod" {
@@ -126,6 +127,7 @@ func main() {
 	router.Use(gin.Logger())
 	router.Use(gin.Recovery())
 	router.Use(CORSMiddleware())
+	router.Use(getUserInfo)
 
 	api := router.Group("/api/v1")
 

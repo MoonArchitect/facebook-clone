@@ -96,8 +96,9 @@ func (pc postsController) GetPost(ctx *gin.Context) {
 	}
 
 	// check if user posts are private
+	uid := middleware.GetContextData(ctx).UID
 
-	posts, err := pc.userService.GetPost(ctx, req.PostID)
+	posts, err := pc.userService.GetPost(ctx, uid, req.PostID)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return

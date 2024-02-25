@@ -55,6 +55,7 @@ export type APIPostData = {
   postText: string
   postImages: string[] | null
   comments: APICommentData[] | null
+  likedByCurrentUser: boolean
   likeCount: number
   shareCount: number
   createdAt: number
