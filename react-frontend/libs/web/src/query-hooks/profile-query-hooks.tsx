@@ -1,4 +1,4 @@
-import { APIPostData, APIUserProfileResponse, CreatePostRequestData, mainAPI } from "@facebook-clone/api_client/main_api";
+import { APIPostData, APIUserProfileResponse, CreatePostRequestData, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -43,6 +43,40 @@ export const useCreatePostMutation = (userID: string) => {
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
       }
+    }
+  )
+}
+
+export const useLikePostMutation = () => {
+  // const queryClient = useQueryClient()
+
+  return useMutation<void, AxiosError, LikePostRequest>(
+    {
+      // mutationKey: ["like-post"],
+      mutationFn: (data) => {
+        return mainAPI.likePost(data)
+      },
+      // TODO: invalidate post data, update optimistically?
+      // onSuccess: (data, req) => {
+      //   queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
+      // }
+    }
+  )
+}
+
+export const useSharePostMutation = () => {
+  // const queryClient = useQueryClient()
+
+  return useMutation<void, AxiosError, SharePostRequest>(
+    {
+      // mutationKey: ["like-post"],
+      mutationFn: (data) => {
+        return mainAPI.sharePost(data)
+      },
+      // TODO: invalidate post data, update optimistically?
+      // onSuccess: (data, req) => {
+      //   queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
+      // }
     }
   )
 }

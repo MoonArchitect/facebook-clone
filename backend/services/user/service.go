@@ -15,6 +15,7 @@ type userService struct {
 	userRepository       repositories.UserRepository
 	profileRepository    repositories.ProfileRepository
 	postsRepository      repositories.PostsRepository
+	postLikesRepository  repositories.PostLikesRepository
 }
 
 type UserService interface {
@@ -27,7 +28,8 @@ type UserService interface {
 
 	CreateUserPost(ctx context.Context, uid, text string) error
 	GetHistoricUserPosts(ctx context.Context, uid string) ([]ApiPost, error)
-	// GetUserPosts(ctx context.Context, uid string) error
+	LikePost(ctx context.Context, userID, postID string) error
+	SharePost(ctx context.Context, postID string) error
 }
 
 func NewUserService(
@@ -35,12 +37,14 @@ func NewUserService(
 	profileRepository repositories.ProfileRepository,
 	friendshipRepository repositories.FriendshipRepository,
 	postsRepository repositories.PostsRepository,
+	postLikesRepository repositories.PostLikesRepository,
 ) UserService {
 	return &userService{
 		friendshipRepository,
 		userRepository,
 		profileRepository,
 		postsRepository,
+		postLikesRepository,
 	}
 }
 
@@ -110,6 +114,47 @@ func (s userService) GetHistoricUserPosts(ctx context.Context, uid string) ([]Ap
 	return apiPosts, nil
 }
 
+// TODO: ugly triple querying of db, name != functionality (should be toggleLike or smth), maybe have like/unlike endpoints
+func (s userService) LikePost(ctx context.Context, userID, postID string) error {
+	// validate that user can do this
+	isLiked, err := s.postLikesRepository.IsPostLikedByUser(ctx, userID, postID)
+	if err != nil {
+		return err
+	}
+
+	if isLiked {
+		err = s.postsRepository.DecrementPostLikeCount(ctx, postID)
+		if err != nil {
+			return err
+		}
+		err = s.postLikesRepository.UnlikePost(ctx, userID, postID)
+		if err != nil {
+			return err
+		}
+	} else {
+		err = s.postsRepository.IncrementPostLikeCount(ctx, postID)
+		if err != nil {
+			return err
+		}
+		err = s.postLikesRepository.LikePost(ctx, userID, postID)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s userService) SharePost(ctx context.Context, postID string) error {
+	// validate that user can do this
+
+	err := s.postsRepository.IncrementPostShareCount(ctx, postID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (s userService) getApiPosts(ctx context.Context, dbPosts ...repositories.Post) ([]ApiPost, error) {
 	seenIds := map[string]struct{}{}
 	uniqueIds := []string{}
@@ -147,8 +192,8 @@ func (s userService) getApiPosts(ctx context.Context, dbPosts ...repositories.Po
 			PostText:   p.PostText,
 			PostImages: p.PostImages,
 			Comments:   []ApiComment{},
-			LikeCount:  111,
-			ShareCount: 101,
+			LikeCount:  p.LikeCount,
+			ShareCount: p.ShareCount,
 			CreatedAt:  JSONTime(p.CreatedAt),
 		}
 	}

@@ -16,6 +16,8 @@ type postsController struct {
 type PostsController interface {
 	CreatePost(ctx *gin.Context)
 	GetHistoricUserPosts(ctx *gin.Context)
+	LikePost(ctx *gin.Context)
+	SharePost(ctx *gin.Context)
 }
 
 func NewPostsController(userService user.UserService) PostsController {
@@ -78,4 +80,58 @@ func (pc postsController) GetHistoricUserPosts(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, posts)
+}
+
+type LikePostRequest struct {
+	PostID string `json:"postID" binding:"required"`
+}
+
+func (pc postsController) LikePost(ctx *gin.Context) {
+	uid := middleware.GetContextData(ctx).UID
+	if uid == nil {
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		return
+	}
+
+	var req LikePostRequest
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = pc.userService.LikePost(ctx, *uid, req.PostID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+}
+
+type SharePostRequest struct {
+	PostID string `json:"postID" binding:"required"`
+}
+
+func (pc postsController) SharePost(ctx *gin.Context) {
+	uid := middleware.GetContextData(ctx).UID
+	if uid == nil {
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		return
+	}
+
+	var req SharePostRequest
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = pc.userService.SharePost(ctx, req.PostID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
 }

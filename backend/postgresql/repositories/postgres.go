@@ -10,4 +10,6 @@ const (
 	profilesTable    = "profiles"
 	friendshipsTable = "friendships"
 	postsTable       = "posts"
+	commentsTable    = "comments"
+	postLikesTable   = "post_likes"
 )

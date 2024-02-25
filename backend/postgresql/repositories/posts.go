@@ -16,20 +16,26 @@ type Post struct {
 	OwnerId    string    `db:"owner_id"`
 	PostText   string    `db:"post_text"`
 	PostImages []string  `db:"post_images"`
-	Comments   []Comment `db:"comments"`
+	LikeCount  int       `db:"like_count"`
+	ShareCount int       `db:"share_count"`
 	CreatedAt  time.Time `db:"created_at"`
 }
 
 type Comment struct {
-	OwnerId   string    `json:"owner_id"`
-	Text      string    `json:"text"`
-	Responds  []Comment `json:"responds"`
-	CreatedAt time.Time `json:"created_at"`
+	Id         string    `db:"id"`
+	PostId     string    `db:"post_id"`
+	OwnerId    string    `db:"owner_id"`
+	Text       string    `db:"text"`
+	ReplyCount int       `db:"reply_count"`
+	CreatedAt  time.Time `db:"created_at"`
 }
 
 type PostsRepository interface {
 	CreatePost(ctx context.Context, userID, text string) error
 	GetUserPostsByDate(ctx context.Context, userID string) ([]Post, error)
+	IncrementPostLikeCount(ctx context.Context, postID string) error
+	DecrementPostLikeCount(ctx context.Context, postID string) error
+	IncrementPostShareCount(ctx context.Context, postID string) error
 }
 
 type postsRepository struct {
@@ -90,4 +96,61 @@ func (r postsRepository) GetUserPostsByDate(ctx context.Context, userID string) 
 	}
 
 	return res, nil
+}
+
+func (r postsRepository) IncrementPostLikeCount(ctx context.Context, postID string) error {
+	sql, args, err := sq.
+		Update(postsTable).
+		Set("like_count", squirrel.Expr("like_count + 1")).
+		Where(squirrel.Eq{"id": postID}).
+		ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to create update query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update: %w", err)
+	}
+
+	return nil
+}
+
+func (r postsRepository) DecrementPostLikeCount(ctx context.Context, postID string) error {
+	sql, args, err := sq.
+		Update(postsTable).
+		Set("like_count", squirrel.Expr("GREATEST(like_count - 1, 0)")).
+		Where(squirrel.Eq{"id": postID}).
+		ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to create update query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update: %w", err)
+	}
+
+	return nil
+}
+
+func (r postsRepository) IncrementPostShareCount(ctx context.Context, postID string) error {
+	sql, args, err := sq.
+		Update(postsTable).
+		Set("share_count", squirrel.Expr("share_count + 1")).
+		Where(squirrel.Eq{"id": postID}).
+		ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to create update query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to update: %w", err)
+	}
+
+	return nil
 }

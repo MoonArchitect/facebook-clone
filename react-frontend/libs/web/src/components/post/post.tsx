@@ -29,6 +29,7 @@ export const Post = (props: PostProps) => {
       )} */}
 
       <ContentReactions
+        postID={post.id}
         isAvailable={true}
         numberOfComments={post.comments?.length ?? 0}
         reactionsCount={post.likeCount}

@@ -5,9 +5,11 @@ import { ReactComponent as ShareIcon } from "@facebook-clone/assets/icons/share.
 
 import { LineDivider } from "../../ui"
 
+import { useLikePostMutation, useSharePostMutation } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import styles from "./content-reactions.module.scss"
 
 interface ContentReactionsProps {
+  postID: string
   isAvailable: boolean
   numberOfComments?: number
   reactionsCount?: number
@@ -16,8 +18,10 @@ interface ContentReactionsProps {
 }
 
 export const ContentReactions = (props: ContentReactionsProps) => {
-  const { isAvailable, numberOfComments, reactionsCount, sharesCount, commentVisibilityState } = props
+  const { postID, isAvailable, numberOfComments, reactionsCount, sharesCount, commentVisibilityState } = props
   const [commentVisibility, setCommentVisibility] = commentVisibilityState
+  const {mutate: likePost} = useLikePostMutation()
+  const {mutate: sharePost} = useSharePostMutation()
 
   return (
     <>
@@ -26,29 +30,29 @@ export const ContentReactions = (props: ContentReactionsProps) => {
           <div className={styles.icon}>
             <LikeFilledIcon />
           </div>
-          <div className={styles.number}>
-            {reactionsCount ? reactionsCount : "..."}
-          </div>
+          {reactionsCount !== undefined && reactionsCount > 0 && <div className={styles.number}>
+            {reactionsCount}
+          </div>}
         </div>
 
         <div className={styles.column}>
-          {numberOfComments !== undefined && numberOfComments > 1 && <div
+          {numberOfComments !== undefined && numberOfComments > 0 && <div
             className={styles.commentsNumber}
             onClick={() => {
               setCommentVisibility(!commentVisibility)
             }}
           >
-            {numberOfComments} Comments
+            {numberOfComments} Comment{numberOfComments>1 ? "s" : ""}
           </div>}
-          <div className={styles.sharesNumber}>
-            {sharesCount ? sharesCount : "..."} Shares
-          </div>
+          {sharesCount !== undefined && sharesCount > 0 && <div className={styles.sharesNumber}>
+            {sharesCount} Shares
+          </div>}
         </div>
       </div>
       {isAvailable && <LineDivider />}
       {isAvailable && (
         <div className={styles.menu}>
-          <div className={styles.button}>
+          <div className={styles.button} onClick={() => likePost({postID})}>
             <LikeIcon /> &thinsp; Like
           </div>
           <div
@@ -59,7 +63,7 @@ export const ContentReactions = (props: ContentReactionsProps) => {
           >
             <CommentIcon /> &thinsp; Comment
           </div>
-          <div className={styles.button}>
+          <div className={styles.button} onClick={() => sharePost({postID})}>
             <ShareIcon /> &thinsp; Share
           </div>
         </div>

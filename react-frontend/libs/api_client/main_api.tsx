@@ -65,6 +65,14 @@ export type APIMiniProfile = {
   thumbnailID: string
 }
 
+export type LikePostRequest = {
+  postID: string
+}
+
+export type SharePostRequest = {
+  postID: string
+}
+
 export const mainAPI = {
   signIn: async (data: SignInRequestData) => {
     await mainAPIClient.post("/auth/signin", data)
@@ -85,6 +93,12 @@ export const mainAPI = {
   getHistoricUserPosts: async (params: GetHistricUserPostsData) => {
     const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params})
     return resp.data
+  },
+  likePost: async (data: LikePostRequest) => {
+    await mainAPIClient.post("/posts/like", data)
+  },
+  sharePost: async (data: SharePostRequest) => {
+    await mainAPIClient.post("/posts/share", data)
   },
 }
 
