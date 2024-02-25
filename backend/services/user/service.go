@@ -28,6 +28,7 @@ type UserService interface {
 
 	CreateUserPost(ctx context.Context, uid, text string) error
 	GetHistoricUserPosts(ctx context.Context, uid string) ([]ApiPost, error)
+	GetPost(ctx context.Context, postID string) (ApiPost, error)
 	LikePost(ctx context.Context, userID, postID string) error
 	SharePost(ctx context.Context, postID string) error
 }
@@ -112,6 +113,20 @@ func (s userService) GetHistoricUserPosts(ctx context.Context, uid string) ([]Ap
 	}
 
 	return apiPosts, nil
+}
+
+func (s userService) GetPost(ctx context.Context, postID string) (ApiPost, error) {
+	dbPost, err := s.postsRepository.GetPostByID(ctx, postID)
+	if err != nil {
+		return ApiPost{}, err
+	}
+
+	apiPosts, err := s.getApiPosts(ctx, dbPost) // TODO: more robust system for translating structs from db to API data
+	if err != nil {
+		return ApiPost{}, err
+	}
+
+	return apiPosts[0], nil
 }
 
 // TODO: ugly triple querying of db, name != functionality (should be toggleLike or smth), maybe have like/unlike endpoints

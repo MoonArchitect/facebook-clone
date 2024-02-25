@@ -1,23 +1,30 @@
 import { useState } from "react"
 
-import { APIPostData } from "@facebook-clone/api_client/main_api"
 import { CommentsSection } from "./comments-section/comments-section"
 import { ContentOrigin } from "./content-origin/content-origin"
 import { ContentReactions } from "./content-reactions/content-reactions"
 import { TextContent } from "./text-content/text-content"
 
+import { useGetPostDataQuey } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import styles from "./post.module.scss"
 
 
 type PostProps = {
-  post: APIPostData
+  postID: string
 }
 
 export const Post = (props: PostProps) => {
-  const {post} = props
+  const {postID} = props
+  const {data: post, isSuccess} = useGetPostDataQuey(postID)
   const [commentVisibility, setCommentVisibility] = useState(false)
 
-  // useEffect(() => console.log("post: ", post), [post])
+  if (!isSuccess) {
+    return (
+      <div className={styles.container}>
+        oops no data
+      </div>
+    )
+  }
 
   return (
     <div className={styles.container}>

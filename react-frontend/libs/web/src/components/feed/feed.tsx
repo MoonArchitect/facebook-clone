@@ -8,13 +8,13 @@ import styles from "./feed.module.scss"
 
 export const Feed = () => {
   const {data: userData} = useMeQuery()
-  const {data} = useGetHistoricUserPostsQuery(userData?.id ?? "", userData?.id !== undefined)
+  const {data} = useGetHistoricUserPostsQuery(userData?.id ?? "no-user-id-found")
 
   return (
     <div className={styles.container}>
       <CreatePostSection />
-      {data && data.map((post) => (
-        <Post post={post} />
+      {data && data.map((postID) => (
+        <Post postID={postID} />
       ))}
     </div>
   )

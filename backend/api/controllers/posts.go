@@ -16,6 +16,7 @@ type postsController struct {
 type PostsController interface {
 	CreatePost(ctx *gin.Context)
 	GetHistoricUserPosts(ctx *gin.Context)
+	GetPost(ctx *gin.Context)
 	LikePost(ctx *gin.Context)
 	SharePost(ctx *gin.Context)
 }
@@ -74,6 +75,29 @@ func (pc postsController) GetHistoricUserPosts(ctx *gin.Context) {
 	// check if user posts are private
 
 	posts, err := pc.userService.GetHistoricUserPosts(ctx, req.UserID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, posts)
+}
+
+type GetPostRequest struct {
+	PostID string `form:"postID" binding:"required"`
+}
+
+func (pc postsController) GetPost(ctx *gin.Context) {
+	var req GetPostRequest
+	err := ctx.BindQuery(&req)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// check if user posts are private
+
+	posts, err := pc.userService.GetPost(ctx, req.PostID)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return

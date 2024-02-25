@@ -7,7 +7,9 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/go-errors/errors"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -36,6 +38,7 @@ type PostsRepository interface {
 	IncrementPostLikeCount(ctx context.Context, postID string) error
 	DecrementPostLikeCount(ctx context.Context, postID string) error
 	IncrementPostShareCount(ctx context.Context, postID string) error
+	GetPostByID(ctx context.Context, postID string) (Post, error)
 }
 
 type postsRepository struct {
@@ -93,6 +96,33 @@ func (r postsRepository) GetUserPostsByDate(ctx context.Context, userID string) 
 	err = pgxscan.ScanAll(&res, rows)
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan rows: %w", err)
+	}
+
+	return res, nil
+}
+
+func (r postsRepository) GetPostByID(ctx context.Context, postID string) (Post, error) {
+	sql, args, err := sq.
+		Select("*").
+		From(postsTable).
+		Where(squirrel.Eq{"id": postID}).
+		ToSql()
+
+	if err != nil {
+		return Post{}, fmt.Errorf("failed to create select query: %w", err)
+	}
+
+	rows, err := r.dbPool.Query(ctx, sql, args...)
+	if err != nil {
+		return Post{}, fmt.Errorf("failed to select: %w", err)
+	}
+
+	var res Post
+	err = pgxscan.ScanOne(&res, rows)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return Post{}, fmt.Errorf("did not find any rows: %w", err)
+	} else if err != nil {
+		return Post{}, fmt.Errorf("failed to scan rows: %w", err)
 	}
 
 	return res, nil

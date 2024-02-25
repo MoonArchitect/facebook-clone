@@ -18,18 +18,41 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
 )
 
 export const queryKeys = {
-  getHistoricUserPosts: (userID: string) => ["get-historic-user-posts", userID]
+  getHistoricUserPosts: (userID: string) => ["get-historic-user-posts", userID],
+  post: (postID: string) => ["post", postID],
+} as const
+
+
+export const useGetHistoricUserPostsQuery = (userID: string) => {
+  const queryClient = useQueryClient()
+
+  return useQuery<APIPostData[], AxiosError, string[]>(
+    {
+      queryKey: queryKeys.getHistoricUserPosts(userID),
+      queryFn: () => {
+        return mainAPI.getHistoricUserPosts({userID})
+      },
+      select(data) {
+        for (const post of data) {
+          queryClient.setQueryData(queryKeys.post(post.id), () => post)
+        }
+        return data.map((post) => post.id)
+      },
+    }
+  )
 }
 
-export const useGetHistoricUserPostsQuery = (userID: string, enabled: boolean) => useQuery<APIPostData[], AxiosError>(
-  {
-    queryKey: queryKeys.getHistoricUserPosts(userID),
-    queryFn: () => {
-      return mainAPI.getHistoricUserPosts({userID})
-    },
-    enabled: enabled,
-  }
-)
+export const useGetPostDataQuey = (postID: string) => {
+  return useQuery<APIPostData, AxiosError>(
+    {
+      queryKey: queryKeys.post(postID),
+      queryFn: () => {
+        return mainAPI.getPost({postID})
+      },
+      staleTime: 5 * 60 * 1000, // TODO: do it in queryClient config maybe
+    }
+  )
+}
 
 export const useCreatePostMutation = (userID: string) => {
   const queryClient = useQueryClient()
@@ -48,7 +71,7 @@ export const useCreatePostMutation = (userID: string) => {
 }
 
 export const useLikePostMutation = () => {
-  // const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
 
   return useMutation<void, AxiosError, LikePostRequest>(
     {
@@ -56,16 +79,15 @@ export const useLikePostMutation = () => {
       mutationFn: (data) => {
         return mainAPI.likePost(data)
       },
-      // TODO: invalidate post data, update optimistically?
-      // onSuccess: (data, req) => {
-      //   queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
-      // }
+      onSuccess: (data, req) => {
+        queryClient.invalidateQueries({queryKey: queryKeys.post(req.postID)})
+      }
     }
   )
 }
 
 export const useSharePostMutation = () => {
-  // const queryClient = useQueryClient()
+  const queryClient = useQueryClient()
 
   return useMutation<void, AxiosError, SharePostRequest>(
     {
@@ -73,10 +95,9 @@ export const useSharePostMutation = () => {
       mutationFn: (data) => {
         return mainAPI.sharePost(data)
       },
-      // TODO: invalidate post data, update optimistically?
-      // onSuccess: (data, req) => {
-      //   queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
-      // }
+      onSuccess: (data, req) => {
+        queryClient.invalidateQueries({queryKey: queryKeys.post(req.postID)})
+      }
     }
   )
 }

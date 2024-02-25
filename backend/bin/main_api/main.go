@@ -141,7 +141,8 @@ func main() {
 	api.GET("/profiles/get", profileController.GetProfile)
 
 	// api.GET("/posts", profileController.GetProfile)
-	api.GET("/profiles/posts", authRequired, postsController.GetHistoricUserPosts)
+	api.GET("/profiles/posts", authRequired, postsController.GetHistoricUserPosts) // TODO: authRequired might not be required
+	api.GET("/posts", postsController.GetPost)
 	api.POST("/posts", authRequired, postsController.CreatePost)
 	api.POST("/posts/like", authRequired, postsController.LikePost)
 	api.POST("/posts/share", authRequired, postsController.SharePost) // temp

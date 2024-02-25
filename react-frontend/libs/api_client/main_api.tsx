@@ -73,6 +73,10 @@ export type SharePostRequest = {
   postID: string
 }
 
+export type GetPostRequest = {
+  postID: string
+}
+
 export const mainAPI = {
   signIn: async (data: SignInRequestData) => {
     await mainAPIClient.post("/auth/signin", data)
@@ -91,7 +95,11 @@ export const mainAPI = {
     await mainAPIClient.post("/posts", data)
   },
   getHistoricUserPosts: async (params: GetHistricUserPostsData) => {
-    const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params})
+    const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params: {"userID": params.userID}})
+    return resp.data
+  },
+  getPost: async (params: GetPostRequest) => {
+    const resp = await mainAPIClient.get<APIPostData>("/posts", {params: {"postID": params.postID}})
     return resp.data
   },
   likePost: async (data: LikePostRequest) => {
