@@ -1,6 +1,6 @@
 module fb-clone
 
-go 1.21.0
+go 1.22.0
 
 require (
 	github.com/Masterminds/squirrel v1.5.4
