@@ -44,7 +44,7 @@ export type GetHistricUserPostsData = {
 }
 
 export type APICommentData = {
-  owner: APIMiniProfile
+  owner: APIUserProfileResponse
   text: string
   responds: APICommentData[] | null
   createdAt: number
@@ -52,7 +52,7 @@ export type APICommentData = {
 
 export type APIPostData = {
   id: string
-  owner: APIMiniProfile
+  owner: APIUserProfileResponse
   postText: string
   postImages: string[] | null
   comments: APICommentData[] | null
@@ -62,10 +62,11 @@ export type APIPostData = {
   createdAt: number
 }
 
-export type APIMiniProfile = {
-  name: string
-  thumbnailID: string
-}
+// export type APIMiniProfile = {
+//   name: string
+//   username: string
+//   thumbnailID: string
+// }
 
 export type LikePostRequest = {
   postID: string
@@ -91,6 +92,10 @@ export const mainAPI = {
   },
   getMe: async () => {
     const resp = await mainAPIClient.get<APIUserProfileResponse>("/profiles/me")
+    return resp.data
+  },
+  getProfileByUsername: async (username: string) => {
+    const resp = await mainAPIClient.get<APIUserProfileResponse>("/profiles/get", {params: {username}})
     return resp.data
   },
   createPost: async (data: CreatePostRequestData) => {

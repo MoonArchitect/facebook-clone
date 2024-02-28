@@ -46,7 +46,7 @@ func (pc profileController) UpdateMe(ctx *gin.Context) {
 }
 
 type GetProfileRequest struct {
-	Username string `json:"username"` // min length: 1, no spaces, alphanumeric
+	Username string `form:"username" binding:"required"` // min length: 1, no spaces, alphanumeric
 }
 
 func (pc profileController) GetProfile(ctx *gin.Context) {
@@ -56,7 +56,7 @@ func (pc profileController) GetProfile(ctx *gin.Context) {
 	// }
 
 	var req GetProfileRequest
-	err := ctx.BindJSON(&req)
+	err := ctx.BindQuery(&req)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return

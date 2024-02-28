@@ -10,10 +10,11 @@ import styles from "./feed.module.scss"
 
 export type FeedProps = {
   queryRes: UseInfiniteQueryResult<string[], AxiosError>
+  includeCreatePostSection?: boolean
 }
 
 export const Feed = (props: FeedProps) => {
-  const {queryRes} = props
+  const {queryRes, includeCreatePostSection} = props
   const {data, isLoading, isFetchingNextPage, fetchNextPage} = queryRes
   const loaderRef = useRef<HTMLDivElement>(null)
 
@@ -40,7 +41,7 @@ export const Feed = (props: FeedProps) => {
 
   return (
     <div className={styles.container}>
-      <CreatePostSection />
+      {includeCreatePostSection && <CreatePostSection />}
       {data && data.map((postID) => (
         <Post key={`post-${postID}`} postID={postID} />
       ))}

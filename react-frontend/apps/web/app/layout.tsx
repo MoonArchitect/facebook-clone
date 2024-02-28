@@ -1,18 +1,17 @@
-import { PropsWithChildren } from "react"
-
-import { Navbar } from "@facebook-clone/web/components/navbar/navbar"
-
-import { APIUserProfileResponse } from "@facebook-clone/api_client/main_api"
-import { GlobalModals } from "@facebook-clone/web/components/global-modals/global-modals"
-import { TanstackQueryClientProvider } from "@facebook-clone/web/components/utils/react-query-provider"
-import { parseServerOptions } from "@facebook-clone/web/components/utils/server-options/parse-server-options"
-import { GlobalTheme } from "@facebook-clone/web/components/utils/server-options/server-options"
-import { SessionContextProvider } from "@facebook-clone/web/components/utils/session-context"
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query'
 import axios from "axios"
 import clsx from "clsx"
 import { cookies } from "next/headers"
-import { cache } from 'react'
+import { PropsWithChildren, cache } from "react"
+
+import { APIUserProfileResponse } from "@facebook-clone/api_client/main_api"
+import { GlobalModals } from "@facebook-clone/web/components/global-modals/global-modals"
+import { Navbar } from "@facebook-clone/web/components/navbar/navbar"
+import { TanstackQueryClientProvider } from "@facebook-clone/web/components/utils/react-query-provider"
+import { parseServerOptions } from "@facebook-clone/web/components/utils/server-options/parse-server-options"
+import { GlobalTheme } from "@facebook-clone/web/components/utils/server-options/server-options"
+import { SessionContextProvider } from "@facebook-clone/web/components/utils/session-context"
+
 import "./global.css"
 
 const getQueryClient = cache(() => new QueryClient())

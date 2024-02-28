@@ -16,7 +16,7 @@ type FeedService interface {
 	GetPublicHomeFeed(ctx context.Context, skip uint64) ([]apitypes.Post, error)
 	GetPersonalHomeFeed(ctx context.Context, uid string, skip uint64) ([]apitypes.Post, error)
 	GetPersonalGroupFeed(ctx context.Context, uid string, skip uint64) ([]apitypes.Post, error)
-	GetHistoricUserPosts(ctx context.Context, uid string, skip uint64) ([]apitypes.Post, error)
+	GetHistoricUserPosts(ctx context.Context, requesterID *string, uid string, skip uint64) ([]apitypes.Post, error)
 }
 
 func NewFeedService(
@@ -66,7 +66,7 @@ func (s feedService) GetPersonalHomeFeed(ctx context.Context, uid string, skip u
 	return apiPosts, nil
 }
 
-func (s feedService) GetHistoricUserPosts(ctx context.Context, uid string, skip uint64) ([]apitypes.Post, error) {
+func (s feedService) GetHistoricUserPosts(ctx context.Context, requesterID *string, uid string, skip uint64) ([]apitypes.Post, error) {
 	// if uid != *requesterUID {
 	// 	return nil, fmt.Errorf("Only the owner may access their account")
 	// }
@@ -76,7 +76,7 @@ func (s feedService) GetHistoricUserPosts(ctx context.Context, uid string, skip 
 		return nil, err
 	}
 
-	apiPosts, err := s.getApiPosts(ctx, &uid, dbPosts)
+	apiPosts, err := s.getApiPosts(ctx, requesterID, dbPosts)
 	if err != nil {
 		return nil, err
 	}

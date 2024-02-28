@@ -13,13 +13,13 @@ type UserProfile struct {
 	BannerID    string `json:"bannerID"`
 }
 
-type MinUserInfo struct {
-	Name        string `json:"name"`
-	ThumbnailID string `json:"thumbnailID"`
-}
+// type MinUserInfo struct {
+// 	Name        string `json:"name"`
+// 	ThumbnailID string `json:"thumbnailID"`
+// }
 
 type Comment struct {
-	Owner     MinUserInfo `json:"owner"`
+	Owner     UserProfile `json:"owner"`
 	Text      string      `json:"text"`
 	Responds  []Comment   `json:"responds"`
 	CreatedAt JSONTime    `json:"createdAt"`
@@ -27,7 +27,7 @@ type Comment struct {
 
 type Post struct {
 	Id                 string      `json:"id"`
-	Owner              MinUserInfo `json:"owner"`
+	Owner              UserProfile `json:"owner"`
 	PostText           string      `json:"postText"`
 	PostImages         []string    `json:"postImages"`
 	LikedByCurrentUser bool        `json:"likedByCurrentUser"`

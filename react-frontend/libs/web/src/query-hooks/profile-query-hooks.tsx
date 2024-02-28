@@ -17,6 +17,15 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
   }
 )
 
+export const useProfileByUsernameQuery = (username: string) => useQuery<APIUserProfileResponse, AxiosError>(
+  {
+    queryKey: ["get-me-query", username],
+    queryFn: () => {
+      return mainAPI.getProfileByUsername(username)
+    },
+  }
+)
+
 export const queryKeys = {
   getHistoricUserPosts: (userID?: string) => ["get-historic-user-posts", userID ?? "undefined"], // todo: check if userID = undefined can be a problem
   post: (postID: string) => ["post", postID],
@@ -29,18 +38,17 @@ export const useGetHistoricUserPostsQuery = (userID?: string) => {
   return useInfiniteQuery<APIPostData[], AxiosError, string[], string[], number>(
     {
       queryKey: queryKeys.getHistoricUserPosts(userID),
-      queryFn: ({pageParam}) => {
+      queryFn: async ({pageParam}) => {
         if (userID === undefined)
           throw new AxiosError("userID is undefined")
 
-        return mainAPI.getHistoricUserPosts({userID, skip: pageParam})
+        const res = await mainAPI.getHistoricUserPosts({userID, skip: pageParam})
+        for (const post of res) {
+          queryClient.setQueryData(queryKeys.post(post.id), () => post)
+        }
+        return res
       },
       select(data) {
-        for (const page of data.pages) {
-          for (const post of page) {
-            queryClient.setQueryData(queryKeys.post(post.id), () => post)
-          }
-        }
         return data.pages.flatMap((page) => page.map((post) => post.id))
       },
       enabled: userID !== undefined,
@@ -56,19 +64,14 @@ export const useGetHomePageFeedQuery = () => {
   return useInfiniteQuery<APIPostData[], AxiosError, string[], string[], number>(
     {
       queryKey: ["home-page-feed"],
-      queryFn: (data) => {
-        return mainAPI.getHomePageFeed(data.pageParam)
+      queryFn: async (data) => {
+        const res = await mainAPI.getHomePageFeed(data.pageParam)
+        for (const post of res) {
+          queryClient.setQueryData(queryKeys.post(post.id), () => post)
+        }
+        return res
       },
       select(data) {
-        for (const page of data.pages) {
-          for (const post of page) {
-            queryClient.setQueryData(queryKeys.post(post.id), () => post)
-          }
-        }
-        // return {
-        //   pages: data.pages.map((page) => page.map((post) => post.id)),
-        //   pageParams: data.pageParams
-        // }
         return data.pages.flatMap((page) => page.map((post) => post.id))
       },
       getNextPageParam: (lastPage, _, lastPageParam) => lastPage.length === 0 ? undefined : lastPageParam + lastPage.length,
@@ -83,15 +86,14 @@ export const useGetGroupsPageFeedQuery = () => {
   return useInfiniteQuery<APIPostData[], AxiosError, string[], string[], number>(
     {
       queryKey: ["groups-page-feed"],
-      queryFn: ({pageParam}) => {
-        return mainAPI.getGroupsPageFeed(pageParam)
+      queryFn: async ({pageParam}) => {
+        const res = await mainAPI.getGroupsPageFeed(pageParam)
+        for (const post of res) {
+          queryClient.setQueryData(queryKeys.post(post.id), () => post)
+        }
+        return res
       },
       select(data) {
-        for (const page of data.pages) {
-          for (const post of page) {
-            queryClient.setQueryData(queryKeys.post(post.id), () => post)
-          }
-        }
         return data.pages.flatMap((page) => page.map((post) => post.id))
       },
       getNextPageParam: (lastPage, _, lastPageParam) => lastPage.length === 0 ? undefined : lastPageParam + lastPage.length,

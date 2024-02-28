@@ -33,10 +33,10 @@ type GetUserPostsRequest struct {
 
 func (fc feedController) GetUserPosts(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
-	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
-		return
-	}
+	// if uid == nil {
+	// 	_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+	// 	return
+	// }
 
 	var req GetUserPostsRequest
 	err := ctx.BindQuery(&req)
@@ -47,7 +47,7 @@ func (fc feedController) GetUserPosts(ctx *gin.Context) {
 
 	// check if user posts are private
 
-	posts, err := fc.feedService.GetHistoricUserPosts(ctx, req.UserID, req.Skip)
+	posts, err := fc.feedService.GetHistoricUserPosts(ctx, uid, req.UserID, req.Skip)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return

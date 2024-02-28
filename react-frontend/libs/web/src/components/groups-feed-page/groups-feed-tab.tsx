@@ -8,8 +8,8 @@ import { ReactComponent as ReactIcon } from "@facebook-clone/assets/icons/react_
 import { Feed } from "../feed/feed"
 import { LineDivider, MenuButton, NavigationButton, SearchBar } from "../ui"
 
-import styles from "./groups-feed-tab.module.scss"
 import { useGetGroupsPageFeedQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
+import styles from "./groups-feed-tab.module.scss"
 
 // <Button icon={CogIcon} action=...  />
 
@@ -124,7 +124,7 @@ export const GroupsFeedTab = () => {
       <Groups />
       <div className={styles.feed}>
         <div className={styles.recentActivity}> Recent activity </div>
-        <Feed queryRes={queryRes} />
+        <Feed queryRes={queryRes} includeCreatePostSection />
       </div>
     </div>
   )

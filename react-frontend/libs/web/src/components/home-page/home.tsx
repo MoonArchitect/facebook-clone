@@ -13,7 +13,7 @@ export const HomePage = () => {
   return (
     <div className={styles.container}>
       <NavigationMenu />
-      <Feed queryRes={queryRes} />
+      <Feed queryRes={queryRes} includeCreatePostSection />
       <RightAddOn />
     </div>
   )

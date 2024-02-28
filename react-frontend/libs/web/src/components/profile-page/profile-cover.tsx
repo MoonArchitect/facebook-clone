@@ -2,18 +2,18 @@
 
 import clsx from "clsx"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { FormEvent, MouseEvent, useCallback, useMemo, useRef, useState } from "react"
+import { usePathname, useRouter } from "next/navigation"
+import { FormEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import { ReactComponent as CameraIcon } from "@facebook-clone/assets/icons/camera.svg"
 import { ReactComponent as ChevronIcon } from "@facebook-clone/assets/icons/chevron.svg"
 import { ReactComponent as CogIcon } from "@facebook-clone/assets/icons/cog.svg"
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
-import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { APIUserProfileResponse, getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import { useUploadProfileCover, useUploadProfileThumbnail } from "@facebook-clone/web/query-hooks/asset-query-hooks"
-import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import ReactModal from "react-modal"
+import { useSession } from "../utils/session-context"
 import styles from "./profile-cover.module.scss"
 
 // TODO: move to global config of some kind
@@ -25,8 +25,22 @@ type ImagePreviewStateType = {
   target: 'thumbnail' | 'cover'
 }
 
-export const ProfileCover = () => {
-  const {data} = useMeQuery()
+export type ProfileCoverProps = {
+  profile?: APIUserProfileResponse
+}
+
+export const ProfileCover = (props: ProfileCoverProps) => {
+  const { profile } = props
+  const {userData} = useSession()
+  const {replace} = useRouter()
+  const pathname = usePathname()
+
+  useEffect(() => {
+    if (userData?.id && profile?.id && userData?.id === profile?.id && pathname.includes(`/user/${userData.username}`)) {
+      replace("/profile")
+    }
+  }, [replace, pathname, profile, userData])
+
   const coverImageUploadRef = useRef<HTMLInputElement>(null)
   const {mutateAsync: uploadProfileCover} = useUploadProfileCover()
   const {mutateAsync: uploadProfileThumbnail} = useUploadProfileThumbnail()
@@ -120,16 +134,16 @@ export const ProfileCover = () => {
       />
 
       <div className={styles.coverImage} onClick={selectNewCoverImage} >
-        {data?.bannerID && <img src={getImageURLFromId(data.bannerID)} alt={"profile cover"}/>}
+        <img src={getImageURLFromId(profile?.bannerID ?? "")} alt={"profile cover"}/>
         <button className={styles.coverImageButton} onClick={selectNewCoverImage}><CameraIcon/> Add Cover Photo</button>
       </div>
       <div className={styles.infoContainer}>
         <div className={styles.thumbnailContainer} onClick={selectNewThumbnailImage}>
-          <img className={styles.profileThumbnail} onClick={selectNewThumbnailImage} src={getImageURLFromId(data?.thumbnailID)} alt={"profile thumbnail"}></img>
+          <img className={styles.profileThumbnail} onClick={selectNewThumbnailImage} src={getImageURLFromId(profile?.thumbnailID ?? "")} alt={"profile thumbnail"}></img>
           <CameraIcon/>
         </div>
         <div className={styles.nameContainer}>
-          <h1 className={styles.name}>{data?.name ?? "not availbale"}</h1>
+          <h1 className={styles.name}>{profile?.name ?? ""}</h1>
           <p className={styles.friendCount}>4 Friends</p>
         </div>
         <div className={styles.buttonContainer}>
@@ -141,22 +155,39 @@ export const ProfileCover = () => {
 
       <div className={styles.lineDivider} />
 
-      <div className={styles.navigationContainer}>
-        <NavigationButton href="/profile" title="Posts" />
-        <NavigationButton href="/profile/about" title="About" />
-        <NavigationButton href="/profile/friends" title="Friends" />
-        <NavigationButton href="/profile/photos" title="Photos" />
-        <NavigationButton href="/profile/videos" title="Videos" />
-        <NavigationButton href=" " title="More" />
-      </div>
+      <NavigationBar profileUsername={profile?.username}/>
+    </div>
+  )
+}
+
+const NavigationBar = (props: {profileUsername?: string}) => {
+  const {profileUsername} = props
+  const pathname = usePathname()
+  const prefix = useMemo(() => {
+    if (pathname.includes("/profile")) {
+      return `/profile`
+    } else {
+      return `/user/${profileUsername}` // TODO: ugly, either pass usename slug or ensure profileID is not undefined
+    }
+  }, [pathname, profileUsername])
+
+
+  return (
+    <div className={styles.navigationContainer}>
+      <NavigationButton href={`${prefix}`} title="Posts" />
+      <NavigationButton href={`${prefix}/about`} title="About" />
+      <NavigationButton href={`${prefix}/friends`} title="Friends" />
+      <NavigationButton href={`${prefix}/photos`} title="Photos" />
+      <NavigationButton href={`${prefix}/videos`} title="Videos" />
+      <NavigationButton href=" " title="More" />
     </div>
   )
 }
 
 interface NavigationButtonProps {
-    href: string
-    title: string
-  }
+  href: string
+  title: string
+}
 
 
 const NavigationButton = (props: NavigationButtonProps) => {

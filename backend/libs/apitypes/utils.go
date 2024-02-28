@@ -45,9 +45,12 @@ func BuildApiPosts(profiles []repositories.Profile, postLikes []repositories.Pos
 
 		apiPosts[i] = Post{
 			Id: p.Id,
-			Owner: MinUserInfo{
+			Owner: UserProfile{
+				Id:          ownerProfile.Id,
 				Name:        ownerProfile.Name,
+				Username:    ownerProfile.Username,
 				ThumbnailID: ownerProfile.ThumbnailID,
+				BannerID:    ownerProfile.BannerID,
 			},
 			PostText:           p.PostText,
 			PostImages:         p.PostImages,

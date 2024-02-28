@@ -11,7 +11,7 @@ type CommentProps = {
 
 export const Comment = (props: CommentProps) => {
   const { comment } = props
-  const {ownerId, text, createdAt} = comment
+  const {owner, text, createdAt} = comment
   const createdAtDate = useMemo(() => new Date(createdAt), [createdAt])
 
   return (
@@ -21,7 +21,7 @@ export const Comment = (props: CommentProps) => {
       </div>
       <div className={styles.messageContainer}>
         <div className={styles.message}>
-          <div className={styles.userName}>{ownerId}</div>
+          <div className={styles.userName}>{owner.username}</div>
           <div className={styles.text}>{text}</div>
         </div>
         <div className={styles.reactionContainer}>
@@ -47,8 +47,7 @@ export const CommentsSection = (props: CommentsSectionProps) => {
     <div className={styles.commentsSectionContainer}>
       {comments.map((data) => (
         <Comment
-          // use comment id
-          key={`${data.ownerId}-${data.createdAt}`}
+          key={`${data.owner.id}-${data.createdAt}`} // TODO: use comment id
           comment={data}
         />
       ))}
