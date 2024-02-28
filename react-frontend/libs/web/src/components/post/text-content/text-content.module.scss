@@ -14,4 +14,7 @@
 .paragraph {
   font-family: var(--segoeui);
   margin-top: 6px;
+
+  overflow-wrap: break-word;
+  hyphens: manual;
 }
