@@ -2,12 +2,11 @@ package user
 
 import (
 	"context"
+	"fb-clone/libs/apitypes"
 	"fb-clone/postgresql/repositories"
 	"fmt"
 	"strings"
 	"time"
-
-	"github.com/go-errors/errors"
 )
 
 type userService struct {
@@ -21,14 +20,13 @@ type userService struct {
 type UserService interface {
 	CreateNewUser(ctx context.Context, email, firstName, lastName string) (string, error)
 	// UpdateProfile(ctx context.Context, name, username string, public bool) (string, error)
-	GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*ApiUserProfile, error)
-	GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*ApiUserProfile, error)
+	GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*apitypes.UserProfile, error)
+	GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*apitypes.UserProfile, error)
 	EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error
 	EditProfileCover(ctx context.Context, uid, coverID string) error
 
 	CreateUserPost(ctx context.Context, uid, text string) error
-	GetHistoricUserPosts(ctx context.Context, uid string) ([]ApiPost, error)
-	GetPost(ctx context.Context, userID *string, postID string) (ApiPost, error)
+	GetPost(ctx context.Context, userID *string, postID string) (apitypes.Post, error)
 	LikePost(ctx context.Context, userID, postID string) error
 	SharePost(ctx context.Context, postID string) error
 }
@@ -82,7 +80,7 @@ func (s userService) CreateUserPost(ctx context.Context, uid, text string) error
 	return s.postsRepository.CreatePost(ctx, uid, text)
 }
 
-func (s userService) GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*ApiUserProfile, error) {
+func (s userService) GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*apitypes.UserProfile, error) {
 	if uid != *requesterUID {
 		return nil, fmt.Errorf("Only the owner may access their account")
 	}
@@ -97,33 +95,15 @@ func (s userService) GetUserProfileByID(ctx context.Context, uid string, request
 	return &apiProfile, nil
 }
 
-func (s userService) GetHistoricUserPosts(ctx context.Context, uid string) ([]ApiPost, error) {
-	// if uid != *requesterUID {
-	// 	return nil, fmt.Errorf("Only the owner may access their account")
-	// }
-
-	dbPosts, err := s.postsRepository.GetUserPostsByDate(ctx, uid)
-	if err != nil {
-		return nil, err
-	}
-
-	apiPosts, err := s.getApiPosts(ctx, &uid, dbPosts...)
-	if err != nil {
-		return nil, err
-	}
-
-	return apiPosts, nil
-}
-
-func (s userService) GetPost(ctx context.Context, userID *string, postID string) (ApiPost, error) {
+func (s userService) GetPost(ctx context.Context, userID *string, postID string) (apitypes.Post, error) {
 	dbPost, err := s.postsRepository.GetPostByID(ctx, postID)
 	if err != nil {
-		return ApiPost{}, err
+		return apitypes.Post{}, err
 	}
 
-	apiPosts, err := s.getApiPosts(ctx, userID, dbPost) // TODO: more robust system for translating structs from db to API data
+	apiPosts, err := s.getApiPosts(ctx, userID, []repositories.Post{dbPost}) // TODO: more robust system for translating structs from db to API data
 	if err != nil {
-		return ApiPost{}, err
+		return apitypes.Post{}, err
 	}
 
 	return apiPosts[0], nil
@@ -170,71 +150,7 @@ func (s userService) SharePost(ctx context.Context, postID string) error {
 	return nil
 }
 
-func (s userService) getApiPosts(ctx context.Context, userID *string, dbPosts ...repositories.Post) ([]ApiPost, error) {
-	seenIds := map[string]struct{}{}
-	uniqueUserIds := []string{}
-	postIds := []string{}
-	for _, p := range dbPosts {
-		postIds = append(postIds, p.Id)
-
-		_, ok := seenIds[p.OwnerId]
-		if !ok {
-			uniqueUserIds = append(uniqueUserIds, p.OwnerId)
-		}
-		seenIds[p.OwnerId] = struct{}{}
-	}
-
-	profiles, err := s.profileRepository.GetManyByID(ctx, uniqueUserIds)
-	if err != nil {
-		return nil, err
-	}
-
-	profilesMap := map[string]repositories.Profile{}
-	for _, p := range profiles {
-		profilesMap[p.Id] = p
-	}
-
-	postLikesMap := map[string]struct{}{}
-	if userID != nil {
-		postLikes, err := s.postLikesRepository.GetUserLikesForPosts(ctx, *userID, postIds)
-		if err != nil {
-			return nil, err
-		}
-
-		for _, p := range postLikes {
-			postLikesMap[p.PostID] = struct{}{}
-		}
-	}
-
-	apiPosts := make([]ApiPost, len(dbPosts))
-	for i, p := range dbPosts {
-		ownerProfile, ok := profilesMap[p.OwnerId]
-		if !ok {
-			return nil, errors.Errorf("failed to find associated profile with post's owner")
-		}
-
-		_, isLikedByUser := postLikesMap[p.Id]
-
-		apiPosts[i] = ApiPost{
-			Id: p.Id,
-			Owner: MinUserInfo{
-				Name:        ownerProfile.Name,
-				ThumbnailID: ownerProfile.ThumbnailID,
-			},
-			PostText:           p.PostText,
-			PostImages:         p.PostImages,
-			Comments:           []ApiComment{},
-			LikedByCurrentUser: isLikedByUser,
-			LikeCount:          p.LikeCount,
-			ShareCount:         p.ShareCount,
-			CreatedAt:          JSONTime(p.CreatedAt),
-		}
-	}
-
-	return apiPosts, nil
-}
-
-func (s userService) GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*ApiUserProfile, error) {
+func (s userService) GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*apitypes.UserProfile, error) {
 	profile, err := s.profileRepository.GetByUsername(ctx, username)
 	if err != nil {
 		return nil, err
@@ -267,4 +183,27 @@ func (s userService) EditProfileThumbnail(ctx context.Context, uid, thumbnailID 
 func (s userService) EditProfileCover(ctx context.Context, uid, coverID string) error {
 	err := s.profileRepository.EditProfileCover(ctx, uid, coverID)
 	return err
+}
+
+// ugly 3 additional queries to build API response for a post
+// dbPost ->
+//   - isLiked + comment
+//   - owner info
+func (s userService) getApiPosts(ctx context.Context, userID *string, dbPosts []repositories.Post) ([]apitypes.Post, error) {
+	postIds, uniqueUserIds := apitypes.GetPostAndOwnerIds(dbPosts)
+
+	profiles, err := s.profileRepository.GetManyByID(ctx, uniqueUserIds)
+	if err != nil {
+		return nil, err
+	}
+
+	postLikes := []repositories.PostLike{}
+	if userID != nil {
+		postLikes, err = s.postLikesRepository.GetUserLikesForPosts(ctx, *userID, postIds)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return apitypes.BuildApiPosts(profiles, postLikes, dbPosts)
 }

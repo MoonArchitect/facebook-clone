@@ -33,12 +33,15 @@ type Comment struct {
 }
 
 type PostsRepository interface {
+	GetPostByID(ctx context.Context, postID string) (Post, error)
 	CreatePost(ctx context.Context, userID, text string) error
-	GetUserPostsByDate(ctx context.Context, userID string) ([]Post, error)
+
 	IncrementPostLikeCount(ctx context.Context, postID string) error
 	DecrementPostLikeCount(ctx context.Context, postID string) error
 	IncrementPostShareCount(ctx context.Context, postID string) error
-	GetPostByID(ctx context.Context, postID string) (Post, error)
+
+	GetUserPostsByDate(ctx context.Context, userID string, skip, limit uint64) ([]Post, error)
+	GetMostPopularPosts(ctx context.Context, skip, limit uint64) ([]Post, error)
 }
 
 type postsRepository struct {
@@ -75,12 +78,42 @@ func (r postsRepository) CreatePost(ctx context.Context, userID, text string) er
 	return nil
 }
 
-func (r postsRepository) GetUserPostsByDate(ctx context.Context, userID string) ([]Post, error) {
+func (r postsRepository) GetUserPostsByDate(ctx context.Context, userID string, skip, limit uint64) ([]Post, error) {
 	sql, args, err := sq.
 		Select("*").
 		From(postsTable).
 		Where(squirrel.Eq{"owner_id": userID}).
 		OrderBy("created_at DESC").
+		Offset(skip).
+		Limit(limit).
+		ToSql()
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to create select query: %w", err)
+	}
+
+	rows, err := r.dbPool.Query(ctx, sql, args...)
+	if err != nil {
+		return nil, fmt.Errorf("failed to select: %w", err)
+	}
+
+	var res []Post
+	err = pgxscan.ScanAll(&res, rows)
+	if err != nil {
+		return nil, fmt.Errorf("failed to scan rows: %w", err)
+	}
+
+	return res, nil
+}
+
+func (r postsRepository) GetMostPopularPosts(ctx context.Context, skip, limit uint64) ([]Post, error) {
+	sql, args, err := sq.
+		Select("*").
+		From(postsTable).
+		OrderBy("like_count DESC").
+		OrderBy("created_at DESC").
+		Offset(skip).
+		Limit(limit).
 		ToSql()
 
 	if err != nil {

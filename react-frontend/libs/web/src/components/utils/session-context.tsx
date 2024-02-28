@@ -1,10 +1,13 @@
 "use client"
 
+import { APIUserProfileResponse } from "@facebook-clone/api_client/main_api"
 import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
+import { useQueryClient } from "@tanstack/react-query"
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react"
 
 export type SessionType = {
-    isLoggedIn: boolean
+    isLoggedIn: boolean,
+    userData?: APIUserProfileResponse
 }
 
 export type SessionContextType = {
@@ -21,16 +24,22 @@ const sessionContext = createContext<SessionContextType>({
 
 export const useSession = () => {
   const {state, setState} = useContext(sessionContext)
-  const {refetch: refetchMeQuery} = useMeQuery()
+  const {data: userData, refetch: refetchMeQuery} = useMeQuery()
+  const queryClient = useQueryClient()
 
   return {
     state,
+    userData,
     signout: () => {
       setState({isLoggedIn: false})
+      window.location.reload() // TODO: temp solution to clear most of the state
     },
     signin: () => {
       refetchMeQuery()
-        .then(() => setState({isLoggedIn: true}))
+        .then(() => {
+          setState({isLoggedIn: true})
+          queryClient.invalidateQueries()
+        })
         .catch(() => console.error("Failed to refetchMeQuery in signin callback"))
     },
     refetchUserData: refetchMeQuery,

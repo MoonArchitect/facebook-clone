@@ -1,5 +1,5 @@
 import { APIPostData, APIUserProfileResponse, CreatePostRequestData, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
@@ -18,26 +18,84 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
 )
 
 export const queryKeys = {
-  getHistoricUserPosts: (userID: string) => ["get-historic-user-posts", userID],
+  getHistoricUserPosts: (userID?: string) => ["get-historic-user-posts", userID ?? "undefined"], // todo: check if userID = undefined can be a problem
   post: (postID: string) => ["post", postID],
 } as const
 
 
-export const useGetHistoricUserPostsQuery = (userID: string) => {
+export const useGetHistoricUserPostsQuery = (userID?: string) => {
   const queryClient = useQueryClient()
 
-  return useQuery<APIPostData[], AxiosError, string[]>(
+  return useInfiniteQuery<APIPostData[], AxiosError, string[], string[], number>(
     {
       queryKey: queryKeys.getHistoricUserPosts(userID),
       queryFn: () => {
+        if (userID === undefined)
+          throw new AxiosError("userID is undefined")
+
         return mainAPI.getHistoricUserPosts({userID})
       },
       select(data) {
-        for (const post of data) {
-          queryClient.setQueryData(queryKeys.post(post.id), () => post)
+        for (const page of data.pages) {
+          for (const post of page) {
+            queryClient.setQueryData(queryKeys.post(post.id), () => post)
+          }
         }
-        return data.map((post) => post.id)
+        return data.pages.flatMap((page) => page.map((post) => post.id))
       },
+      enabled: userID !== undefined,
+      getNextPageParam: (lastPage, _, lastPageParam) => lastPage.length === 0 ? undefined : lastPageParam + lastPage.length,
+      initialPageParam: 0,
+    }
+  )
+}
+
+export const useGetHomePageFeedQuery = () => {
+  const queryClient = useQueryClient()
+
+  return useInfiniteQuery<APIPostData[], AxiosError, string[], string[], number>(
+    {
+      queryKey: ["home-page-feed"],
+      queryFn: (data) => {
+        return mainAPI.getHomePageFeed(data.pageParam)
+      },
+      select(data) {
+        for (const page of data.pages) {
+          for (const post of page) {
+            queryClient.setQueryData(queryKeys.post(post.id), () => post)
+          }
+        }
+        // return {
+        //   pages: data.pages.map((page) => page.map((post) => post.id)),
+        //   pageParams: data.pageParams
+        // }
+        return data.pages.flatMap((page) => page.map((post) => post.id))
+      },
+      getNextPageParam: (lastPage, _, lastPageParam) => lastPage.length === 0 ? undefined : lastPageParam + lastPage.length,
+      initialPageParam: 0,
+    }
+  )
+}
+
+export const useGetGroupsPageFeedQuery = () => {
+  const queryClient = useQueryClient()
+
+  return useInfiniteQuery<APIPostData[], AxiosError, string[], string[], number>(
+    {
+      queryKey: ["groups-page-feed"],
+      queryFn: () => {
+        return mainAPI.getGroupsPageFeed(0)
+      },
+      select(data) {
+        for (const page of data.pages) {
+          for (const post of page) {
+            queryClient.setQueryData(queryKeys.post(post.id), () => post)
+          }
+        }
+        return data.pages.flatMap((page) => page.map((post) => post.id))
+      },
+      getNextPageParam: (lastPage, _, lastPageParam) => lastPage.length === 0 ? undefined : lastPageParam + lastPage.length,
+      initialPageParam: 0,
     }
   )
 }
@@ -47,7 +105,7 @@ export const useGetPostDataQuey = (postID: string) => {
     {
       queryKey: queryKeys.post(postID),
       queryFn: () => {
-        return mainAPI.getPost({postID})
+        return mainAPI.getPost({postID, skip: 0})
       },
       staleTime: 5 * 60 * 1000, // TODO: do it in queryClient config maybe
     }

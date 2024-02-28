@@ -76,6 +76,7 @@ export type SharePostRequest = {
 
 export type GetPostRequest = {
   postID: string
+  skip: number
 }
 
 export const mainAPI = {
@@ -97,6 +98,14 @@ export const mainAPI = {
   },
   getHistoricUserPosts: async (params: GetHistricUserPostsData) => {
     const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params: {"userID": params.userID}})
+    return resp.data
+  },
+  getHomePageFeed: async (skip: number) => {
+    const resp = await mainAPIClient.get<APIPostData[]>("/feed/home", {params: {skip}})
+    return resp.data
+  },
+  getGroupsPageFeed: async (skip: number) => {
+    const resp = await mainAPIClient.get<APIPostData[]>("/feed/groups", {params: {skip}})
     return resp.data
   },
   getPost: async (params: GetPostRequest) => {

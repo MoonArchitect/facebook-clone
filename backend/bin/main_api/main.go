@@ -7,6 +7,7 @@ import (
 	"fb-clone/libs/middleware"
 	"fb-clone/postgresql/repositories"
 	"fb-clone/services/auth"
+	"fb-clone/services/feed"
 	"fb-clone/services/user"
 	"fmt"
 	"net/http"
@@ -102,6 +103,7 @@ func main() {
 
 	// Services
 	userService := user.NewUserService(userRepository, profileRepository, friendshipRepository, postsRepository, postLikesRepository)
+	feedService := feed.NewFeedService(postsRepository, profileRepository, postLikesRepository)
 	authService, err := auth.NewAuthService(credentialsRepository) // TODO: auth service should be a separate binary
 	if err != nil {
 		panic(err)
@@ -112,6 +114,7 @@ func main() {
 	profileController := controllers.NewProfileController(userService)
 	assetsController := controllers.NewAssetsController(userService, s3Uploader)
 	authController := controllers.NewAuthController(authService, userService)
+	feedController := controllers.NewFeedController(feedService)
 
 	// middleware
 	authRequired := middleware.BasicAuth(authService) // TODO: this should use authValidator locally instead of separate service
@@ -136,24 +139,22 @@ func main() {
 	api.POST("/auth/signout", authRequired, authController.Signout)
 	api.POST("/auth/signup", authController.Signup)
 
-	// api.POST("/profiles/update/banner", authRequired, profileController.GetMe)
-	// api.POST("/profiles/update/thumbnail", authRequired, profileController.GetMe)
 	api.GET("/profiles/me", authRequired, profileController.GetMe)
 	// api.PATCH("/profiles/me", authRequired, profileController.UpdateMe)
 	api.GET("/profiles/get", profileController.GetProfile)
 
-	// api.GET("/posts", profileController.GetProfile)
-	api.GET("/profiles/posts", authRequired, postsController.GetHistoricUserPosts) // TODO: authRequired might not be required
 	api.GET("/posts", postsController.GetPost)
 	api.POST("/posts", authRequired, postsController.CreatePost)
 	api.POST("/posts/like", authRequired, postsController.LikePost)
 	api.POST("/posts/share", authRequired, postsController.SharePost) // temp
+
+	api.GET("/profiles/posts", authRequired, feedController.GetUserPosts) // TODO: authRequired might not be required
+	api.GET("/feed/groups", authRequired, feedController.GetGroupsFeed)
+	api.GET("/feed/home", feedController.GetHomeFeed)
 	// api.POST("/comment", profileController.GetProfile)
 	// api.POST("/reply", profileController.GetProfile)
 	// api.GET("/user/friends", profileController.GetProfile)
 	// api.GET("/friends/requests", profileController.GetProfile)
-	// api.GET("/feed", profileController.GetProfile)
-	// api.GET("/user/feed", profileController.GetProfile)
 
 	assetAPI := router.Group("/asset_api/v1")
 	assetAPI.POST("/profile/thumbnail", authRequired, assetsController.UploadProfileThumbnail)

@@ -9,6 +9,7 @@ import { Feed } from "../feed/feed"
 import { LineDivider, MenuButton, NavigationButton, SearchBar } from "../ui"
 
 import styles from "./groups-feed-tab.module.scss"
+import { useGetGroupsPageFeedQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 
 // <Button icon={CogIcon} action=...  />
 
@@ -116,12 +117,14 @@ const Groups = () => {
 // Menu Buttons component
 
 export const GroupsFeedTab = () => {
+  const queryRes = useGetGroupsPageFeedQuery()
+
   return (
     <div className={styles.groupsTabContainer}>
       <Groups />
       <div className={styles.feed}>
         <div className={styles.recentActivity}> Recent activity </div>
-        <Feed />
+        <Feed queryRes={queryRes} />
       </div>
     </div>
   )
