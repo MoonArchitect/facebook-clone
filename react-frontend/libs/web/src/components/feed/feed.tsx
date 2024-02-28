@@ -19,10 +19,8 @@ export const Feed = (props: FeedProps) => {
 
   useEffect(() => {
     const ref = loaderRef.current
-    console.log("ref: ", ref, "isLoading: ", isLoading)
     const observer = new IntersectionObserver((intersections) => {
       if (!isLoading && intersections[0].isIntersecting) {
-        console.log("loading!")
         fetchNextPage()
       }
     }, {
@@ -30,13 +28,12 @@ export const Feed = (props: FeedProps) => {
       threshold: 0,
       rootMargin: "100%",
     })
+
     if (ref) {
-      console.log("sub: ", ref)
       observer.observe(ref)
     }
 
     return () => {
-      console.log("unsub: ", ref)
       if (ref) observer.unobserve(ref)
     }
   }, [isLoading, isFetchingNextPage, fetchNextPage])

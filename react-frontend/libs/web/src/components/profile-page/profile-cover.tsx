@@ -67,7 +67,6 @@ export const ProfileCover = () => {
     // TODO validate dimensions, file type, etc.
 
     const fileURL = URL.createObjectURL(file)
-    console.log("setImagePreviewState")
     setImagePreviewState({
       ...imagePreviewState,
       isOpen: true,

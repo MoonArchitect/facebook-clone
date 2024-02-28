@@ -29,11 +29,11 @@ export const useGetHistoricUserPostsQuery = (userID?: string) => {
   return useInfiniteQuery<APIPostData[], AxiosError, string[], string[], number>(
     {
       queryKey: queryKeys.getHistoricUserPosts(userID),
-      queryFn: () => {
+      queryFn: ({pageParam}) => {
         if (userID === undefined)
           throw new AxiosError("userID is undefined")
 
-        return mainAPI.getHistoricUserPosts({userID})
+        return mainAPI.getHistoricUserPosts({userID, skip: pageParam})
       },
       select(data) {
         for (const page of data.pages) {
@@ -83,8 +83,8 @@ export const useGetGroupsPageFeedQuery = () => {
   return useInfiniteQuery<APIPostData[], AxiosError, string[], string[], number>(
     {
       queryKey: ["groups-page-feed"],
-      queryFn: () => {
-        return mainAPI.getGroupsPageFeed(0)
+      queryFn: ({pageParam}) => {
+        return mainAPI.getGroupsPageFeed(pageParam)
       },
       select(data) {
         for (const page of data.pages) {
@@ -105,7 +105,7 @@ export const useGetPostDataQuey = (postID: string) => {
     {
       queryKey: queryKeys.post(postID),
       queryFn: () => {
-        return mainAPI.getPost({postID, skip: 0})
+        return mainAPI.getPost({postID})
       },
       staleTime: 5 * 60 * 1000, // TODO: do it in queryClient config maybe
     }

@@ -24,8 +24,6 @@ export const SignUpModal = (props: SignUpModalProps) => {
     const email = form.get("email")?.toString();
     const password = form.get("password")?.toString();
 
-    // console.log({ firstName, lastName, email, password });
-
     if (email && password && firstName && lastName)
       signupMutation({email, password, firstName, lastName}, {onSuccess: close})
   }, [close, signupMutation])

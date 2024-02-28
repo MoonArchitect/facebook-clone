@@ -40,6 +40,7 @@ export type CreatePostRequestData = {
 
 export type GetHistricUserPostsData = {
   userID: string
+  skip: number
 }
 
 export type APICommentData = {
@@ -76,7 +77,6 @@ export type SharePostRequest = {
 
 export type GetPostRequest = {
   postID: string
-  skip: number
 }
 
 export const mainAPI = {
@@ -97,7 +97,7 @@ export const mainAPI = {
     await mainAPIClient.post("/posts", data)
   },
   getHistoricUserPosts: async (params: GetHistricUserPostsData) => {
-    const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params: {"userID": params.userID}})
+    const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params})
     return resp.data
   },
   getHomePageFeed: async (skip: number) => {
@@ -109,7 +109,7 @@ export const mainAPI = {
     return resp.data
   },
   getPost: async (params: GetPostRequest) => {
-    const resp = await mainAPIClient.get<APIPostData>("/posts", {params: {"postID": params.postID}})
+    const resp = await mainAPIClient.get<APIPostData>("/posts", {params})
     return resp.data
   },
   likePost: async (data: LikePostRequest) => {
