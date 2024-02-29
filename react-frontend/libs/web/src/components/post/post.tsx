@@ -6,6 +6,7 @@ import { ContentReactions } from "./content-reactions/content-reactions"
 import { TextContent } from "./text-content/text-content"
 
 import { useGetPostDataQuey } from "@facebook-clone/web/query-hooks/profile-query-hooks"
+import { MediaContent } from "./media-content/media-content"
 import styles from "./post.module.scss"
 
 
@@ -31,9 +32,9 @@ export const Post = (props: PostProps) => {
       <ContentOrigin dateCreated={post.createdAt} user={post.owner} />
       <TextContent text={post.postText} />
 
-      {/* {postData && postData.media && (
-        <MediaContent media={postData.media} mediaType={postData.media_type} />
-      )} */}
+      {(post.postImages !== null && post.postImages.length > 0) && (
+        <MediaContent images={post.postImages} />
+      )}
 
       <ContentReactions
         postID={post.id}

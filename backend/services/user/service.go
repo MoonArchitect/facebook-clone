@@ -25,7 +25,7 @@ type UserService interface {
 	EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error
 	EditProfileCover(ctx context.Context, uid, coverID string) error
 
-	CreateUserPost(ctx context.Context, uid, text string) error
+	CreateUserPost(ctx context.Context, uid, text string, imageID *string) error
 	GetPost(ctx context.Context, userID *string, postID string) (apitypes.Post, error)
 	LikePost(ctx context.Context, userID, postID string) error
 	SharePost(ctx context.Context, postID string) error
@@ -71,13 +71,13 @@ func (s userService) CreateNewUser(ctx context.Context, email, firstName, lastNa
 	return uid, nil
 }
 
-func (s userService) CreateUserPost(ctx context.Context, uid, text string) error {
+func (s userService) CreateUserPost(ctx context.Context, uid, text string, imageID *string) error {
 	// sanitize text, etc.
 	text = strings.ToValidUTF8(text, "")
 	text = strings.TrimSpace(text)
 	text = strings.ReplaceAll(text, "\u00A0", "")
 
-	return s.postsRepository.CreatePost(ctx, uid, text)
+	return s.postsRepository.CreatePost(ctx, uid, text, imageID)
 }
 
 func (s userService) GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*apitypes.UserProfile, error) {

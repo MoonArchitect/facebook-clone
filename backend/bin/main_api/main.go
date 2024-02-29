@@ -159,6 +159,7 @@ func main() {
 	assetAPI := router.Group("/asset_api/v1")
 	assetAPI.POST("/profile/thumbnail", authRequired, assetsController.UploadProfileThumbnail)
 	assetAPI.POST("/profile/cover", authRequired, assetsController.UploadProfileCover)
+	assetAPI.POST("/post/images/:id", authRequired, assetsController.UploadPostImage) // TODO: attack vector since image is uploaded by client provided ID
 
 	s := &http.Server{
 		Addr:           fmt.Sprintf(":%d", config.Cfg.Server.Port),

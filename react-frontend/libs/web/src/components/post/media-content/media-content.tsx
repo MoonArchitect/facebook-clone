@@ -1,3 +1,4 @@
+import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import styles from "./media-content.module.scss"
 
 // TODO: redesign 'post API' and add proper interface instead of any type
@@ -31,7 +32,16 @@ import styles from "./media-content.module.scss"
 // }
 // }
 
-// TODO: redesign 'post API' and add proper interface instead of any type
-export const MediaContent = () => {
-  return <div className={styles.container}>temp media placeholder</div>
+export type MediaContentProps = {
+  images: string[]
+}
+
+export const MediaContent = (props: MediaContentProps) => {
+  const {images} = props
+
+  return (
+    <div className={styles.container}>
+      <img className={styles.img} src={getImageURLFromId(images[0])} alt="post media content" />
+    </div>
+  )
 }

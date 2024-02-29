@@ -1,4 +1,4 @@
-import { APIPostData, APIUserProfileResponse, CreatePostRequestData, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
+import { APIPostData, APIUserProfileResponse, CreatePostRequestData, CreatePostResponse, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -117,7 +117,7 @@ export const useGetPostDataQuey = (postID: string) => {
 export const useCreatePostMutation = (userID: string) => {
   const queryClient = useQueryClient()
 
-  return useMutation<void, AxiosError, CreatePostRequestData>(
+  return useMutation<CreatePostResponse, AxiosError, CreatePostRequestData>(
     {
       mutationKey: ["create-post"],
       mutationFn: (data) => {

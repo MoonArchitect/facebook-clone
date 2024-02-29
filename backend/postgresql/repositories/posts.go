@@ -34,7 +34,7 @@ type Comment struct {
 
 type PostsRepository interface {
 	GetPostByID(ctx context.Context, postID string) (Post, error)
-	CreatePost(ctx context.Context, userID, text string) error
+	CreatePost(ctx context.Context, userID, text string, imageID *string) error
 
 	IncrementPostLikeCount(ctx context.Context, postID string) error
 	DecrementPostLikeCount(ctx context.Context, postID string) error
@@ -54,16 +54,21 @@ func NewPostsRepository(dbPool *pgxpool.Pool) PostsRepository {
 	}
 }
 
-func (r postsRepository) CreatePost(ctx context.Context, userID, text string) error {
+func (r postsRepository) CreatePost(ctx context.Context, userID, text string, imageID *string) error {
 	uuid, err := uuid.NewRandom() // TODO: generate uuid in database
 	if err != nil {
 		return fmt.Errorf("failed generate uuid: %w", err)
 	}
 
+	images := []string{}
+	if imageID != nil {
+		images = append(images, *imageID)
+	}
+
 	sql, args, err := sq.
 		Insert(postsTable).
-		Columns("id", "owner_id", "post_text").
-		Values(uuid.String(), userID, text).
+		Columns("id", "owner_id", "post_text", "post_images").
+		Values(uuid.String(), userID, text, images).
 		ToSql()
 
 	if err != nil {

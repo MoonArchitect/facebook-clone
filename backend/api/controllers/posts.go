@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 type postsController struct {
@@ -27,7 +28,12 @@ func NewPostsController(userService user.UserService) PostsController {
 }
 
 type CreatePostRequest struct {
-	Text string `json:"text" binding:"required"`
+	Text        string `json:"text" binding:"required"`
+	AttachImage bool   `json:"attachImage"`
+}
+
+type CreatePostResponse struct {
+	ImageID string `json:"imageID"`
 }
 
 func (pc postsController) CreatePost(ctx *gin.Context) {
@@ -44,13 +50,28 @@ func (pc postsController) CreatePost(ctx *gin.Context) {
 		return
 	}
 
-	err = pc.userService.CreateUserPost(ctx, *uid, req.Text)
+	var imageID *string
+	if req.AttachImage {
+		uuid, err := uuid.NewRandom()
+		if err != nil {
+			_ = ctx.AbortWithError(http.StatusBadRequest, err)
+			return
+		}
+		id := uuid.String()
+		imageID = &id
+	}
+
+	err = pc.userService.CreateUserPost(ctx, *uid, req.Text, imageID)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 
-	ctx.Status(http.StatusOK)
+	resp := CreatePostResponse{}
+	if imageID != nil {
+		resp.ImageID = *imageID
+	}
+	ctx.JSON(http.StatusOK, resp)
 }
 
 type GetPostRequest struct {

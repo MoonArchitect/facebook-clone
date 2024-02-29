@@ -24,6 +24,7 @@ type assetsController struct {
 type AssetsController interface {
 	UploadProfileThumbnail(ctx *gin.Context)
 	UploadProfileCover(ctx *gin.Context)
+	UploadPostImage(ctx *gin.Context)
 }
 
 func NewAssetsController(userService user.UserService, s3Uploader *manager.Uploader) AssetsController {
@@ -171,6 +172,58 @@ func (pc assetsController) UploadProfileCover(ctx *gin.Context) {
 	ctx.Status(http.StatusOK)
 }
 
+func (pc assetsController) UploadPostImage(ctx *gin.Context) {
+	imageID := ctx.Param("id")
+
+	if ctx.Request.ContentLength > ImageSizeLimit {
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("image size exceeded"))
+		return
+	}
+
+	ctx.Request.Body = http.MaxBytesReader(ctx.Writer, ctx.Request.Body, ImageSizeLimit)
+
+	buff := make([]byte, 512)
+	_, err := ctx.Request.Body.Read(buff)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to read 512 bytes: %w", err))
+		return
+	}
+
+	mimeType := http.DetectContentType(buff)
+	if mimeType != "image/jpeg" && mimeType != "image/png" && mimeType != "image/webp" {
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("image format is unsupported"))
+		return
+	}
+
+	rest, err := io.ReadAll(ctx.Request.Body)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to read rest: %w", err))
+		return
+	}
+
+	fullImage := append(buff, rest...) // TODO: find a better way to handle a file
+	fullImage, err = resizePostImage(fullImage)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed edit image: %w", err))
+		return
+	}
+
+	bucket := config.Cfg.Aws.S3
+
+	_, err = pc.s3Uploader.Upload(ctx, &s3.PutObjectInput{
+		Bucket:      &bucket,
+		Key:         &imageID,
+		ContentType: &mimeType,
+		Body:        bytes.NewReader(fullImage),
+	})
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to upload image: %w", err))
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+}
+
 const thumbnailSize = 300
 
 // temporary
@@ -215,7 +268,7 @@ const coverImageAspectRation = 4 // width / height
 const coverHeightSize = 360
 
 // temporary
-// crops square center of image and resizes it to (thumbnailSize x thumbnailSize), compresses to 75quality jpeg
+// crops section center of image and resizes it to (thumbnailSize x thumbnailSize), compresses to 75quality jpeg
 func resizeImageToCover(fullImage []byte) ([]byte, error) {
 	imgRef, err := vips.NewImageFromBuffer(fullImage)
 	if err != nil {
@@ -235,6 +288,35 @@ func resizeImageToCover(fullImage []byte) ([]byte, error) {
 	height := imgRef.Height()
 	if height > coverHeightSize {
 		err = imgRef.Resize(coverHeightSize/float64(height), vips.KernelAuto)
+	}
+	if err != nil {
+		return nil, err
+	}
+
+	fullImage, _, err = imgRef.Export(&vips.ExportParams{
+		Format:     vips.ImageTypeJPEG,
+		Quality:    75,
+		Interlaced: true,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return fullImage, nil
+}
+
+const maxPostImageSize = 540
+
+// temporary
+func resizePostImage(fullImage []byte) ([]byte, error) {
+	imgRef, err := vips.NewImageFromBuffer(fullImage)
+	if err != nil {
+		return nil, err
+	}
+
+	height := min(imgRef.Height(), imgRef.Width())
+	if height > maxPostImageSize {
+		err = imgRef.Resize(maxPostImageSize/float64(height), vips.KernelAuto)
 	}
 	if err != nil {
 		return nil, err

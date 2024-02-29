@@ -1,66 +1,76 @@
 .container {
   width: 100%;
+  max-height: 50vh;
   display: flex;
+
+  cursor: pointer;
+  background-color: rgba($color: white, $alpha: 0.04);
+  transition: background-color ease var(--fastest-speed);
+
+  &:hover {
+    background-color: rgba($color: white, $alpha: 0.1);
+  }
 }
 
-.media-content-img {
+.img {
   width: 100%;
+  object-fit: contain;
 }
 
-.media-content-link {
-  width: 100%;
-  height: fit-content;
+// .media-content-link {
+//   width: 100%;
+//   height: fit-content;
 
-  text-decoration: none;
-  color: var(--primary-text);
+//   text-decoration: none;
+//   color: var(--primary-text);
 
-  background-color: var(--bg);
+//   background-color: var(--bg);
 
-  border-top: 1px solid var(--divider);
-  border-bottom: 1px solid var(--divider);
-}
+//   border-top: 1px solid var(--divider);
+//   border-bottom: 1px solid var(--divider);
+// }
 
-.media-content-link-preview {
-  width: 100%;
-  border-bottom: 1px solid var(--divider);
-  background-color: var(--primary);
-}
+// .media-content-link-preview {
+//   width: 100%;
+//   border-bottom: 1px solid var(--divider);
+//   background-color: var(--primary);
+// }
 
-.media-content-link-info {
-  margin-top: 3px;
-  margin-bottom: 7px;
-  margin-left: 16px;
-  margin-right: 26px;
-}
+// .media-content-link-info {
+//   margin-top: 3px;
+//   margin-bottom: 7px;
+//   margin-left: 16px;
+//   margin-right: 26px;
+// }
 
-.media-content-link-domain-title {
-  margin-bottom: 2px;
+// .media-content-link-domain-title {
+//   margin-bottom: 2px;
 
-  text-transform: uppercase;
+//   text-transform: uppercase;
 
-  font-weight: 400;
-  font-size: 0.8125rem;
-  color: var(--secondary-text);
-}
+//   font-weight: 400;
+//   font-size: 0.8125rem;
+//   color: var(--secondary-text);
+// }
 
-.media-content-link-title {
-  margin-bottom: 1px;
+// .media-content-link-title {
+//   margin-bottom: 1px;
 
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+//   overflow: hidden;
+//   white-space: nowrap;
+//   text-overflow: ellipsis;
 
-  font-weight: 600;
-  font-size: 1.0625rem;
-  color: var(--primary-text);
-}
+//   font-weight: 600;
+//   font-size: 1.0625rem;
+//   color: var(--primary-text);
+// }
 
-.media-content-link-description {
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+// .media-content-link-description {
+//   overflow: hidden;
+//   white-space: nowrap;
+//   text-overflow: ellipsis;
 
-  font-weight: 400;
-  font-size: 0.9375rem;
-  color: var(--secondary-text);
-}
+//   font-weight: 400;
+//   font-size: 0.9375rem;
+//   color: var(--secondary-text);
+// }

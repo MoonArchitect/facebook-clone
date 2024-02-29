@@ -36,6 +36,11 @@ export type APIUserProfileResponse = {
 
 export type CreatePostRequestData = {
   text: string
+  attachImage: boolean
+}
+
+export type CreatePostResponse = {
+  imageID: string
 }
 
 export type GetHistricUserPostsData = {
@@ -99,7 +104,8 @@ export const mainAPI = {
     return resp.data
   },
   createPost: async (data: CreatePostRequestData) => {
-    await mainAPIClient.post("/posts", data)
+    const resp = await mainAPIClient.post<CreatePostResponse>("/posts", data)
+    return resp.data
   },
   getHistoricUserPosts: async (params: GetHistricUserPostsData) => {
     const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params})
@@ -125,12 +131,20 @@ export const mainAPI = {
   },
 }
 
+export type UploadPostImageRequest = {
+  id: string
+  img: Blob
+}
+
 export const assetsAPI = {
   uploadProfileCover: async (data: Blob) => {
     await assetsAPIClient.post("/profile/cover", data, {headers: {"Content-Type": data.type}})
   },
   uploadProfileThumbnail: async (data: Blob) => {
     await assetsAPIClient.post("/profile/thumbnail", data, {headers: {"Content-Type": data.type}})
+  },
+  uploadPostImage: async (data: UploadPostImageRequest) => {
+    await assetsAPIClient.post(`/post/images/${data.id}`, data.img, {headers: {"Content-Type": data.img.type}})
   },
 }
 

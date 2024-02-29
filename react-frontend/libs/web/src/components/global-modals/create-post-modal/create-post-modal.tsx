@@ -1,11 +1,12 @@
 "use client"
 
-import { FormEvent, useCallback, useMemo, useRef, useState } from "react"
+import { FormEvent, MouseEvent, useCallback, useMemo, useRef, useState } from "react"
 import Modal from "react-modal"
 
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
 import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { useUploadPostImage } from "@facebook-clone/web/query-hooks/asset-query-hooks"
 import { useCreatePostMutation, useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import clsx from "clsx"
 import { ProfilePreview } from "../../ui/profile-preview/profile-preview"
@@ -25,8 +26,12 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
   const {isOpen, close} = props
   const {data} = useMeQuery()
   const [isEmptyText, setIsEmptyText] = useState(true)
+  const [isImageAttached, setIsImageAttached] = useState(false)
+  const [imagePreviewURL, setImagePreviewURL] = useState<string | undefined>(undefined)
   const editableDivRef = useRef<HTMLDivElement>(null)
-  const {mutate: createPost, isPending} = useCreatePostMutation(data?.id ?? "unknown") // TODO fix this
+  const coverImageUploadRef = useRef<HTMLInputElement>(null)
+  const {mutate: createPost, isPending} = useCreatePostMutation(data?.id ?? "unknown") // TODO fix this nullish coalescing
+  const {mutate: uploadPostImage} = useUploadPostImage()
 
   const updateIsEmptyText = useCallback((e: FormEvent<HTMLDivElement>) => {
     if (e.currentTarget.innerText === "" || e.currentTarget.innerText === "\n") {
@@ -36,23 +41,48 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
     }
   }, [isEmptyText, setIsEmptyText])
 
+  const closeCallback = useCallback(() => {
+    if(imagePreviewURL) URL.revokeObjectURL(imagePreviewURL)
+    setImagePreviewURL("")
+    close()
+  }, [imagePreviewURL, setImagePreviewURL, close])
+
   const createPostCallback = useCallback(() => {
     const text = editableDivRef.current?.innerText;
     if (text === undefined || text.trim() === "") {
       console.error("trying to create an empty post")
       return
     }
-    createPost({text}, {
-      onSuccess: () => close()
+
+    const attachImage = imagePreviewURL !== undefined && imagePreviewURL !== ""
+    console.log("attachImage: ", attachImage)
+
+    createPost({text, attachImage}, {
+      onSuccess: async (resp) => {
+        if (attachImage) {
+          const blob = await fetch(imagePreviewURL).then(r => r.blob());
+          uploadPostImage({id: resp.imageID, img: blob}, {
+            onSuccess: () => closeCallback()
+          })
+        } else {
+          closeCallback()
+        }
+      }
     })
-  }, [createPost, close])
+  }, [imagePreviewURL, uploadPostImage, closeCallback, createPost])
+
+  const onImageChangeCallback = useOnCoverImageChangeCallback(setImagePreviewURL)
+  const selectNewImage = useCallback((e: MouseEvent<HTMLDivElement> | MouseEvent<HTMLButtonElement>) => {
+    coverImageUploadRef.current?.click()
+    e.stopPropagation()
+  }, [])
 
   const modalAppElement = useMemo(() => typeof window !== 'undefined' && document.getElementById('root') || undefined, [])
 
   return (
     <Modal
       className={styles.modalContainer}
-      onRequestClose={() => close()}
+      onRequestClose={() => closeCallback()}
       isOpen={isOpen}
       overlayClassName={styles.modalOverlay}
       appElement={modalAppElement}
@@ -65,7 +95,7 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
           <div className={styles.text}>
             <h3>Create post</h3>
           </div>
-          <button type="button" className={styles.closeButton} onClick={close}><PlusIcon /></button>
+          <button type="button" className={styles.closeButton} onClick={closeCallback}><PlusIcon /></button>
         </div>
 
         <div className={styles.lineDivider} />
@@ -79,9 +109,21 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
           <div ref={editableDivRef} className={styles.input} contentEditable onInput={updateIsEmptyText}></div>
         </div>
 
+        {isImageAttached && <div className={styles.imagePreviewContainer} onClick={selectNewImage}>
+          <img className={styles.imagePreview} src={imagePreviewURL} alt="attached image preview" />
+        </div>}
+
+        <input
+          type="file"
+          accept="image/*"
+          ref={coverImageUploadRef}
+          className={styles.hiddenInput}
+          onChangeCapture={onImageChangeCallback}
+        />
+
         <div className={styles.menuContainer}>
           <p>Add to your post</p>
-          <div className={clsx(styles.iconContainer, styles.selected)}>
+          <div className={clsx(styles.iconContainer, isImageAttached && styles.selected)} onClick={() => setIsImageAttached(!isImageAttached)}>
             <ImageIcon />
           </div>
           <div className={styles.iconContainer}>
@@ -101,4 +143,28 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
       </div>
     </Modal>
   )
+}
+
+const maxImageSize = 5 * 1024 * 1024 // TODO: ugly, move into config
+
+// TODO: ugly, and copied line for line from anotehr component, generalize, add placeholder animations, etc.
+const useOnCoverImageChangeCallback = (setImagePreviewURL: (val: string) => void) => {
+  return useCallback((e: FormEvent<HTMLInputElement>) => {
+    const files = e.currentTarget.files
+    const file = files?.item(0)
+    if (file === null || file === undefined) {
+      console.error("failed to select files")
+      return
+    }
+
+    if (file.size > maxImageSize)  {
+      console.error("file is too large: ", file.size)
+      return
+    }
+
+    // // TODO validate dimensions, file type, etc.
+
+    const fileURL = URL.createObjectURL(file)
+    setImagePreviewURL(fileURL)
+  }, [setImagePreviewURL])
 }
