@@ -132,6 +132,7 @@
         position: absolute;
         height: 20px;
         width: fit-content;
+        pointer-events: none;
         color: var(--secondary-text);
     }
 

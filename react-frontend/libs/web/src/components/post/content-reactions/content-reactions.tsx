@@ -11,17 +11,15 @@ import styles from "./content-reactions.module.scss"
 
 interface ContentReactionsProps {
   postID: string
-  isAvailable: boolean
   likedByCurrentUser: boolean
   numberOfComments: number
   reactionsCount: number
   sharesCount: number
-  commentVisibilityState: [boolean, (val: boolean) => void]
+  onFocusComment: () => void
 }
 
 export const ContentReactions = (props: ContentReactionsProps) => {
-  const { postID, isAvailable, likedByCurrentUser, numberOfComments, reactionsCount, sharesCount, commentVisibilityState } = props
-  const [commentVisibility, setCommentVisibility] = commentVisibilityState
+  const { postID, likedByCurrentUser, numberOfComments, reactionsCount, sharesCount, onFocusComment } = props
   const {mutate: likePost} = useLikePostMutation()
   const {mutate: sharePost} = useSharePostMutation()
 
@@ -40,9 +38,7 @@ export const ContentReactions = (props: ContentReactionsProps) => {
         <div className={styles.column}>
           {numberOfComments > 0 && <div
             className={styles.commentsNumber}
-            onClick={() => {
-              setCommentVisibility(!commentVisibility)
-            }}
+            onClick={onFocusComment}
           >
             {numberOfComments} Comment{numberOfComments>1 ? "s" : ""}
           </div>}
@@ -51,27 +47,25 @@ export const ContentReactions = (props: ContentReactionsProps) => {
           </div>}
         </div>
       </div>
-      {isAvailable && <LineDivider />}
-      {isAvailable && (
-        <div className={styles.menu}>
-          <div className={clsx(styles.button, likedByCurrentUser && styles.activeButton)} onClick={() => likePost({postID})}>
-            <LikeIcon /> &thinsp; Like
-          </div>
-          <div
-            className={styles.button}
-            onClick={() => {
-              setCommentVisibility(!commentVisibility)
-            }}
-          >
-            <CommentIcon /> &thinsp; Comment
-          </div>
-          <div className={styles.button} onClick={() => sharePost({postID})}>
-            <ShareIcon /> &thinsp; Share
-          </div>
-        </div>
-      )}
 
-      {commentVisibility && <LineDivider />}
+      <LineDivider />
+
+      <div className={styles.menu}>
+        <div className={clsx(styles.button, likedByCurrentUser && styles.activeButton)} onClick={() => likePost({postID})}>
+          <LikeIcon /> &thinsp; Like
+        </div>
+        <div
+          className={styles.button}
+          onClick={onFocusComment}
+        >
+          <CommentIcon /> &thinsp; Comment
+        </div>
+        <div className={styles.button} onClick={() => sharePost({postID})}>
+          <ShareIcon /> &thinsp; Share
+        </div>
+      </div>
+
+      <LineDivider />
     </>
   )
 }

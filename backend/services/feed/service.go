@@ -10,6 +10,7 @@ type feedService struct {
 	postsRepository     repositories.PostsRepository
 	profileRepository   repositories.ProfileRepository
 	postLikesRepository repositories.PostLikesRepository
+	commentsRepository  repositories.CommentsRepository
 }
 
 type FeedService interface {
@@ -23,11 +24,13 @@ func NewFeedService(
 	postsRepository repositories.PostsRepository,
 	profileRepository repositories.ProfileRepository,
 	postLikesRepository repositories.PostLikesRepository,
+	commentsRepository repositories.CommentsRepository,
 ) FeedService {
 	return &feedService{
 		postsRepository,
 		profileRepository,
 		postLikesRepository,
+		commentsRepository,
 	}
 }
 
@@ -89,7 +92,14 @@ func (s feedService) GetHistoricUserPosts(ctx context.Context, requesterID *stri
 //   - isLiked + comment
 //   - owner info
 func (s feedService) getApiPosts(ctx context.Context, userID *string, dbPosts []repositories.Post) ([]apitypes.Post, error) {
-	postIds, uniqueUserIds := apitypes.GetPostAndOwnerIds(dbPosts)
+	postIDs := apitypes.GetPostIds(dbPosts)
+
+	dbComments, err := s.commentsRepository.GetFromManyPosts(ctx, postIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	uniqueUserIds := apitypes.GetOwnerIds(dbPosts, dbComments)
 
 	profiles, err := s.profileRepository.GetManyByID(ctx, uniqueUserIds)
 	if err != nil {
@@ -98,11 +108,11 @@ func (s feedService) getApiPosts(ctx context.Context, userID *string, dbPosts []
 
 	postLikes := []repositories.PostLike{}
 	if userID != nil {
-		postLikes, err = s.postLikesRepository.GetUserLikesForPosts(ctx, *userID, postIds)
+		postLikes, err = s.postLikesRepository.GetUserLikesForPosts(ctx, *userID, postIDs)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return apitypes.BuildApiPosts(profiles, postLikes, dbPosts)
+	return apitypes.BuildApiPosts(profiles, postLikes, dbPosts, dbComments)
 }

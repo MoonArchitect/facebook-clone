@@ -100,10 +100,11 @@ func main() {
 	friendshipRepository := repositories.NewFriendshipRepository(db)
 	postsRepository := repositories.NewPostsRepository(db)
 	postLikesRepository := repositories.NewPostLikesRepository(db)
+	commentsRepository := repositories.NewCommentsRepository(db)
 
 	// Services
-	userService := user.NewUserService(userRepository, profileRepository, friendshipRepository, postsRepository, postLikesRepository)
-	feedService := feed.NewFeedService(postsRepository, profileRepository, postLikesRepository)
+	userService := user.NewUserService(userRepository, profileRepository, friendshipRepository, postsRepository, postLikesRepository, commentsRepository)
+	feedService := feed.NewFeedService(postsRepository, profileRepository, postLikesRepository, commentsRepository)
 	authService, err := auth.NewAuthService(credentialsRepository) // TODO: auth service should be a separate binary
 	if err != nil {
 		panic(err)
@@ -144,6 +145,7 @@ func main() {
 	api.GET("/profiles/get", profileController.GetProfile)
 
 	api.GET("/posts", postsController.GetPost)
+	api.POST("/posts/:postid/comment", authRequired, postsController.CreateComment)
 	api.POST("/posts", authRequired, postsController.CreatePost)
 	api.POST("/posts/like", authRequired, postsController.LikePost)
 	api.POST("/posts/share", authRequired, postsController.SharePost) // temp

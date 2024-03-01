@@ -1,11 +1,143 @@
 .commentsSectionContainer {
-  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  margin: 8px 0px;
+
+  .showMoreButton {
+    margin: 4px 16px;
+
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.85rem;
+    font-weight: 700;
+    font-family: var(--segoeui-semibold);
+    color: var(--secondary-text);
+
+    &:hover{
+      text-decoration: underline;
+    }
+  }
 }
 
 .container {
   margin-left: 16px;
   margin-right: 42px;
   display: flex;
+}
+
+.createComment {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 6px;
+  margin: 4px 16px 0;
+}
+
+.loadingCover {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top:  -6px;
+  left: -6px;
+  padding: 6px;
+  border-radius: 20px;
+  z-index: 1;
+  transition: background-color ease var(--fastest-speed);
+  pointer-events: none;
+}
+
+.loading {
+  background-color: rgba($color: black, $alpha: 0.4);
+  pointer-events: all;
+}
+
+.inputContainer {
+  flex-grow: 1;
+  position: relative;
+  height: fit-content;
+
+  background-color: var(--comment-background);
+  border-radius: 20px;
+  font-size: 0.85rem;
+
+  .arrowIcon {
+    position: absolute;
+    right: 12px;
+    bottom: 6px;
+    width: 16px;
+    height: 16px;
+    padding: 8px;
+    rotate: 180deg;
+
+    border-radius: 50%;
+    opacity: 0;
+    transition: background-color ease var(--fast-speed), opacity ease var(--fast-speed);
+    user-select: none;
+    cursor: pointer;
+
+    &:hover {
+      background-color: rgba($color: white, $alpha: 0.1);
+    }
+  }
+
+  .visible {
+    opacity: 1;
+  }
+
+  .inputPlaceholder {
+      position: absolute;
+
+      width: fit-content;
+      padding: 8.5px 10px; // TODO : this is in sync with padding in .input, also .5px is ugly, should use min-height of some kind to align input field with thumbnail
+      
+      pointer-events: none;
+      color: var(--secondary-text);
+  }
+
+  .input {
+    width: 100%;
+    min-height: 16px;
+    padding: 8.5px 10px;
+    word-break: break-all;
+    
+    &:focus {
+      outline: none;
+    }
+
+    overflow-y: scroll;
+    overscroll-behavior: contain;
+
+    transition: min-height ease var(--fast-speed);
+
+    &::-webkit-scrollbar {
+        width: 12px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        border: 4px solid transparent;
+        border-radius: 8px;
+        box-shadow: inset 0 0 0 10px;
+    }
+  }
+}
+
+.expandedInput {
+  .input {
+    min-height: 48px;
+  }
+}
+
+.userLink {
+  display: flex;
+}
+
+.userThumbnail {
+  width: 32px;
+  aspect-ratio: 1;
+  border-radius: 50%;
 }
 
 .userIcon {
@@ -27,21 +159,20 @@
 
 .messageContainer {
   margin-left: 6px;
+  // flex: 1;
 }
 
 .message {
   width: fit-content;
 
-  padding: 6px;
-  padding-left: 12px;
-  padding-right: 12px;
-
+  padding: 6px 12px 8px;
+  
   font-family: var(--segoeui);
   font-size: 0.9375rem;
   font-weight: 400;
   color: var(--primary-text);
 
-  background-color: var(--background);
+  background-color: var(--comment-background);
   border-radius: 16px;
 }
 
@@ -54,6 +185,7 @@
   color: var(--primary-text);
   font-weight: 600;
   font-size: 0.8125rem;
+  text-decoration: none;
 
   &:hover {
     text-decoration: underline;
@@ -65,8 +197,8 @@
   align-items: center;
 
   margin-left: 12px;
-  margin-top: 2px;
   margin-bottom: 8px;
+  margin-top: 2px;
 }
 
 .reactionButton {

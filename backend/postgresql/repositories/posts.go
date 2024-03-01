@@ -23,15 +23,6 @@ type Post struct {
 	CreatedAt  time.Time `db:"created_at"`
 }
 
-type Comment struct {
-	Id         string    `db:"id"`
-	PostId     string    `db:"post_id"`
-	OwnerId    string    `db:"owner_id"`
-	Text       string    `db:"text"`
-	ReplyCount int       `db:"reply_count"`
-	CreatedAt  time.Time `db:"created_at"`
-}
-
 type PostsRepository interface {
 	GetPostByID(ctx context.Context, postID string) (Post, error)
 	CreatePost(ctx context.Context, userID, text string, imageID *string) error

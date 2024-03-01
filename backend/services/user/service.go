@@ -15,6 +15,7 @@ type userService struct {
 	profileRepository    repositories.ProfileRepository
 	postsRepository      repositories.PostsRepository
 	postLikesRepository  repositories.PostLikesRepository
+	commentsRepository   repositories.CommentsRepository
 }
 
 type UserService interface {
@@ -26,6 +27,7 @@ type UserService interface {
 	EditProfileCover(ctx context.Context, uid, coverID string) error
 
 	CreateUserPost(ctx context.Context, uid, text string, imageID *string) error
+	CreateComment(ctx context.Context, uid, text, postID string) error
 	GetPost(ctx context.Context, userID *string, postID string) (apitypes.Post, error)
 	LikePost(ctx context.Context, userID, postID string) error
 	SharePost(ctx context.Context, postID string) error
@@ -37,6 +39,7 @@ func NewUserService(
 	friendshipRepository repositories.FriendshipRepository,
 	postsRepository repositories.PostsRepository,
 	postLikesRepository repositories.PostLikesRepository,
+	commentsRepository repositories.CommentsRepository,
 ) UserService {
 	return &userService{
 		friendshipRepository,
@@ -44,6 +47,7 @@ func NewUserService(
 		profileRepository,
 		postsRepository,
 		postLikesRepository,
+		commentsRepository,
 	}
 }
 
@@ -78,6 +82,15 @@ func (s userService) CreateUserPost(ctx context.Context, uid, text string, image
 	text = strings.ReplaceAll(text, "\u00A0", "")
 
 	return s.postsRepository.CreatePost(ctx, uid, text, imageID)
+}
+
+func (s userService) CreateComment(ctx context.Context, uid, text, postID string) error {
+	// sanitize text, etc.
+	text = strings.ToValidUTF8(text, "")
+	text = strings.TrimSpace(text)
+	text = strings.ReplaceAll(text, "\u00A0", "")
+
+	return s.commentsRepository.CreateComment(ctx, uid, text, postID)
 }
 
 func (s userService) GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*apitypes.UserProfile, error) {
@@ -190,7 +203,14 @@ func (s userService) EditProfileCover(ctx context.Context, uid, coverID string) 
 //   - isLiked + comment
 //   - owner info
 func (s userService) getApiPosts(ctx context.Context, userID *string, dbPosts []repositories.Post) ([]apitypes.Post, error) {
-	postIds, uniqueUserIds := apitypes.GetPostAndOwnerIds(dbPosts)
+	postIDs := apitypes.GetPostIds(dbPosts)
+
+	dbComments, err := s.commentsRepository.GetFromManyPosts(ctx, postIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	uniqueUserIds := apitypes.GetOwnerIds(dbPosts, dbComments)
 
 	profiles, err := s.profileRepository.GetManyByID(ctx, uniqueUserIds)
 	if err != nil {
@@ -199,11 +219,11 @@ func (s userService) getApiPosts(ctx context.Context, userID *string, dbPosts []
 
 	postLikes := []repositories.PostLike{}
 	if userID != nil {
-		postLikes, err = s.postLikesRepository.GetUserLikesForPosts(ctx, *userID, postIds)
+		postLikes, err = s.postLikesRepository.GetUserLikesForPosts(ctx, *userID, postIDs)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	return apitypes.BuildApiPosts(profiles, postLikes, dbPosts)
+	return apitypes.BuildApiPosts(profiles, postLikes, dbPosts, dbComments)
 }

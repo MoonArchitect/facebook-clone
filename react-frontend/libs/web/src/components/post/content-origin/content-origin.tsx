@@ -4,6 +4,8 @@ import { ReactComponent as Globe2Icon } from "@facebook-clone/assets/icons/globe
 
 import { APIUserProfileResponse, getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import Link from "next/link"
+import { useMemo } from "react"
+import { getDateString } from "../../utils/date"
 import styles from "./content-origin.module.scss"
 
 type ContentOriginProps = {
@@ -17,6 +19,7 @@ function getLinkToProfile(username: string): string {
 
 export const ContentOrigin = (props: ContentOriginProps) => {
   const { user, dateCreated } = props
+  const createdAtDate = useMemo(() => dateCreated ? getDateString(dateCreated) : "...", [dateCreated])
 
   return (
     <div className={styles.container}>
@@ -24,7 +27,7 @@ export const ContentOrigin = (props: ContentOriginProps) => {
       <div className={styles.infoContainer}>
         <Link href={getLinkToProfile(user.username)} className={styles.links}>{user.name}</Link>
         <div className={styles.info}>
-          <span className={styles.infoDate}>{dateCreated ? new Date(dateCreated * 1000).toDateString() : "Loading ..."}</span>
+          <span className={styles.infoDate}>{createdAtDate}</span>
           &thinsp;·&thinsp;
           <span className={styles.infoIcon}>
             <Globe2Icon />

@@ -15,6 +15,7 @@ type postsController struct {
 }
 
 type PostsController interface {
+	CreateComment(ctx *gin.Context)
 	CreatePost(ctx *gin.Context)
 	GetPost(ctx *gin.Context)
 	LikePost(ctx *gin.Context)
@@ -72,6 +73,51 @@ func (pc postsController) CreatePost(ctx *gin.Context) {
 		resp.ImageID = *imageID
 	}
 	ctx.JSON(http.StatusOK, resp)
+}
+
+type CreateCommentRequest struct {
+	Text string `json:"text" binding:"required"`
+}
+
+func (pc postsController) CreateComment(ctx *gin.Context) {
+	uid := middleware.GetContextData(ctx).UID
+	if uid == nil {
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		return
+	}
+
+	postID := ctx.Param("postid")
+	fmt.Println("postID: ", postID)
+	var req CreateCommentRequest
+	err := ctx.BindJSON(&req)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// var imageID *string
+	// if req.AttachImage {
+	// 	uuid, err := uuid.NewRandom()
+	// 	if err != nil {
+	// 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+	// 		return
+	// 	}
+	// 	id := uuid.String()
+	// 	imageID = &id
+	// }
+
+	err = pc.userService.CreateComment(ctx, *uid, req.Text, postID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	// resp := CreatePostResponse{}
+	// if imageID != nil {
+	// 	resp.ImageID = *imageID
+	// }
+	// ctx.JSON(http.StatusOK, resp)
+	ctx.Status(http.StatusOK)
 }
 
 type GetPostRequest struct {

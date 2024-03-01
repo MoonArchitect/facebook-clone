@@ -85,6 +85,11 @@ export type GetPostRequest = {
   postID: string
 }
 
+export type CreateCommentRequest = {
+  postID: string
+  text: string
+}
+
 export const mainAPI = {
   signIn: async (data: SignInRequestData) => {
     await mainAPIClient.post("/auth/signin", data)
@@ -106,6 +111,9 @@ export const mainAPI = {
   createPost: async (data: CreatePostRequestData) => {
     const resp = await mainAPIClient.post<CreatePostResponse>("/posts", data)
     return resp.data
+  },
+  createComment: async (data: CreateCommentRequest) => {
+    await mainAPIClient.post(`/posts/${data.postID}/comment`, {"text": data.text})
   },
   getHistoricUserPosts: async (params: GetHistricUserPostsData) => {
     const resp = await mainAPIClient.get<APIPostData[]>("/profiles/posts", {params})

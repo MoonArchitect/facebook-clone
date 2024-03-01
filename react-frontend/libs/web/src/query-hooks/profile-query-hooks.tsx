@@ -1,4 +1,4 @@
-import { APIPostData, APIUserProfileResponse, CreatePostRequestData, CreatePostResponse, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
+import { APIPostData, APIUserProfileResponse, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -19,7 +19,7 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
 
 export const useProfileByUsernameQuery = (username: string) => useQuery<APIUserProfileResponse, AxiosError>(
   {
-    queryKey: ["get-me-query", username],
+    queryKey: ["get-profile-query", username],
     queryFn: () => {
       return mainAPI.getProfileByUsername(username)
     },
@@ -119,12 +119,28 @@ export const useCreatePostMutation = (userID: string) => {
 
   return useMutation<CreatePostResponse, AxiosError, CreatePostRequestData>(
     {
-      mutationKey: ["create-post"],
+      mutationKey: ["create-post", userID],
       mutationFn: (data) => {
         return mainAPI.createPost(data)
       },
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
+      }
+    }
+  )
+}
+
+export const useCreateCommentMutation = (postID: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, AxiosError, Pick<CreateCommentRequest, "text">>(
+    {
+      mutationKey: ["create-comment", postID],
+      mutationFn: (data) => {
+        return mainAPI.createComment({postID, text: data.text})
+      },
+      onSuccess: (data, req) => {
+        queryClient.invalidateQueries({queryKey: queryKeys.post(postID)})
       }
     }
   )

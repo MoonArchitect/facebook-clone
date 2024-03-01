@@ -17,7 +17,7 @@ type PostProps = {
 export const Post = (props: PostProps) => {
   const {postID} = props
   const {data: post, isSuccess} = useGetPostDataQuey(postID)
-  const [commentVisibility, setCommentVisibility] = useState(false)
+  const [isCommentFocused, setIsCommentFocused] = useState(false)
 
   if (!isSuccess) {
     return (
@@ -38,15 +38,14 @@ export const Post = (props: PostProps) => {
 
       <ContentReactions
         postID={post.id}
-        isAvailable={true}
         numberOfComments={post.comments?.length ?? 0}
         likedByCurrentUser={post.likedByCurrentUser}
         reactionsCount={post.likeCount}
         sharesCount={post.shareCount}
-        commentVisibilityState={[commentVisibility, setCommentVisibility]}
+        onFocusComment={() => setIsCommentFocused(!isCommentFocused)}
       />
 
-      {commentVisibility && <CommentsSection comments={post.comments ?? []} />}
+      <CommentsSection comments={post.comments ?? []} isCommentFocused={isCommentFocused} focusComment={() => setIsCommentFocused(true)} postID={postID} />
     </div>
   )
 }
