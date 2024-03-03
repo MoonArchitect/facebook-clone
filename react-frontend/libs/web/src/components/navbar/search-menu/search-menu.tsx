@@ -5,20 +5,18 @@ import { useRef, useState } from "react"
 import { ReactComponent as FacebookIcon } from "@facebook-clone/assets/icons/facebook_icon.svg"
 import { ReactComponent as SearchIcon } from "@facebook-clone/assets/icons/search.svg"
 
-import { useClickOutside } from "../../../hooks"
 
+import { UseClickOutsideSubscriber } from "@facebook-clone/web/hooks"
 import styles from "./search-menu.module.scss"
 
 export const SearchMenu = () => {
   const [inputFocused, setInputFocused] = useState(false)
   const divRef = useRef(null)
 
-  useClickOutside(divRef, () => {
-    setInputFocused(false)
-  })
-
   return (
     <div className={styles.container} ref={divRef}>
+      {inputFocused && <UseClickOutsideSubscriber domRef={divRef} effect={() => setInputFocused(false)} />}
+
       <Link href="/" className={clsx(styles.icon, inputFocused && styles.focused)}>
         <FacebookIcon />
       </Link>
@@ -35,6 +33,7 @@ export const SearchMenu = () => {
           onFocus={() => setInputFocused(true)}
         />
       </div>
+
     </div>
   )
 }

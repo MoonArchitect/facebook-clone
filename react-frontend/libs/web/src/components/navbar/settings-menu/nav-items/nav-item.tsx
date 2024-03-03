@@ -2,8 +2,8 @@ import clsx from "clsx"
 import { ReactNode, useRef, useState } from "react"
 import { CSSTransition } from "react-transition-group"
 
-import { useClickOutside } from "../../../../hooks"
 
+import { UseClickOutsideSubscriber } from "@facebook-clone/web/hooks"
 import styles from "./nav-items.module.scss"
 
 export const NavItem = ({
@@ -21,12 +21,10 @@ export const NavItem = ({
   const [isOpen, setIsOpen] = useState(false)
   const navItemRef = useRef<HTMLLIElement>(null)
 
-  useClickOutside(navItemRef, () => {
-    setIsOpen(false)
-  })
-
   return (
     <li className={styles.navItem} ref={navItemRef}>
+      {isOpen && <UseClickOutsideSubscriber domRef={navItemRef} effect={() => setIsOpen(false)} />}
+
       <div
         className={clsx(styles.iconButton, isOpen && styles.iconButtonActive)}
         onClick={() => {
