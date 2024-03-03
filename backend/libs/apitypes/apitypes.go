@@ -6,6 +6,15 @@ import (
 )
 
 type UserProfile struct {
+	Id          string   `json:"id"`
+	Name        string   `json:"name"`
+	Username    string   `json:"username"`
+	FriendIDs   []string `json:"friendIDs"`
+	ThumbnailID string   `json:"thumbnailID"`
+	BannerID    string   `json:"bannerID"`
+}
+
+type MiniUserProfile struct {
 	Id          string `json:"id"`
 	Name        string `json:"name"`
 	Username    string `json:"username"`
@@ -19,22 +28,22 @@ type UserProfile struct {
 // }
 
 type Comment struct {
-	Owner     UserProfile `json:"owner"`
-	Text      string      `json:"text"`
-	Responds  []Comment   `json:"responds"`
-	CreatedAt JSONTime    `json:"createdAt"`
+	Owner     MiniUserProfile `json:"owner"`
+	Text      string          `json:"text"`
+	Responds  []Comment       `json:"responds"`
+	CreatedAt JSONTime        `json:"createdAt"`
 }
 
 type Post struct {
-	Id                 string      `json:"id"`
-	Owner              UserProfile `json:"owner"`
-	PostText           string      `json:"postText"`
-	PostImages         []string    `json:"postImages"`
-	LikedByCurrentUser bool        `json:"likedByCurrentUser"`
-	LikeCount          int         `json:"likeCount"`
-	ShareCount         int         `json:"shareCount"`
-	Comments           []Comment   `json:"comments"`
-	CreatedAt          JSONTime    `json:"createdAt"`
+	Id                 string          `json:"id"`
+	Owner              MiniUserProfile `json:"owner"`
+	PostText           string          `json:"postText"`
+	PostImages         []string        `json:"postImages"`
+	LikedByCurrentUser bool            `json:"likedByCurrentUser"`
+	LikeCount          int             `json:"likeCount"`
+	ShareCount         int             `json:"shareCount"`
+	Comments           []Comment       `json:"comments"`
+	CreatedAt          JSONTime        `json:"createdAt"`
 }
 
 type JSONTime time.Time

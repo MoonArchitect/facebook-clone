@@ -1,4 +1,4 @@
-import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { getImageURLFromId } from "@facebook-clone/api_client/src"
 import { SyntheticEvent, useCallback, useState } from "react"
 import styles from "./media-content.module.scss"
 

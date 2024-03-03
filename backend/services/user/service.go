@@ -23,7 +23,7 @@ type userService struct {
 type UserService interface {
 	CreateNewUser(ctx context.Context, email, firstName, lastName string) (string, error)
 	// UpdateProfile(ctx context.Context, name, username string, public bool) (string, error)
-	GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*apitypes.UserProfile, error)
+	GetUserProfileByID(ctx context.Context, uid string, requesterUID string) (*apitypes.UserProfile, error)
 	GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*apitypes.UserProfile, error)
 	EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error
 	EditProfileCover(ctx context.Context, uid, coverID string) error
@@ -119,8 +119,8 @@ func (s userService) CreateComment(ctx context.Context, uid, text, postID string
 	return s.commentsRepository.CreateComment(ctx, uid, text, postID)
 }
 
-func (s userService) GetUserProfileByID(ctx context.Context, uid string, requesterUID *string) (*apitypes.UserProfile, error) {
-	if uid != *requesterUID {
+func (s userService) GetUserProfileByID(ctx context.Context, uid, requesterUID string) (*apitypes.UserProfile, error) {
+	if uid != requesterUID {
 		return nil, fmt.Errorf("Only the owner may access their account")
 	}
 
@@ -129,7 +129,13 @@ func (s userService) GetUserProfileByID(ctx context.Context, uid string, request
 		return nil, err
 	}
 
-	apiProfile := getApiProfile(profile)
+	friends, err := s.friendshipRepository.GetAllFriends(ctx, profile.Id)
+	friendIDs := make([]string, len(friends))
+	for i, f := range friends {
+		friendIDs[i] = f.FriendID
+	}
+
+	apiProfile := apitypes.GetUserProfile(profile, friendIDs)
 
 	return &apiProfile, nil
 }
@@ -197,19 +203,25 @@ func (s userService) GetUserProfileByUsername(ctx context.Context, username stri
 
 	if !profile.Public {
 		if requesterUID == nil {
-			return nil, fmt.Errorf("You cannot see this profile")
+			return nil, errors.Errorf("You cannot see this profile")
 		}
 		areFriends, err := s.friendshipRepository.AreFriends(ctx, profile.Id, *requesterUID)
 		if err != nil {
-			return nil, fmt.Errorf("failed to check if users are friends: %w", err)
+			return nil, errors.Errorf("failed to check if users are friends: %w", err)
 		}
 
 		if !areFriends {
-			return nil, fmt.Errorf("You cannot see this profile")
+			return nil, errors.Errorf("You cannot see this profile")
 		}
 	}
 
-	apiProfile := getApiProfile(profile)
+	friends, err := s.friendshipRepository.GetAllFriends(ctx, profile.Id)
+	friendIDs := make([]string, len(friends))
+	for i, f := range friends {
+		friendIDs[i] = f.FriendID
+	}
+
+	apiProfile := apitypes.GetUserProfile(profile, friendIDs)
 
 	return &apiProfile, nil
 }

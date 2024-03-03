@@ -1,4 +1,4 @@
-import { APICommentData, getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { APICommentData, getImageURLFromId } from "@facebook-clone/api_client/src"
 import { ReactComponent as ArrowIcon } from "@facebook-clone/assets/icons/arrow.svg"
 
 import clsx from "clsx"

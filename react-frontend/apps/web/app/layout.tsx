@@ -4,7 +4,7 @@ import clsx from "clsx"
 import { cookies } from "next/headers"
 import { PropsWithChildren, cache } from "react"
 
-import { APIUserProfileResponse } from "@facebook-clone/api_client/main_api"
+import { APIUserProfile } from "@facebook-clone/api_client/src"
 import { GlobalModals } from "@facebook-clone/web/components/global-modals/global-modals"
 import { Navbar } from "@facebook-clone/web/components/navbar/navbar"
 import { TanstackQueryClientProvider } from "@facebook-clone/web/components/utils/react-query-provider"
@@ -36,7 +36,7 @@ export default async function IndexLayout(props: PropsWithChildren) {
   await queryClient.prefetchQuery({
     queryKey: ["get-me-query"],
     queryFn:  async () => {
-      const resp = await mainAPIClient.get<APIUserProfileResponse>("/profiles/me")
+      const resp = await mainAPIClient.get<APIUserProfile>("/profiles/me")
       return resp.data
     },
   })

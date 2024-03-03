@@ -1,4 +1,4 @@
-import { UploadPostImageRequest, assetsApiClient } from "@facebook-clone/api_client/assets_api";
+import { UploadPostImageRequest, assetsApiClient } from "@facebook-clone/api_client/src";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "../components/utils/session-context";
 

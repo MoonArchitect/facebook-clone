@@ -1,4 +1,4 @@
-import { SignInRequestData, SignUpRequestData, mainApiClient } from "@facebook-clone/api_client/main_api";
+import { SignInRequestData, SignUpRequestData, mainApiClient } from "@facebook-clone/api_client/src";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "../components/utils/session-context";
 

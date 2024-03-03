@@ -10,7 +10,7 @@ import { ReactComponent as ChevronIcon } from "@facebook-clone/assets/icons/chev
 import { ReactComponent as CogIcon } from "@facebook-clone/assets/icons/cog.svg"
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
-import { APIUserProfileResponse, getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { APIUserProfile, getImageURLFromId } from "@facebook-clone/api_client/src"
 import ReactModal from "react-modal"
 import { useUploadProfileCover, useUploadProfileThumbnail } from "../../query-hooks/asset-query-hooks"
 import { useSession } from "../utils/session-context"
@@ -26,7 +26,7 @@ type ImagePreviewStateType = {
 }
 
 export type ProfileCoverProps = {
-  profile?: APIUserProfileResponse
+  profile?: APIUserProfile
 }
 
 function emptyCallback(){
@@ -38,6 +38,8 @@ export const ProfileCover = (props: ProfileCoverProps) => {
   const {userData} = useSession()
   const {replace} = useRouter()
   const pathname = usePathname()
+
+  useEffect(() => console.log(profile), [])
 
   const coverImageUploadRef = useRef<HTMLInputElement>(null)
   const {mutateAsync: uploadProfileCover} = useUploadProfileCover()
@@ -150,7 +152,7 @@ export const ProfileCover = (props: ProfileCoverProps) => {
         </div>
         <div className={styles.nameContainer}>
           <h1 className={styles.name}>{profile?.name ?? ""}</h1>
-          <p className={styles.friendCount}>4 Friends</p>
+          <p className={styles.friendCount}>{profile?.friendIDs.length ?? "..."} Friends</p>
         </div>
         <div className={styles.buttonContainer}>
           {isOwner && <button className={clsx(styles.addStoryButton, styles.buttonText, styles.disabled)}><PlusIcon/>Add to Story</button>}

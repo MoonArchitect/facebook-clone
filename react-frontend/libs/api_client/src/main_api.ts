@@ -1,4 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
+import { APIPostData, APIUserProfile } from './types'
 
 export type SignInRequestData = {
   email: string
@@ -10,14 +11,6 @@ export type SignUpRequestData = {
   password: string
   firstName: string
   lastName: string
-}
-
-export type APIUserProfileResponse = {
-  id:           string
-  name:         string
-  username:     string
-  thumbnailID:  string
-  bannerID:     string
 }
 
 export type CreatePostRequestData = {
@@ -32,25 +25,6 @@ export type CreatePostResponse = {
 export type GetHistricUserPostsData = {
   userID: string
   skip: number
-}
-
-export type APICommentData = {
-  owner: APIUserProfileResponse
-  text: string
-  responds: APICommentData[] | null
-  createdAt: number
-}
-
-export type APIPostData = {
-  id: string
-  owner: APIUserProfileResponse
-  postText: string
-  postImages: string[] | null
-  comments: APICommentData[] | null
-  likedByCurrentUser: boolean
-  likeCount: number
-  shareCount: number
-  createdAt: number
 }
 
 export type LikePostRequest = {
@@ -93,11 +67,11 @@ const createMainApiClient = (client: AxiosInstance) => {
       await client.post("/auth/signup", data)
     },
     getMe: async () => {
-      const resp = await client.get<APIUserProfileResponse>("/profiles/me")
+      const resp = await client.get<APIUserProfile>("/profiles/me")
       return resp.data
     },
     getProfileByUsername: async (username: string) => {
-      const resp = await client.get<APIUserProfileResponse>("/profiles/get", {params: {username}})
+      const resp = await client.get<APIUserProfile>("/profiles/get", {params: {username}})
       return resp.data
     },
     createPost: async (data: CreatePostRequestData) => {

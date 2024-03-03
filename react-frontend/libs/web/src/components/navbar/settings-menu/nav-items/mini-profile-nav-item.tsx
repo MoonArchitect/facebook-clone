@@ -2,7 +2,7 @@ import clsx from "clsx"
 import Link from "next/link"
 import { useRef } from "react"
 
-import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { getImageURLFromId } from "@facebook-clone/api_client/src"
 import { useMeQuery } from "../../../../query-hooks/profile-query-hooks"
 import styles from "./nav-items.module.scss"
 

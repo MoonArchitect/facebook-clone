@@ -71,13 +71,7 @@ func BuildApiComments(dbComments []repositories.Comment, profiles map[string]rep
 		}
 
 		apiComments[c.PostId] = append(apiComments[c.PostId], Comment{
-			Owner: UserProfile{
-				Id:          ownerProfile.Id,
-				Name:        ownerProfile.Name,
-				Username:    ownerProfile.Username,
-				ThumbnailID: ownerProfile.ThumbnailID,
-				BannerID:    ownerProfile.BannerID,
-			},
+			Owner:     GetMiniUserProfile(&ownerProfile),
 			Text:      c.Text,
 			Responds:  []Comment{},
 			CreatedAt: JSONTime(c.CreatedAt),
@@ -117,14 +111,8 @@ func BuildApiPosts(profiles []repositories.Profile, postLikes []repositories.Pos
 		_, isLikedByUser := postLikesMap[p.Id]
 
 		apiPosts[i] = Post{
-			Id: p.Id,
-			Owner: UserProfile{
-				Id:          ownerProfile.Id,
-				Name:        ownerProfile.Name,
-				Username:    ownerProfile.Username,
-				ThumbnailID: ownerProfile.ThumbnailID,
-				BannerID:    ownerProfile.BannerID,
-			},
+			Id:                 p.Id,
+			Owner:              GetMiniUserProfile(&ownerProfile),
 			PostText:           p.PostText,
 			PostImages:         p.PostImages,
 			Comments:           comments,
@@ -136,4 +124,25 @@ func BuildApiPosts(profiles []repositories.Profile, postLikes []repositories.Pos
 	}
 
 	return apiPosts, nil
+}
+
+func GetMiniUserProfile(p *repositories.Profile) MiniUserProfile {
+	return MiniUserProfile{
+		Id:          p.Id,
+		Name:        p.Name,
+		Username:    p.Username,
+		BannerID:    p.BannerID,
+		ThumbnailID: p.ThumbnailID,
+	}
+}
+
+func GetUserProfile(p *repositories.Profile, friendIDs []string) UserProfile {
+	return UserProfile{
+		Id:          p.Id,
+		Name:        p.Name,
+		Username:    p.Username,
+		FriendIDs:   friendIDs,
+		BannerID:    p.BannerID,
+		ThumbnailID: p.ThumbnailID,
+	}
 }

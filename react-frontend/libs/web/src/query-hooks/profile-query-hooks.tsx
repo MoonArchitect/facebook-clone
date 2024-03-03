@@ -1,8 +1,8 @@
-import { APIPostData, APIUserProfileResponse, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, DeletePostRequest, LikePostRequest, SharePostRequest, mainApiClient } from "@facebook-clone/api_client/main_api";
+import { APIPostData, APIUserProfile, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, DeletePostRequest, LikePostRequest, SharePostRequest, mainApiClient } from "@facebook-clone/api_client/src";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
+export const useMeQuery = () => useQuery<APIUserProfile, AxiosError>(
   {
     queryKey: ["get-me-query"],
     queryFn: () => {
@@ -17,7 +17,7 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
   }
 )
 
-export const useProfileByUsernameQuery = (username: string) => useQuery<APIUserProfileResponse, AxiosError>(
+export const useProfileByUsernameQuery = (username: string) => useQuery<APIUserProfile, AxiosError>(
   {
     queryKey: ["get-profile-query", username],
     queryFn: () => {

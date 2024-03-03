@@ -1,7 +1,7 @@
 import clsx from "clsx"
 import Link from "next/link"
 
-import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { getImageURLFromId } from "@facebook-clone/api_client/src"
 import { useMeQuery } from "../../../../../query-hooks/profile-query-hooks"
 
 import commonStyles from "./common-item-styles.module.scss"

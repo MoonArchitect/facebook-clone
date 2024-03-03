@@ -4,7 +4,7 @@ import { ReactComponent as ChevronIcon } from "@facebook-clone/assets/icons/chev
 
 import { NavigationButton } from "../../ui"
 
-import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { getImageURLFromId } from "@facebook-clone/api_client/src"
 import { useMeQuery } from "../../../query-hooks/profile-query-hooks"
 import { RequireAuthenticated } from "../../utils/require-auth"
 import styles from "./navigation-menu.module.scss"

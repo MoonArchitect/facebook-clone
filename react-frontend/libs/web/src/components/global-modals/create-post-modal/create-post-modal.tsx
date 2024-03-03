@@ -5,7 +5,7 @@ import Modal from "react-modal"
 
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
-import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { getImageURLFromId } from "@facebook-clone/api_client/src"
 import clsx from "clsx"
 import { useUploadPostImage } from "../../../query-hooks/asset-query-hooks"
 import { useCreatePostMutation, useMeQuery } from "../../../query-hooks/profile-query-hooks"

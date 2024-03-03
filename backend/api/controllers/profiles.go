@@ -32,7 +32,7 @@ func (pc profileController) GetMe(ctx *gin.Context) {
 		return
 	}
 
-	apiProfile, err := pc.userService.GetUserProfileByID(ctx, *uid, uid)
+	apiProfile, err := pc.userService.GetUserProfileByID(ctx, *uid, *uid)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return
