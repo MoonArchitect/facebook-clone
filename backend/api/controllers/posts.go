@@ -114,10 +114,16 @@ func (pc postsController) CreateComment(ctx *gin.Context) {
 		return
 	}
 
+	// TODO: check that comment exists, etc.
 	postID := ctx.Param("postid")
-	fmt.Println("postID: ", postID)
+	err := uuid.Validate(postID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
 	var req CreateCommentRequest
-	err := ctx.BindJSON(&req)
+	err = ctx.BindJSON(&req)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return
