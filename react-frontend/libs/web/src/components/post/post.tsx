@@ -5,7 +5,7 @@ import { ContentOrigin } from "./content-origin/content-origin"
 import { ContentReactions } from "./content-reactions/content-reactions"
 import { TextContent } from "./text-content/text-content"
 
-import { useGetPostDataQuey } from "@facebook-clone/web/query-hooks/profile-query-hooks"
+import { useGetPostDataQuey } from "../../query-hooks/profile-query-hooks"
 import { MediaContent } from "./media-content/media-content"
 import styles from "./post.module.scss"
 

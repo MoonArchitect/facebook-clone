@@ -5,10 +5,10 @@ import { ReactComponent as CompassIcon } from "@facebook-clone/assets/icons/comp
 import { ReactComponent as NewsFeedIcon } from "@facebook-clone/assets/icons/newsfeed.svg"
 import { ReactComponent as ReactIcon } from "@facebook-clone/assets/icons/react_logo.svg"
 
+import { useGetGroupsPageFeedQuery } from "../../query-hooks/profile-query-hooks"
 import { Feed } from "../feed/feed"
 import { LineDivider, MenuButton, NavigationButton, SearchBar } from "../ui"
 
-import { useGetGroupsPageFeedQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import styles from "./groups-feed-tab.module.scss"
 
 // <Button icon={CogIcon} action=...  />

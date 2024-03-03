@@ -6,8 +6,8 @@ import { ReactComponent as KeyboardIcon } from "@facebook-clone/assets/icons/key
 import { DropdownItem, MenuTitleItem, OptionsItem } from "../dropdown-items"
 import { DropdownMenuPage } from "./dropdown-page/dropdown-page"
 
-import { GlobalTheme } from "@facebook-clone/web/components/utils/server-options/server-options"
-import { useGlobalTheme } from "@facebook-clone/web/hooks/use-global-theme"
+import { GlobalTheme } from "../../../../../components/utils/server-options/server-options"
+import { useGlobalTheme } from "../../../../../hooks/use-global-theme"
 import styles from "../dropdown-menu.module.scss"
 
 export const DropdownDisplayPage = () => {

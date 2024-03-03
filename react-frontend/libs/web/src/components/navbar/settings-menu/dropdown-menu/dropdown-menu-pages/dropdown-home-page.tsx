@@ -4,10 +4,10 @@ import { ReactComponent as DarkModeIcon } from "@facebook-clone/assets/icons/dar
 import { ReactComponent as HelpIcon } from "@facebook-clone/assets/icons/help.svg"
 import { ReactComponent as LogoutIcon } from "@facebook-clone/assets/icons/logout.svg"
 
+import { useSignoutMutation } from "../../../../../query-hooks/auth-query-hooks"
 import { DropdownItem, MiniProfile } from "../dropdown-items"
 import { DropdownMenuPage } from "./dropdown-page/dropdown-page"
 
-import { useSignoutMutation } from "@facebook-clone/web/query-hooks/auth-query-hooks"
 import styles from "../dropdown-menu.module.scss"
 
 export const DropdownHomePage = () => {

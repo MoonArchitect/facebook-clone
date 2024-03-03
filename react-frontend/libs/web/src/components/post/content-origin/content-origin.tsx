@@ -4,7 +4,7 @@ import { useCallback, useMemo } from "react"
 import { ReactComponent as Globe2Icon } from "@facebook-clone/assets/icons/globe2.svg"
 
 import { APIUserProfileResponse, getImageURLFromId } from "@facebook-clone/api_client/main_api"
-import { useDeletePostMutation } from "@facebook-clone/web/query-hooks/profile-query-hooks"
+import { useDeletePostMutation } from "../../../query-hooks/profile-query-hooks"
 
 import { OptionMenuButton } from "../../ui/options-popup/option-menu-buttons"
 import { OptionsButton } from "../../ui/options-popup/options-popup"

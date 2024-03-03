@@ -3,8 +3,8 @@
 import Modal from "react-modal"
 
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
-import { useSigninMutation } from "@facebook-clone/web/query-hooks/auth-query-hooks"
 import { FormEvent, useCallback, useMemo } from "react"
+import { useSigninMutation } from "../../../query-hooks/auth-query-hooks"
 
 import clsx from "clsx"
 import { useGlobalModal } from "../global-modals"

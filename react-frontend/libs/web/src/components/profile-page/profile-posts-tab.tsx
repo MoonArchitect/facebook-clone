@@ -1,6 +1,6 @@
 "use client"
 
-import { useGetHistoricUserPostsQuery, useProfileByUsernameQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
+import { useProfileByUsernameQuery, useGetHistoricUserPostsQuery } from "../../query-hooks/profile-query-hooks"
 import { Feed } from "../feed/feed"
 
 import { useSession } from "../utils/session-context"

@@ -6,9 +6,9 @@ import Modal from "react-modal"
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
 import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
-import { useUploadPostImage } from "@facebook-clone/web/query-hooks/asset-query-hooks"
-import { useCreatePostMutation, useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import clsx from "clsx"
+import { useUploadPostImage } from "../../../query-hooks/asset-query-hooks"
+import { useCreatePostMutation, useMeQuery } from "../../../query-hooks/profile-query-hooks"
 import { ProfilePreview } from "../../ui/profile-preview/profile-preview"
 import styles from "./create-post-modal.module.scss"
 
@@ -112,7 +112,7 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
         </div>
 
         {isImageAttached && <div className={styles.imagePreviewContainer} onClick={selectNewImage}>
-          <img className={styles.imagePreview} src={imagePreviewURL} alt="attached image preview" />
+          <img className={styles.imagePreview} src={imagePreviewURL} alt="attached media preview" />
         </div>}
 
         <input

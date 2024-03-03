@@ -11,8 +11,8 @@ import { ReactComponent as CogIcon } from "@facebook-clone/assets/icons/cog.svg"
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
 import { APIUserProfileResponse, getImageURLFromId } from "@facebook-clone/api_client/main_api"
-import { useUploadProfileCover, useUploadProfileThumbnail } from "@facebook-clone/web/query-hooks/asset-query-hooks"
 import ReactModal from "react-modal"
+import { useUploadProfileCover, useUploadProfileThumbnail } from "../../query-hooks/asset-query-hooks"
 import { useSession } from "../utils/session-context"
 import styles from "./profile-cover.module.scss"
 

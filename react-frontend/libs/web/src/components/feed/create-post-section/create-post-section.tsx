@@ -1,9 +1,9 @@
-import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import { useGlobalModal } from "../../global-modals/global-modals"
 import { LineDivider, NavigationButton } from "../../ui"
 import { ProfilePreview } from "../../ui/profile-preview/profile-preview"
 
 import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { useMeQuery } from "../../../query-hooks/profile-query-hooks"
 import { RequireAuthenticated } from "../../utils/require-auth"
 import styles from "./create-post-section.module.scss"
 

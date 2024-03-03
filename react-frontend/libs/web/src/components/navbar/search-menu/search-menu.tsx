@@ -6,7 +6,7 @@ import { ReactComponent as FacebookIcon } from "@facebook-clone/assets/icons/fac
 import { ReactComponent as SearchIcon } from "@facebook-clone/assets/icons/search.svg"
 
 
-import { UseClickOutsideSubscriber } from "@facebook-clone/web/hooks"
+import { UseClickOutsideSubscriber } from "../../../hooks"
 import styles from "./search-menu.module.scss"
 
 export const SearchMenu = () => {

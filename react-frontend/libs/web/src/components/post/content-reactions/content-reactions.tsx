@@ -5,8 +5,8 @@ import { ReactComponent as ShareIcon } from "@facebook-clone/assets/icons/share.
 
 import { LineDivider } from "../../ui"
 
-import { useLikePostMutation, useSharePostMutation } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import clsx from "clsx"
+import { useLikePostMutation, useSharePostMutation } from "../../../query-hooks/profile-query-hooks"
 import styles from "./content-reactions.module.scss"
 
 interface ContentReactionsProps {

@@ -2,7 +2,7 @@ import clsx from "clsx"
 import { ReactElement, useRef, useState } from "react"
 
 
-import { UseClickOutsideSubscriber } from "@facebook-clone/web/hooks"
+import { UseClickOutsideSubscriber } from "../../../hooks"
 import styles from "./menu-button.module.scss"
 
 export const MenuButton = ({ icon = undefined }: { icon?: ReactElement }) => {

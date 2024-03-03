@@ -1,9 +1,9 @@
 "use client"
 
 import { APIUserProfileResponse } from "@facebook-clone/api_client/main_api"
-import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import { useQueryClient } from "@tanstack/react-query"
 import { PropsWithChildren, createContext, useContext, useEffect, useState } from "react"
+import { useMeQuery } from "../../query-hooks/profile-query-hooks"
 
 export type SessionType = {
     isLoggedIn: boolean,

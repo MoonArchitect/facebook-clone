@@ -1,5 +1,4 @@
-
-import { useGetHomePageFeedQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
+import { useGetHomePageFeedQuery } from "../../query-hooks/profile-query-hooks"
 import { Feed } from "../feed/feed"
 import { NavigationMenu } from "./navigation-menu/navigation-menu"
 import { RightAddOn } from "./right-add-on/right-add-on"

@@ -3,7 +3,7 @@ import { ReactNode, useRef, useState } from "react"
 import { CSSTransition } from "react-transition-group"
 
 
-import { UseClickOutsideSubscriber } from "@facebook-clone/web/hooks"
+import { UseClickOutsideSubscriber } from "../../../../hooks"
 import styles from "./nav-items.module.scss"
 
 export const NavItem = ({

@@ -3,7 +3,7 @@ import { ReactComponent as FlatMenuIcon } from "@facebook-clone/assets/icons/fla
 import { PropsWithChildren, forwardRef, useRef, useState } from "react"
 import { CSSTransition } from "react-transition-group"
 
-import { UseClickOutsideSubscriber } from "@facebook-clone/web/hooks"
+import { UseClickOutsideSubscriber } from "../../../hooks"
 
 import styles from "./options-popup.module.scss"
 

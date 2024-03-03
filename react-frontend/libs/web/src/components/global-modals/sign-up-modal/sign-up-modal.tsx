@@ -3,8 +3,8 @@
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 import Modal from "react-modal"
 
-import { useSignupMutation } from "@facebook-clone/web/query-hooks/auth-query-hooks"
 import { FormEvent, useCallback, useMemo } from "react"
+import { useSignupMutation } from "../../../query-hooks/auth-query-hooks"
 import styles from "./sign-up-modal.module.scss"
 
 export type SignUpModalProps = {

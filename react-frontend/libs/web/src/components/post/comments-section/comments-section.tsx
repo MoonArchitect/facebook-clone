@@ -1,10 +1,10 @@
 import { APICommentData, getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import { ReactComponent as ArrowIcon } from "@facebook-clone/assets/icons/arrow.svg"
 
-import { useCreateCommentMutation } from "@facebook-clone/web/query-hooks/profile-query-hooks"
 import clsx from "clsx"
 import Link from "next/link"
 import { FormEvent, KeyboardEvent, useCallback, useMemo, useRef, useState } from "react"
+import { useCreateCommentMutation } from "../../../query-hooks/profile-query-hooks"
 import { getDateString } from "../../utils/date"
 import { RequireAuthenticated } from "../../utils/require-auth"
 import { useSession } from "../../utils/session-context"

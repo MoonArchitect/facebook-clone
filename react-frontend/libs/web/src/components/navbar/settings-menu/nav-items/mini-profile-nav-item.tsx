@@ -3,7 +3,7 @@ import Link from "next/link"
 import { useRef } from "react"
 
 import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
-import { useMeQuery } from "@facebook-clone/web/query-hooks/profile-query-hooks"
+import { useMeQuery } from "../../../../query-hooks/profile-query-hooks"
 import styles from "./nav-items.module.scss"
 
 export const MiniProfileNavItem = () => {
