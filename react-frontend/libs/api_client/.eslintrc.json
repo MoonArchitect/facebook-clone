@@ -1,5 +1,5 @@
 {
-  "extends": ["plugin:@nrwl/nx/react", "../../.eslintrc.json", "plugin:@tanstack/eslint-plugin-query/recommended"],
+  "extends": ["../../.eslintrc.json"],
   "ignorePatterns": ["!**/*"],
   "rules": {
     

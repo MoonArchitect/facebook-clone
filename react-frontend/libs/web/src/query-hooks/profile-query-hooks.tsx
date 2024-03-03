@@ -1,4 +1,4 @@
-import { APIPostData, APIUserProfileResponse, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, DeletePostRequest, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
+import { APIPostData, APIUserProfileResponse, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, DeletePostRequest, LikePostRequest, SharePostRequest, mainApiClient } from "@facebook-clone/api_client/main_api";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -6,7 +6,7 @@ export const useMeQuery = () => useQuery<APIUserProfileResponse, AxiosError>(
   {
     queryKey: ["get-me-query"],
     queryFn: () => {
-      return mainAPI.getMe()
+      return mainApiClient.getMe()
     },
     retry(failureCount, error) {
       if (error.response?.status === 401) // do not retry if unothorized
@@ -21,7 +21,7 @@ export const useProfileByUsernameQuery = (username: string) => useQuery<APIUserP
   {
     queryKey: ["get-profile-query", username],
     queryFn: () => {
-      return mainAPI.getProfileByUsername(username)
+      return mainApiClient.getProfileByUsername(username)
     },
   }
 )
@@ -42,7 +42,7 @@ export const useGetHistoricUserPostsQuery = (userID?: string) => {
         if (userID === undefined)
           throw new AxiosError("userID is undefined")
 
-        const res = await mainAPI.getHistoricUserPosts({userID, skip: pageParam})
+        const res = await mainApiClient.getHistoricUserPosts({userID, skip: pageParam})
         for (const post of res) {
           queryClient.setQueryData(queryKeys.post(post.id), () => post)
         }
@@ -65,7 +65,7 @@ export const useGetHomePageFeedQuery = () => {
     {
       queryKey: ["home-page-feed"],
       queryFn: async (data) => {
-        const res = await mainAPI.getHomePageFeed(data.pageParam)
+        const res = await mainApiClient.getHomePageFeed(data.pageParam)
         for (const post of res) {
           queryClient.setQueryData(queryKeys.post(post.id), () => post)
         }
@@ -87,7 +87,7 @@ export const useGetGroupsPageFeedQuery = () => {
     {
       queryKey: ["groups-page-feed"],
       queryFn: async ({pageParam}) => {
-        const res = await mainAPI.getGroupsPageFeed(pageParam)
+        const res = await mainApiClient.getGroupsPageFeed(pageParam)
         for (const post of res) {
           queryClient.setQueryData(queryKeys.post(post.id), () => post)
         }
@@ -107,7 +107,7 @@ export const useGetPostDataQuey = (postID: string) => {
     {
       queryKey: queryKeys.post(postID),
       queryFn: () => {
-        return mainAPI.getPost({postID})
+        return mainApiClient.getPost({postID})
       },
       staleTime: 5 * 60 * 1000, // TODO: do it in queryClient config maybe
     }
@@ -121,7 +121,7 @@ export const useCreatePostMutation = (userID: string) => {
     {
       mutationKey: ["create-post", userID],
       mutationFn: (data) => {
-        return mainAPI.createPost(data)
+        return mainApiClient.createPost(data)
       },
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
@@ -137,7 +137,7 @@ export const useDeletePostMutation = (userID: string) => {
     {
       mutationKey: ["delete-post", userID],
       mutationFn: (data) => {
-        return mainAPI.deletePost(data)
+        return mainApiClient.deletePost(data)
       },
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
@@ -153,7 +153,7 @@ export const useCreateCommentMutation = (postID: string) => {
     {
       mutationKey: ["create-comment", postID],
       mutationFn: (data) => {
-        return mainAPI.createComment({postID, text: data.text})
+        return mainApiClient.createComment({postID, text: data.text})
       },
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.post(postID)})
@@ -169,7 +169,7 @@ export const useLikePostMutation = () => {
     {
       // mutationKey: ["like-post"],
       mutationFn: (data) => {
-        return mainAPI.likePost(data)
+        return mainApiClient.likePost(data)
       },
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.post(req.postID)})
@@ -185,7 +185,7 @@ export const useSharePostMutation = () => {
     {
       // mutationKey: ["like-post"],
       mutationFn: (data) => {
-        return mainAPI.sharePost(data)
+        return mainApiClient.sharePost(data)
       },
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.post(req.postID)})

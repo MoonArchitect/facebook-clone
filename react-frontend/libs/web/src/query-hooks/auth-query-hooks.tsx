@@ -1,4 +1,4 @@
-import { SignInRequestData, SignUpRequestData, mainAPI } from "@facebook-clone/api_client/main_api";
+import { SignInRequestData, SignUpRequestData, mainApiClient } from "@facebook-clone/api_client/main_api";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "../components/utils/session-context";
 
@@ -8,7 +8,7 @@ export const useSigninMutation = () => {
   return useMutation<void, Error, SignInRequestData>(
     {
       mutationKey: ["singin"],
-      mutationFn: mainAPI.signIn,
+      mutationFn: mainApiClient.signIn,
       onSuccess: () => {
         sessionSignInCallback()
       }
@@ -22,7 +22,7 @@ export const useSignoutMutation = () => {
   return useMutation<void, Error, void>(
     {
       mutationKey: ["signout"],
-      mutationFn: mainAPI.signOut,
+      mutationFn: mainApiClient.signOut,
       onSuccess: () => {
         sessionSignOutCallback()
         // TODO: clear server options and local storage on logout
@@ -37,7 +37,7 @@ export const useSignupMutation = () => {
   return useMutation<void, Error, SignUpRequestData>(
     {
       mutationKey: ["signup"],
-      mutationFn: mainAPI.signUp,
+      mutationFn: mainApiClient.signUp,
       onSuccess: () => {
         sessionSignInCallback()
       }

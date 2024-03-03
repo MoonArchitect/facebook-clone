@@ -1,4 +1,4 @@
-import { UploadPostImageRequest, assetsAPI } from "@facebook-clone/api_client/main_api";
+import { UploadPostImageRequest, assetsApiClient } from "@facebook-clone/api_client/assets_api";
 import { useMutation } from "@tanstack/react-query";
 import { useSession } from "../components/utils/session-context";
 
@@ -9,7 +9,7 @@ export const useUploadProfileCover = () => {
   return useMutation<void, Error, Blob>(
     {
       mutationKey: ["uploadProfileCover"],
-      mutationFn: assetsAPI.uploadProfileCover,
+      mutationFn: assetsApiClient.uploadProfileCover,
       onSuccess: () => refetchUserData()
     },
   )
@@ -21,7 +21,7 @@ export const useUploadProfileThumbnail = () => {
   return useMutation<void, Error, Blob>(
     {
       mutationKey: ["uploadProfileThumbnail"],
-      mutationFn: assetsAPI.uploadProfileThumbnail,
+      mutationFn: assetsApiClient.uploadProfileThumbnail,
       onSuccess: () => refetchUserData()
     },
   )
@@ -31,7 +31,7 @@ export const useUploadPostImage = () => {
   return useMutation<void, Error, UploadPostImageRequest>(
     {
       mutationKey: ["uploadPostImage"],
-      mutationFn: assetsAPI.uploadPostImage,
+      mutationFn: assetsApiClient.uploadPostImage,
     },
   )
 }
