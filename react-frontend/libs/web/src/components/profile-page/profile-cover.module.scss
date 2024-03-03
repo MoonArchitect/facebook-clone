@@ -367,3 +367,7 @@
 
   background-color: var(--modal-overlay-color);
 }
+
+.disabled {
+  cursor: not-allowed!important;
+}

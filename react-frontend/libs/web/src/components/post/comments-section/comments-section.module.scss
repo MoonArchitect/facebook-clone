@@ -205,7 +205,7 @@
   margin-right: 16px;
 
   user-select: none;
-  cursor: pointer;
+  cursor: not-allowed;
 
   font-weight: 700;
   font-size: 0.75rem;
@@ -219,7 +219,7 @@
 .reactionInfo {
   margin-right: 12px;
 
-  cursor: pointer;
+  cursor: not-allowed;
   user-select: none;
 
   font-weight: 500;

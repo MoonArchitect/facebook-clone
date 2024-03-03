@@ -147,9 +147,9 @@ export const ProfileCover = (props: ProfileCoverProps) => {
           <p className={styles.friendCount}>4 Friends</p>
         </div>
         <div className={styles.buttonContainer}>
-          <button className={clsx(styles.addStoryButton, styles.buttonText)}><PlusIcon/>Add to Story</button>
-          <button className={clsx(styles.editProfileButton, styles.buttonText)}><CogIcon/>Edit profile</button>
-          <button className={clsx(styles.settingsButton)}><ChevronIcon/></button>
+          <button className={clsx(styles.addStoryButton, styles.buttonText, styles.disabled)}><PlusIcon/>Add to Story</button>
+          <button className={clsx(styles.editProfileButton, styles.buttonText, styles.disabled)}><CogIcon/>Edit profile</button>
+          <button className={clsx(styles.settingsButton, styles.disabled)}><ChevronIcon/></button>
         </div>
       </div>
 
@@ -202,7 +202,7 @@ const NavigationButton = (props: NavigationButtonProps) => {
   return (
     <Link
       href={href}
-      className={clsx(styles.linkButton, isActive && styles.highlightedLink)}
+      className={clsx(styles.linkButton, isActive && styles.highlightedLink, href === " " && styles.disabled)}
     >
       {title}
       <div className={clsx(styles.highlightBar, isActive && styles.show)} />

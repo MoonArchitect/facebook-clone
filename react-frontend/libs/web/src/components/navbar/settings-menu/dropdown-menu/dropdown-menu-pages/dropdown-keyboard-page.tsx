@@ -20,7 +20,7 @@ export const DropdownKeyboardPage = () => (
         options={["Off", "On"]}
       />
 
-      <DropdownItem leftIcon={<KeyboardIcon />} goToMenu={4}>
+      <DropdownItem leftIcon={<KeyboardIcon />}>
         <span> See All Keyboard Shortcuts </span>
       </DropdownItem>
     </div>

@@ -23,6 +23,10 @@
   }
 }
 
+.disabled {
+  cursor: not-allowed;
+}
+
 .menuIconButton {
   display: flex;
   align-items: center;

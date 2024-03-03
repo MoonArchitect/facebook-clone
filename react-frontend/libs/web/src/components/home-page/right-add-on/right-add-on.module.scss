@@ -38,7 +38,7 @@
       padding-bottom: 8px;
 
       border-radius: 8px;
-      cursor: pointer;
+      cursor: not-allowed;
       transition: background-color var(--fast-speed) ease;
 
       &:hover {
@@ -53,8 +53,6 @@
         width: fit-content;
         height: fit-content;
         margin-left: 8px;
-
-        cursor: pointer;
 
         display: flex;
         align-items: center;
