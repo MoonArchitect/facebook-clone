@@ -1,11 +1,13 @@
-import { ReactComponent as FlatMenuIcon } from "@facebook-clone/assets/icons/flat-menu.svg"
-import { ReactComponent as Globe2Icon } from "@facebook-clone/assets/icons/globe2.svg"
-
-
-import { APIUserProfileResponse, getImageURLFromId } from "@facebook-clone/api_client/main_api"
 import Link from "next/link"
 import { useMemo } from "react"
+
+import { APIUserProfileResponse, getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { ReactComponent as Globe2Icon } from "@facebook-clone/assets/icons/globe2.svg"
+
+import { OptionMenuButton } from "../../ui/options-popup/option-menu-buttons"
+import { OptionsButton } from "../../ui/options-popup/options-popup"
 import { getDateString } from "../../utils/date"
+
 import styles from "./content-origin.module.scss"
 
 type ContentOriginProps = {
@@ -34,9 +36,11 @@ export const ContentOrigin = (props: ContentOriginProps) => {
           </span>
         </div>
       </div>
-      <div className={styles.optionsButton}>
-        <FlatMenuIcon />
-      </div>
+      <OptionsButton>
+        <OptionMenuButton accent="no" title="Info" />
+        <OptionMenuButton accent="blue" title="Report" />
+        <OptionMenuButton accent="red" title="Delete" />
+      </OptionsButton>
     </div>
   )
 }

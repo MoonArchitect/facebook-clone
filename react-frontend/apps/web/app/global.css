@@ -57,6 +57,7 @@ code {
   --primary:  #ffffff;
   --primary-highlight: #f2f2f2;
   --accent: #1876f2;
+  --red-accent: #dd1919;
   --green-accent: #1dad4f;
 
   --primary-text: #050505;
@@ -90,6 +91,7 @@ code {
   --primary:  #242526;
   --primary-highlight: rgba(255, 255, 255, 0.1);
   --accent: hsl(214, 100%, 59%);
+  --red-accent: #dd1919;
   --green-accent: #1dad4f;
 
   --primary-text: #E4E6EB;

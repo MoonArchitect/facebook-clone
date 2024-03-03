@@ -1,0 +1,29 @@
+
+.buttonContainer {
+    display: flex;
+    align-items: center;
+    width: 120px;
+    padding: 8px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: var(--segoeui);
+
+    background-color: var(--primary);
+    transition: background-color ease var(--fastest-speed), margin-top ease 100ms;
+
+    &:hover {
+        background-color: var(--primary-highlight);
+        transition: margin-top ease 100ms;
+    }
+}
+
+.redAccent {
+    color: var(--red-accent);
+}
+
+.blueAccent {
+    color: var(--accent);
+}
