@@ -26,6 +26,7 @@ type Post struct {
 type PostsRepository interface {
 	GetPostByID(ctx context.Context, postID string) (Post, error)
 	CreatePost(ctx context.Context, userID, text string, imageID *string) error
+	DeletePost(ctx context.Context, postID string) error
 
 	IncrementPostLikeCount(ctx context.Context, postID string) error
 	DecrementPostLikeCount(ctx context.Context, postID string) error
@@ -69,6 +70,24 @@ func (r postsRepository) CreatePost(ctx context.Context, userID, text string, im
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
 		return fmt.Errorf("failed to insert post: %w", err)
+	}
+
+	return nil
+}
+
+func (r postsRepository) DeletePost(ctx context.Context, postID string) error {
+	sql, args, err := sq.
+		Delete(postsTable).
+		Where(squirrel.Eq{"id": postID}).
+		ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to create delete post query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to delete post: %w", err)
 	}
 
 	return nil

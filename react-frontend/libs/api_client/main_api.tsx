@@ -77,6 +77,10 @@ export type LikePostRequest = {
   postID: string
 }
 
+export type DeletePostRequest = {
+  postID: string
+}
+
 export type SharePostRequest = {
   postID: string
 }
@@ -130,6 +134,9 @@ export const mainAPI = {
   getPost: async (params: GetPostRequest) => {
     const resp = await mainAPIClient.get<APIPostData>("/posts", {params})
     return resp.data
+  },
+  deletePost: async (params: DeletePostRequest) => {
+    await mainAPIClient.delete("/posts", {params})
   },
   likePost: async (data: LikePostRequest) => {
     await mainAPIClient.post("/posts/like", data)

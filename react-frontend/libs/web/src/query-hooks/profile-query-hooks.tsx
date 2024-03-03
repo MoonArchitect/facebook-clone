@@ -1,4 +1,4 @@
-import { APIPostData, APIUserProfileResponse, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
+import { APIPostData, APIUserProfileResponse, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, DeletePostRequest, LikePostRequest, SharePostRequest, mainAPI } from "@facebook-clone/api_client/main_api";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
@@ -122,6 +122,22 @@ export const useCreatePostMutation = (userID: string) => {
       mutationKey: ["create-post", userID],
       mutationFn: (data) => {
         return mainAPI.createPost(data)
+      },
+      onSuccess: (data, req) => {
+        queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})
+      }
+    }
+  )
+}
+
+export const useDeletePostMutation = (userID: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, AxiosError, DeletePostRequest>(
+    {
+      mutationKey: ["delete-post", userID],
+      mutationFn: (data) => {
+        return mainAPI.deletePost(data)
       },
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.getHistoricUserPosts(userID)})

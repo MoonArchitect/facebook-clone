@@ -22,6 +22,7 @@ type PostLikesRepository interface {
 	LikePost(ctx context.Context, userID, postID string) error
 	UnlikePost(ctx context.Context, userID, postID string) error
 	GetUserLikesForPosts(ctx context.Context, userID string, postIDs []string) ([]PostLike, error)
+	DeletePostLikes(ctx context.Context, postID string) error
 }
 
 type postLikesRepository struct {
@@ -62,6 +63,24 @@ func (r postLikesRepository) IsPostLikedByUser(ctx context.Context, userID, post
 	}
 
 	return true, nil
+}
+
+func (r postLikesRepository) DeletePostLikes(ctx context.Context, postID string) error {
+	sql, args, err := sq.
+		Delete(postLikesTable).
+		Where(squirrel.Eq{"post_id": postID}).
+		ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to create delete comments query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to delete comments: %w", err)
+	}
+
+	return nil
 }
 
 func (r postLikesRepository) GetUserLikesForPosts(ctx context.Context, userID string, postIDs []string) ([]PostLike, error) {

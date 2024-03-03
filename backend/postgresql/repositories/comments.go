@@ -23,6 +23,7 @@ type Comment struct {
 type CommentsRepository interface {
 	GetFromManyPosts(ctx context.Context, postIDs []string) ([]Comment, error)
 	CreateComment(ctx context.Context, userID, text, postID string) error
+	DeletePostComments(ctx context.Context, postID string) error
 }
 
 type commentsRepository struct {
@@ -54,6 +55,24 @@ func (r commentsRepository) CreateComment(ctx context.Context, userID, text, pos
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
 		return fmt.Errorf("failed to insert post: %w", err)
+	}
+
+	return nil
+}
+
+func (r commentsRepository) DeletePostComments(ctx context.Context, postID string) error {
+	sql, args, err := sq.
+		Delete(commentsTable).
+		Where(squirrel.Eq{"post_id": postID}).
+		ToSql()
+
+	if err != nil {
+		return fmt.Errorf("failed to create delete comments query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to delete comments: %w", err)
 	}
 
 	return nil

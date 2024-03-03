@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/go-errors/errors"
 )
 
 type userService struct {
@@ -27,6 +29,7 @@ type UserService interface {
 	EditProfileCover(ctx context.Context, uid, coverID string) error
 
 	CreateUserPost(ctx context.Context, uid, text string, imageID *string) error
+	DeleteUserPost(ctx context.Context, uid, postID string) error
 	CreateComment(ctx context.Context, uid, text, postID string) error
 	GetPost(ctx context.Context, userID *string, postID string) (apitypes.Post, error)
 	LikePost(ctx context.Context, userID, postID string) error
@@ -82,6 +85,29 @@ func (s userService) CreateUserPost(ctx context.Context, uid, text string, image
 	text = strings.ReplaceAll(text, "\u00A0", "")
 
 	return s.postsRepository.CreatePost(ctx, uid, text, imageID)
+}
+
+func (s userService) DeleteUserPost(ctx context.Context, uid, postID string) error {
+	post, err := s.postsRepository.GetPostByID(ctx, postID)
+	if err != nil {
+		return err
+	}
+
+	if post.OwnerId != uid {
+		return errors.Errorf("user does not own this post")
+	}
+
+	err = s.commentsRepository.DeletePostComments(ctx, postID)
+	if err != nil {
+		return err
+	}
+
+	err = s.postLikesRepository.DeletePostLikes(ctx, postID)
+	if err != nil {
+		return err
+	}
+
+	return s.postsRepository.DeletePost(ctx, postID)
 }
 
 func (s userService) CreateComment(ctx context.Context, uid, text, postID string) error {

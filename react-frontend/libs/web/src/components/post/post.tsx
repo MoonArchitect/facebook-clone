@@ -29,7 +29,7 @@ export const Post = (props: PostProps) => {
 
   return (
     <div className={styles.container}>
-      <ContentOrigin dateCreated={post.createdAt} user={post.owner} />
+      <ContentOrigin dateCreated={post.createdAt} postOwner={post.owner} postID={postID} />
       <TextContent text={post.postText} />
 
       {(post.postImages !== null && post.postImages.length > 0) && (

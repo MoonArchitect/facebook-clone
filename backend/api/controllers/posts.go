@@ -17,6 +17,7 @@ type postsController struct {
 type PostsController interface {
 	CreateComment(ctx *gin.Context)
 	CreatePost(ctx *gin.Context)
+	DeletePost(ctx *gin.Context)
 	GetPost(ctx *gin.Context)
 	LikePost(ctx *gin.Context)
 	SharePost(ctx *gin.Context)
@@ -73,6 +74,33 @@ func (pc postsController) CreatePost(ctx *gin.Context) {
 		resp.ImageID = *imageID
 	}
 	ctx.JSON(http.StatusOK, resp)
+}
+
+type DeletePostRequest struct {
+	PostID string `form:"postID" binding:"required"`
+}
+
+func (pc postsController) DeletePost(ctx *gin.Context) {
+	uid := middleware.GetContextData(ctx).UID
+	if uid == nil {
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		return
+	}
+
+	var req DeletePostRequest
+	err := ctx.BindQuery(&req)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = pc.userService.DeleteUserPost(ctx, *uid, req.PostID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
 }
 
 type CreateCommentRequest struct {
