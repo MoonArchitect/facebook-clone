@@ -43,6 +43,10 @@ export type GetPostRequest = {
   postID: string
 }
 
+export type FriendRequestData = {
+  userID: string
+}
+
 export type CreateCommentRequest = {
   postID: string
   text: string
@@ -105,6 +109,12 @@ const createMainApiClient = (client: AxiosInstance) => {
     },
     sharePost: async (data: SharePostRequest) => {
       await client.post("/posts/share", data)
+    },
+    sendFriendRequest: async (data: FriendRequestData) => {
+      await client.post(`/profiles/${data.userID}/request-friendship`)
+    },
+    acceptFriendRequest: async (data: FriendRequestData) => {
+      await client.post(`/profiles/${data.userID}/accept-friendship`)
     },
   }
 }

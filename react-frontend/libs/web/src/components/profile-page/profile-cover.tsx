@@ -8,11 +8,13 @@ import { FormEvent, MouseEvent, useCallback, useEffect, useMemo, useRef, useStat
 import { ReactComponent as CameraIcon } from "@facebook-clone/assets/icons/camera.svg"
 import { ReactComponent as ChevronIcon } from "@facebook-clone/assets/icons/chevron.svg"
 import { ReactComponent as CogIcon } from "@facebook-clone/assets/icons/cog.svg"
+import { ReactComponent as FriendsIcon } from "@facebook-clone/assets/icons/friends_filled.svg"
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
 import { APIUserProfile, getImageURLFromId } from "@facebook-clone/api_client/src"
 import ReactModal from "react-modal"
 import { useUploadProfileCover, useUploadProfileThumbnail } from "../../query-hooks/asset-query-hooks"
+import { useAcceptFriendRequestMutation, useSendFriendRequestMutation } from "../../query-hooks/profile-query-hooks"
 import { useSession } from "../utils/session-context"
 import styles from "./profile-cover.module.scss"
 
@@ -39,11 +41,11 @@ export const ProfileCover = (props: ProfileCoverProps) => {
   const {replace} = useRouter()
   const pathname = usePathname()
 
-  useEffect(() => console.log(profile), [])
-
   const coverImageUploadRef = useRef<HTMLInputElement>(null)
   const {mutateAsync: uploadProfileCover} = useUploadProfileCover()
   const {mutateAsync: uploadProfileThumbnail} = useUploadProfileThumbnail()
+  const {mutate: sendFriendRequest} = useSendFriendRequestMutation(profile?.username)
+  const {mutate: acceptFriendRequest} = useAcceptFriendRequestMutation(profile?.username)
 
   // ugly but works
   const [imagePreviewState, setImagePreviewState] = useState<ImagePreviewStateType>({
@@ -155,6 +157,13 @@ export const ProfileCover = (props: ProfileCoverProps) => {
           <p className={styles.friendCount}>{profile?.friendIDs.length ?? "..."} Friends</p>
         </div>
         <div className={styles.buttonContainer}>
+          {!isOwner && userData?.id && profile?.id && profile.friendshipStatus !== 'friends' && (
+            profile.friendshipStatus === 'pending'
+              ? <button className={clsx(styles.acceptFriendRequest, styles.buttonText)} onClick={() => acceptFriendRequest({userID: profile.id})}><FriendsIcon/>Accept Friend Request</button>
+              : profile.friendshipStatus === 'requested'
+                ? <button className={clsx(styles.pendingFriendRequest, styles.buttonText)}>Friend Request Sent</button>
+                : <button className={clsx(styles.sendFriendRequest, styles.buttonText)} onClick={() => sendFriendRequest({userID: profile.id})}><PlusIcon/>Add Friend</button>)}
+
           {isOwner && <button className={clsx(styles.addStoryButton, styles.buttonText, styles.disabled)}><PlusIcon/>Add to Story</button>}
           {isOwner && <button className={clsx(styles.editProfileButton, styles.buttonText, styles.disabled)}><CogIcon/>Edit profile</button>}
           <button className={clsx(styles.settingsButton, styles.disabled)}><ChevronIcon/></button>

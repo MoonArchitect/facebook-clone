@@ -101,9 +101,18 @@ func main() {
 	postsRepository := repositories.NewPostsRepository(db)
 	postLikesRepository := repositories.NewPostLikesRepository(db)
 	commentsRepository := repositories.NewCommentsRepository(db)
+	friendshipRequestsRepository := repositories.NewFriendshipRequestsRepository(db)
 
 	// Services
-	userService := user.NewUserService(userRepository, profileRepository, friendshipRepository, postsRepository, postLikesRepository, commentsRepository)
+	userService := user.NewUserService(
+		userRepository,
+		profileRepository,
+		friendshipRepository,
+		postsRepository,
+		postLikesRepository,
+		commentsRepository,
+		friendshipRequestsRepository,
+	)
 	feedService := feed.NewFeedService(postsRepository, profileRepository, postLikesRepository, commentsRepository)
 	authService, err := auth.NewAuthService(credentialsRepository) // TODO: auth service should be a separate binary
 	if err != nil {
@@ -143,6 +152,10 @@ func main() {
 	api.GET("/profiles/me", authRequired, profileController.GetMe)
 	// api.PATCH("/profiles/me", authRequired, profileController.UpdateMe)
 	api.GET("/profiles/get", profileController.GetProfile)
+	// api.GET("/profiles/:userID/friends", profileController.GetUserFriends)
+	api.POST("/profiles/:userID/accept-friendship", authRequired, profileController.AcceptFriendRequest)
+	api.POST("/profiles/:userID/request-friendship", authRequired, profileController.CreateFriendRequest)
+	api.GET("/profiles/posts", feedController.GetUserPosts) // TODO: authRequired might not be required
 
 	api.GET("/posts", postsController.GetPost)
 	api.POST("/posts/:postid/comment", authRequired, postsController.CreateComment)
@@ -151,13 +164,11 @@ func main() {
 	api.POST("/posts/like", authRequired, postsController.LikePost)
 	api.POST("/posts/share", authRequired, postsController.SharePost) // temp
 
-	api.GET("/profiles/posts", feedController.GetUserPosts) // TODO: authRequired might not be required
 	api.GET("/feed/groups", authRequired, feedController.GetGroupsFeed)
 	api.GET("/feed/home", feedController.GetHomeFeed)
 	// api.POST("/comment", profileController.GetProfile)
 	// api.POST("/reply", profileController.GetProfile)
 	// api.GET("/user/friends", profileController.GetProfile)
-	// api.GET("/friends/requests", profileController.GetProfile)
 
 	assetAPI := router.Group("/asset_api/v1")
 	assetAPI.POST("/profile/thumbnail", authRequired, assetsController.UploadProfileThumbnail)

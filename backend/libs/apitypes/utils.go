@@ -136,13 +136,14 @@ func GetMiniUserProfile(p *repositories.Profile) MiniUserProfile {
 	}
 }
 
-func GetUserProfile(p *repositories.Profile, friendIDs []string) UserProfile {
+func GetUserProfile(p *repositories.Profile, friendIDs []string, friendshipStatus FriendshipStatus) UserProfile {
 	return UserProfile{
-		Id:          p.Id,
-		Name:        p.Name,
-		Username:    p.Username,
-		FriendIDs:   friendIDs,
-		BannerID:    p.BannerID,
-		ThumbnailID: p.ThumbnailID,
+		Id:               p.Id,
+		Name:             p.Name,
+		Username:         p.Username,
+		FriendIDs:        friendIDs,
+		FriendshipStatus: friendshipStatus,
+		BannerID:         p.BannerID,
+		ThumbnailID:      p.ThumbnailID,
 	}
 }

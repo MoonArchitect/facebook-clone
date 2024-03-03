@@ -12,12 +12,13 @@ import (
 )
 
 type userService struct {
-	friendshipRepository repositories.FriendshipRepository
-	userRepository       repositories.UserRepository
-	profileRepository    repositories.ProfileRepository
-	postsRepository      repositories.PostsRepository
-	postLikesRepository  repositories.PostLikesRepository
-	commentsRepository   repositories.CommentsRepository
+	friendshipRepository         repositories.FriendshipRepository
+	userRepository               repositories.UserRepository
+	profileRepository            repositories.ProfileRepository
+	postsRepository              repositories.PostsRepository
+	postLikesRepository          repositories.PostLikesRepository
+	commentsRepository           repositories.CommentsRepository
+	friendshipRequestsRepository repositories.FriendshipRequestsRepository
 }
 
 type UserService interface {
@@ -27,6 +28,9 @@ type UserService interface {
 	GetUserProfileByUsername(ctx context.Context, username string, requesterUID *string) (*apitypes.UserProfile, error)
 	EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error
 	EditProfileCover(ctx context.Context, uid, coverID string) error
+
+	CreateFriendRequest(ctx context.Context, requesterID, userID string) error
+	AcceptFriendRequest(ctx context.Context, requesterID, userID string) error
 
 	CreateUserPost(ctx context.Context, uid, text string, imageID *string) error
 	DeleteUserPost(ctx context.Context, uid, postID string) error
@@ -43,6 +47,7 @@ func NewUserService(
 	postsRepository repositories.PostsRepository,
 	postLikesRepository repositories.PostLikesRepository,
 	commentsRepository repositories.CommentsRepository,
+	friendshipRequestsRepository repositories.FriendshipRequestsRepository,
 ) UserService {
 	return &userService{
 		friendshipRepository,
@@ -51,6 +56,7 @@ func NewUserService(
 		postsRepository,
 		postLikesRepository,
 		commentsRepository,
+		friendshipRequestsRepository,
 	}
 }
 
@@ -76,6 +82,26 @@ func (s userService) CreateNewUser(ctx context.Context, email, firstName, lastNa
 	}
 
 	return uid, nil
+}
+
+func (s userService) CreateFriendRequest(ctx context.Context, requesterID, userID string) error {
+	areAlreadyFriends, err := s.friendshipRepository.AreFriends(ctx, requesterID, userID)
+	if err != nil {
+		return err
+	} else if areAlreadyFriends {
+		return errors.Errorf("users are already friends")
+	}
+
+	return s.friendshipRequestsRepository.CreateFriendRequest(ctx, requesterID, userID)
+}
+
+func (s userService) AcceptFriendRequest(ctx context.Context, requesterID, userID string) error {
+	err := s.friendshipRequestsRepository.DeleteFriendRequest(ctx, requesterID, userID)
+	if err != nil {
+		return err
+	}
+
+	return s.friendshipRepository.AddFriendship(ctx, requesterID, userID)
 }
 
 func (s userService) CreateUserPost(ctx context.Context, uid, text string, imageID *string) error {
@@ -130,12 +156,16 @@ func (s userService) GetUserProfileByID(ctx context.Context, uid, requesterUID s
 	}
 
 	friends, err := s.friendshipRepository.GetAllFriends(ctx, profile.Id)
+	if err != nil {
+		return nil, err
+	}
+
 	friendIDs := make([]string, len(friends))
 	for i, f := range friends {
 		friendIDs[i] = f.FriendID
 	}
 
-	apiProfile := apitypes.GetUserProfile(profile, friendIDs)
+	apiProfile := apitypes.GetUserProfile(profile, friendIDs, "none") // "none" since this is used only by /me endpoint right now
 
 	return &apiProfile, nil
 }
@@ -216,14 +246,56 @@ func (s userService) GetUserProfileByUsername(ctx context.Context, username stri
 	}
 
 	friends, err := s.friendshipRepository.GetAllFriends(ctx, profile.Id)
+	if err != nil {
+		return nil, err
+	}
+
 	friendIDs := make([]string, len(friends))
 	for i, f := range friends {
 		friendIDs[i] = f.FriendID
 	}
 
-	apiProfile := apitypes.GetUserProfile(profile, friendIDs)
+	var friendshipStatus apitypes.FriendshipStatus
+	friendshipStatus = apitypes.NoFriends
+
+	if requesterUID != nil {
+		friendshipStatus, err = s.getFriendshipStatus(ctx, *requesterUID, profile.Id)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	apiProfile := apitypes.GetUserProfile(profile, friendIDs, friendshipStatus)
 
 	return &apiProfile, nil
+}
+
+func (s userService) getFriendshipStatus(ctx context.Context, requesterID, userID string) (apitypes.FriendshipStatus, error) {
+	areFriends, err := s.friendshipRepository.AreFriends(ctx, userID, requesterID)
+	if err != nil {
+		return "", err
+	}
+	if areFriends {
+		return apitypes.Friends, nil
+	}
+
+	isFriendshipPending, err := s.friendshipRequestsRepository.CheckRequestExists(ctx, userID, requesterID)
+	if err != nil {
+		return "", err
+	}
+	if isFriendshipPending {
+		return apitypes.FriendshipPending, nil
+	}
+
+	isFriendshipRequested, err := s.friendshipRequestsRepository.CheckRequestExists(ctx, requesterID, userID)
+	if err != nil {
+		return "", err
+	}
+	if isFriendshipRequested {
+		return apitypes.FriendshipRequested, nil
+	}
+
+	return apitypes.NoFriends, nil
 }
 
 func (s userService) EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error {

@@ -57,7 +57,6 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
     }
 
     const attachImage = imagePreviewURL !== undefined && imagePreviewURL !== ""
-    console.log("attachImage: ", attachImage)
 
     createPost({text, attachImage}, {
       onSuccess: async (resp) => {

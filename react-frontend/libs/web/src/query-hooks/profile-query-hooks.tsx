@@ -1,10 +1,18 @@
-import { APIPostData, APIUserProfile, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, DeletePostRequest, LikePostRequest, SharePostRequest, mainApiClient } from "@facebook-clone/api_client/src";
+import { APIPostData, APIUserProfile, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, DeletePostRequest, FriendRequestData, LikePostRequest, SharePostRequest, mainApiClient } from "@facebook-clone/api_client/src";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
+
+export const queryKeys = {
+  getHistoricUserPosts: (userID?: string) => ["get-historic-user-posts", userID ?? "undefined"], // todo: check if userID = undefined can be a problem
+  post: (postID: string) => ["post", postID],
+  me: ["get-me-query"],
+  profile: (username: string) => ["get-profile-query", username],
+} as const
+
 export const useMeQuery = () => useQuery<APIUserProfile, AxiosError>(
   {
-    queryKey: ["get-me-query"],
+    queryKey: queryKeys.me,
     queryFn: () => {
       return mainApiClient.getMe()
     },
@@ -25,12 +33,6 @@ export const useProfileByUsernameQuery = (username: string) => useQuery<APIUserP
     },
   }
 )
-
-export const queryKeys = {
-  getHistoricUserPosts: (userID?: string) => ["get-historic-user-posts", userID ?? "undefined"], // todo: check if userID = undefined can be a problem
-  post: (postID: string) => ["post", postID],
-} as const
-
 
 export const useGetHistoricUserPostsQuery = (userID?: string) => {
   const queryClient = useQueryClient()
@@ -189,6 +191,38 @@ export const useSharePostMutation = () => {
       },
       onSuccess: (data, req) => {
         queryClient.invalidateQueries({queryKey: queryKeys.post(req.postID)})
+      }
+    }
+  )
+}
+
+export const useSendFriendRequestMutation = (username?: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, AxiosError, FriendRequestData>(
+    {
+      mutationKey: ["send-friend-request"],
+      mutationFn: (data) => {
+        return mainApiClient.sendFriendRequest(data)
+      },
+      onSuccess: (data, req) => {
+        if (username) queryClient.invalidateQueries({queryKey: queryKeys.profile(username)})
+      }
+    }
+  )
+}
+
+export const useAcceptFriendRequestMutation = (username?: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, AxiosError, FriendRequestData>(
+    {
+      mutationKey: ["accept-friend-request"],
+      mutationFn: (data) => {
+        return mainApiClient.acceptFriendRequest(data)
+      },
+      onSuccess: (data, req) => {
+        if (username) queryClient.invalidateQueries({queryKey: queryKeys.profile(username)})
       }
     }
   )

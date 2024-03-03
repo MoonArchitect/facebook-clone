@@ -1,11 +1,12 @@
 
 export type APIUserProfile = {
-  id:           string
-  name:         string
-  username:     string
-  friendIDs:    string[]
-  thumbnailID:  string
-  bannerID:     string
+  id:                     string
+  name:                   string
+  username:               string
+  friendIDs:              string[]
+  friendshipStatus:       'friends' | 'pending' | 'requested' | 'none',
+  thumbnailID:            string
+  bannerID:               string
 }
 
 export type APIMiniUserProfile = {

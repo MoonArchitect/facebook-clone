@@ -5,6 +5,16 @@ import (
 	"time"
 )
 
+// TODO: come up with something better
+type FriendshipStatus string
+
+const (
+	NoFriends           FriendshipStatus = "none"
+	FriendshipRequested FriendshipStatus = "requested"
+	FriendshipPending   FriendshipStatus = "pending"
+	Friends             FriendshipStatus = "friends"
+)
+
 type UserProfile struct {
 	Id          string   `json:"id"`
 	Name        string   `json:"name"`
@@ -12,6 +22,9 @@ type UserProfile struct {
 	FriendIDs   []string `json:"friendIDs"`
 	ThumbnailID string   `json:"thumbnailID"`
 	BannerID    string   `json:"bannerID"`
+
+	// in decreasing order of precedence 'friends' | 'pending' | 'requested' | 'none'
+	FriendshipStatus FriendshipStatus `json:"friendshipStatus"`
 }
 
 type MiniUserProfile struct {

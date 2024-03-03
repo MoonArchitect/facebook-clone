@@ -173,6 +173,19 @@
         background-color: var(--accent);
     }
 
+    .sendFriendRequest {
+        background-color: var(--accent);
+    }
+
+    .pendingFriendRequest {
+        background-color: var(--accent);
+        cursor: not-allowed;
+    }
+
+    .acceptFriendRequest {
+        background-color: var(--green-accent);
+    }
+
     .editProfileButton {
         background-color: var(--bg);
         color: var(--primary-text);

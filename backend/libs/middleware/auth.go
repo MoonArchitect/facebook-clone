@@ -44,12 +44,14 @@ func GetContextData(ctx *gin.Context) ContextData {
 	val, exists := ctx.Get(contextDataKey)
 	if !exists {
 		// log
+		// fmt.Println("contextDataKey does not exist")
 		return ContextData{}
 	}
 
 	data, ok := val.(ContextData)
 	if !ok {
 		// log
+		// fmt.Println("contextDataKey value is not of ContextData type")
 		return ContextData{}
 	}
 
