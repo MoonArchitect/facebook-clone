@@ -29,17 +29,15 @@ export type ProfileCoverProps = {
   profile?: APIUserProfileResponse
 }
 
+function emptyCallback(){
+  return null
+}
+
 export const ProfileCover = (props: ProfileCoverProps) => {
   const { profile } = props
   const {userData} = useSession()
   const {replace} = useRouter()
   const pathname = usePathname()
-
-  useEffect(() => {
-    if (userData?.id && profile?.id && userData?.id === profile?.id && pathname.includes(`/user/${userData.username}`)) {
-      replace("/profile")
-    }
-  }, [replace, pathname, profile, userData])
 
   const coverImageUploadRef = useRef<HTMLInputElement>(null)
   const {mutateAsync: uploadProfileCover} = useUploadProfileCover()
@@ -52,6 +50,8 @@ export const ProfileCover = (props: ProfileCoverProps) => {
     url: ""
   })
   const modalAppElement = useMemo(() => typeof window !== 'undefined' && document.getElementById('root') || undefined, [])
+
+  const isOwner = useMemo(() => userData?.id !== undefined && profile?.id === userData.id, [profile, userData])
 
   const selectNewCoverImage = useCallback((e: MouseEvent<HTMLDivElement> | MouseEvent<HTMLButtonElement>) => {
     coverImageUploadRef.current?.click()
@@ -105,6 +105,12 @@ export const ProfileCover = (props: ProfileCoverProps) => {
       await uploadProfileThumbnail(blob).then(() => closeModalCallback())
   }, [imagePreviewState, uploadProfileCover, uploadProfileThumbnail, closeModalCallback])
 
+  useEffect(() => {
+    if (userData?.id && profile?.id && userData?.id === profile?.id && pathname.includes(`/user/${userData.username}`)) {
+      replace("/profile")
+    }
+  }, [replace, pathname, profile, userData])
+
   return (
     <div className={styles.container}>
       <ReactModal
@@ -133,22 +139,22 @@ export const ProfileCover = (props: ProfileCoverProps) => {
         onChangeCapture={onCoverImageChangeCallback}
       />
 
-      <div className={styles.coverImage} onClick={selectNewCoverImage} >
+      <div className={clsx(styles.coverImage, isOwner && styles.interactive)} onClick={isOwner ? selectNewCoverImage : emptyCallback} >
         <img src={getImageURLFromId(profile?.bannerID ?? "")} alt={"profile cover"}/>
-        <button className={styles.coverImageButton} onClick={selectNewCoverImage}><CameraIcon/> Add Cover Photo</button>
+        {isOwner && <button className={clsx(styles.coverImageButton, styles.interactive)} onClick={selectNewCoverImage}><CameraIcon/> Add Cover Photo</button>}
       </div>
       <div className={styles.infoContainer}>
-        <div className={styles.thumbnailContainer} onClick={selectNewThumbnailImage}>
-          <img className={styles.profileThumbnail} onClick={selectNewThumbnailImage} src={getImageURLFromId(profile?.thumbnailID ?? "")} alt={"profile thumbnail"}></img>
-          <CameraIcon/>
+        <div className={styles.thumbnailContainer} onClick={isOwner ? selectNewThumbnailImage : emptyCallback}>
+          <img className={clsx(styles.profileThumbnail, isOwner && styles.interactive)} src={getImageURLFromId(profile?.thumbnailID ?? "")} alt={"profile thumbnail"}></img>
+          {isOwner && <CameraIcon/>}
         </div>
         <div className={styles.nameContainer}>
           <h1 className={styles.name}>{profile?.name ?? ""}</h1>
           <p className={styles.friendCount}>4 Friends</p>
         </div>
         <div className={styles.buttonContainer}>
-          <button className={clsx(styles.addStoryButton, styles.buttonText, styles.disabled)}><PlusIcon/>Add to Story</button>
-          <button className={clsx(styles.editProfileButton, styles.buttonText, styles.disabled)}><CogIcon/>Edit profile</button>
+          {isOwner && <button className={clsx(styles.addStoryButton, styles.buttonText, styles.disabled)}><PlusIcon/>Add to Story</button>}
+          {isOwner && <button className={clsx(styles.editProfileButton, styles.buttonText, styles.disabled)}><CogIcon/>Edit profile</button>}
           <button className={clsx(styles.settingsButton, styles.disabled)}><ChevronIcon/></button>
         </div>
       </div>
