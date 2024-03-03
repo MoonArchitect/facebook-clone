@@ -1,4 +1,5 @@
 import { getImageURLFromId } from "@facebook-clone/api_client/main_api"
+import { SyntheticEvent, useCallback, useState } from "react"
 import styles from "./media-content.module.scss"
 
 // TODO: redesign 'post API' and add proper interface instead of any type
@@ -39,9 +40,18 @@ export type MediaContentProps = {
 export const MediaContent = (props: MediaContentProps) => {
   const {images} = props
 
+  const [imgSrc, setImgSrc] = useState(getImageURLFromId(images[0]))
+
+  // TODO: this is terrible, redo
+  const onImageLoadError = useCallback((e: SyntheticEvent<HTMLImageElement>) => {
+    setTimeout(() => {
+      setImgSrc(getImageURLFromId(images[0]) + `?a=${Math.random()}`)
+    }, 200)
+  }, [images])
+
   return (
     <div className={styles.container}>
-      <img className={styles.img} src={getImageURLFromId(images[0])} alt="post media content" />
+      <img className={styles.img} src={imgSrc} alt="post media content" onError={onImageLoadError} />
     </div>
   )
 }

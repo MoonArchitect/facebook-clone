@@ -30,8 +30,10 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
   const [imagePreviewURL, setImagePreviewURL] = useState<string | undefined>(undefined)
   const editableDivRef = useRef<HTMLDivElement>(null)
   const coverImageUploadRef = useRef<HTMLInputElement>(null)
-  const {mutate: createPost, isPending} = useCreatePostMutation(data?.id ?? "unknown") // TODO fix this nullish coalescing
-  const {mutate: uploadPostImage} = useUploadPostImage()
+  const {mutate: createPost, isPending: isCreatingPost} = useCreatePostMutation(data?.id ?? "unknown") // TODO fix this nullish coalescing
+  const {mutate: uploadPostImage, isPending: isUploadingImage} = useUploadPostImage()
+
+  const isPendingUpload = useMemo(() => isCreatingPost || isUploadingImage, [isCreatingPost, isUploadingImage])
 
   const updateIsEmptyText = useCallback((e: FormEvent<HTMLDivElement>) => {
     if (e.currentTarget.innerText === "" || e.currentTarget.innerText === "\n") {
@@ -88,7 +90,7 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
       appElement={modalAppElement}
     >
       <div className={styles.container} onSubmit={() => null}>
-        {isPending && <div className={styles.loadingContainer}>
+        {isPendingUpload && <div className={styles.loadingContainer}>
           <div className={styles.animatedBackground}>Uploading</div>
         </div>}
         <div className={styles.legend}>
