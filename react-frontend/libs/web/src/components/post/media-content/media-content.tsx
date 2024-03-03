@@ -41,13 +41,17 @@ export const MediaContent = (props: MediaContentProps) => {
   const {images} = props
 
   const [imgSrc, setImgSrc] = useState(getImageURLFromId(images[0]))
+  const [reloadCount, setReloadCount] = useState(0)
 
   // TODO: this is terrible, redo
   const onImageLoadError = useCallback((e: SyntheticEvent<HTMLImageElement>) => {
-    setTimeout(() => {
-      setImgSrc(getImageURLFromId(images[0]) + `?a=${Math.random()}`)
-    }, 200)
-  }, [images])
+    if (reloadCount < 2) {
+      setTimeout(() => {
+        setImgSrc(getImageURLFromId(images[0]) + `?reloadCount=${reloadCount}`)
+        setReloadCount(reloadCount + 1)
+      }, 200)
+    }
+  }, [reloadCount, images])
 
   return (
     <div className={styles.container}>
