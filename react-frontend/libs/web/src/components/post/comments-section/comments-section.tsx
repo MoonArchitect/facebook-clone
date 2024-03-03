@@ -60,7 +60,8 @@ export const CommentsSection = (props: CommentsSectionProps) => {
     <div className={styles.commentsSectionContainer}>
 
       {comments[0] !== undefined &&
-        comments.map((comment, i) => i < commentsVisible ? <Comment comment={comment} /> : null)}
+        comments.map((comment, i) => i < commentsVisible ? <Comment key={`comment-${comment.createdAt}-${comment.owner.id}`} comment={comment} /> : null)}
+      {/* TODO: use comment id as key */}
 
       {comments.length > commentsVisible &&
          <div className={styles.showMoreButton} onClick={showMoreCommentsCallback}>View more comments</div>
