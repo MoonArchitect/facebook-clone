@@ -1,5 +1,5 @@
-import { ProfileFriendsSection } from "@facebook-clone/web/components/profile-page/profile-friends-section"
+import { ProfileFriendsSection } from "@facebook-clone/web/components/profile-page/friends-section/friends-section"
 
-export default function ProfileAbout() {
+export default function ProfileFriends() {
   return <ProfileFriendsSection />
 }

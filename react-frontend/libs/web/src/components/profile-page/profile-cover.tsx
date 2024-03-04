@@ -58,6 +58,16 @@ export const ProfileCover = (props: ProfileCoverProps) => {
 
   const isOwner = useMemo(() => userData?.id !== undefined && profile?.id === userData.id, [profile, userData])
 
+  const baseURLPrefix = useMemo(() => {
+    if (isOwner) {
+      return `/profile`
+    } else if (profile?.username) {
+      return `/user/${profile.username}`
+    }
+    return undefined
+  }, [isOwner, profile])
+
+
   const selectNewCoverImage = useCallback((e: MouseEvent<HTMLDivElement> | MouseEvent<HTMLButtonElement>) => {
     coverImageUploadRef.current?.click()
     setImagePreviewState({...imagePreviewState, target: "cover"})
@@ -168,7 +178,9 @@ export const ProfileCover = (props: ProfileCoverProps) => {
         </div>
         <div className={styles.nameContainer}>
           <h1 className={styles.name}>{profile?.name ?? ""}</h1>
-          <p className={styles.friendCount}>{profile?.friendIDs.length ?? "..."} Friends</p>
+          <Link href={`${baseURLPrefix}/friends`} className={styles.friendCount}>
+            {profile?.friendIDs.length ?? "..."} Friends
+          </Link>
         </div>
         <div className={styles.buttonContainer}>
           {!isOwner && userData?.id && profile && <ProfileActions profile={profile} />}
@@ -184,13 +196,12 @@ export const ProfileCover = (props: ProfileCoverProps) => {
 
       <div className={styles.lineDivider} />
 
-      <NavigationBar profileUsername={profile?.username}/>
+      <NavigationBar baseURLPrefix={baseURLPrefix}/>
     </div>
   )
 }
 
 type ProfileActionsProps = {
-  // userID: string
   profile: APIUserProfile
 }
 
@@ -234,25 +245,20 @@ const ProfileActions = (props: ProfileActionsProps) => {
   return "loading..."
 }
 
-const NavigationBar = (props: {profileUsername?: string}) => {
-  const {profileUsername} = props
-  const pathname = usePathname()
-  const prefix = useMemo(() => {
-    if (pathname.includes("/profile")) {
-      return `/profile`
-    } else {
-      return `/user/${profileUsername}` // TODO: ugly, either pass usename slug or ensure profileID is not undefined
-    }
-  }, [pathname, profileUsername])
+type NavigationBarProps = {
+  baseURLPrefix?: string
+}
 
+const NavigationBar = (props: NavigationBarProps) => {
+  const {baseURLPrefix} = props
 
   return (
     <div className={styles.navigationContainer}>
-      <NavigationButton href={`${prefix}`} title="Posts" />
-      <NavigationButton href={`${prefix}/about`} title="About" />
-      <NavigationButton href={`${prefix}/friends`} title="Friends" />
-      <NavigationButton href={`${prefix}/photos`} title="Photos" />
-      <NavigationButton href={`${prefix}/videos`} title="Videos" />
+      <NavigationButton href={baseURLPrefix ? `${baseURLPrefix}` : " "} title="Posts" />
+      <NavigationButton href={baseURLPrefix ? `${baseURLPrefix}/about` : " "} title="About" />
+      <NavigationButton href={baseURLPrefix ? `${baseURLPrefix}/friends` : " "} title="Friends" />
+      <NavigationButton href={baseURLPrefix ? `${baseURLPrefix}/photos` : " "} title="Photos" />
+      <NavigationButton href={baseURLPrefix ? `${baseURLPrefix}/videos` : " "} title="Videos" />
       <NavigationButton href=" " title="More" />
     </div>
   )

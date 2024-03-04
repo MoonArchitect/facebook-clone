@@ -1,0 +1,76 @@
+.container {
+  margin: auto;
+  margin-top: 16px;
+  max-width: 1200px;
+  padding: 12px 24px;
+
+  border-radius: 12px;
+  background-color: var(--primary);
+}
+
+.title {
+  margin: 0;
+  margin-bottom: 12px;
+
+  font-size: 1.85rem;
+  font-weight: 700;
+  font-family: var(--segoeui-semibold);
+}
+
+.friendList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(420px, 1fr));
+  gap: 16px;
+}
+
+.friendTileContainer {
+  position: relative;
+}
+
+.friendTileInfo {
+  display: flex;
+  align-items: center;
+  // flex: 1 1 400px;
+  padding: 6px 10px;
+
+  color: var(--primary-text);
+  text-decoration: none;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color ease var(--fastest-speed);
+
+  &:hover {
+    background-color: var(--hover);
+  }
+
+  .tileImage {
+    width: 100px;
+    height: 100px;
+    padding: 4px;
+    margin-right: 4px;
+    border-radius: 24px;
+  }
+
+  .tileTitle {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: var(--segoeui-semibold);
+    white-space: nowrap;
+  }
+}
+
+.optionsButton {
+  position: absolute;
+  right: 0px;
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  display: flex;
+  height: fit-content;
+  flex-direction: column;
+  justify-content: center;
+}
