@@ -16,7 +16,8 @@ export const OptionMenuButton = (props: OptionMenuButtonProps) => {
       className={clsx(
         styles.buttonContainer,
         accent === "red" && styles.redAccent,
-        accent === "blue" && styles.blueAccent
+        accent === "blue" && styles.blueAccent,
+        onClick === undefined && styles.deactivated
       )}
       onClick={onClick}
     >
