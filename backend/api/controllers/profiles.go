@@ -20,6 +20,7 @@ type ProfileController interface {
 	GetProfile(ctx *gin.Context)
 	CreateFriendRequest(ctx *gin.Context)
 	AcceptFriendRequest(ctx *gin.Context)
+	GetUserFriends(ctx *gin.Context)
 }
 
 func NewProfileController(userService user.UserService) ProfileController {
@@ -72,6 +73,29 @@ func (pc profileController) GetProfile(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, apiProfile)
+}
+
+func (pc profileController) GetUserFriends(ctx *gin.Context) {
+	// requesterID := middleware.GetContextData(ctx).UID
+	// if requesterID == nil {
+	// 	_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+	// 	return
+	// }
+
+	userID := ctx.Param("userID")
+	err := uuid.Validate(userID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	friends, err := pc.userService.GetUserFriends(ctx, userID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, friends)
 }
 
 func (pc profileController) CreateFriendRequest(ctx *gin.Context) {

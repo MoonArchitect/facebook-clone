@@ -29,6 +29,7 @@ type UserService interface {
 	EditProfileThumbnail(ctx context.Context, uid, thumbnailID string) error
 	EditProfileCover(ctx context.Context, uid, coverID string) error
 
+	GetUserFriends(ctx context.Context, userID string) ([]apitypes.MiniUserProfile, error)
 	CreateFriendRequest(ctx context.Context, requesterID, userID string) error
 	AcceptFriendRequest(ctx context.Context, requesterID, userID string) error
 
@@ -82,6 +83,29 @@ func (s userService) CreateNewUser(ctx context.Context, email, firstName, lastNa
 	}
 
 	return uid, nil
+}
+
+func (s userService) GetUserFriends(ctx context.Context, userID string) ([]apitypes.MiniUserProfile, error) {
+	friends, err := s.friendshipRepository.GetAllFriends(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+	friendIDs := make([]string, len(friends))
+	for i, f := range friends {
+		friendIDs[i] = f.FriendID
+	}
+
+	profiles, err := s.profileRepository.GetManyByID(ctx, friendIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	apiProfiles := make([]apitypes.MiniUserProfile, len(profiles))
+	for i, p := range profiles {
+		apiProfiles[i] = apitypes.GetMiniUserProfile(p)
+	}
+
+	return apiProfiles, nil
 }
 
 func (s userService) CreateFriendRequest(ctx context.Context, requesterID, userID string) error {
@@ -165,7 +189,7 @@ func (s userService) GetUserProfileByID(ctx context.Context, uid, requesterUID s
 		friendIDs[i] = f.FriendID
 	}
 
-	apiProfile := apitypes.GetUserProfile(profile, friendIDs, "none") // "none" since this is used only by /me endpoint right now
+	apiProfile := apitypes.GetUserProfile(*profile, friendIDs, "none") // "none" since this is used only by /me endpoint right now
 
 	return &apiProfile, nil
 }
@@ -265,7 +289,7 @@ func (s userService) GetUserProfileByUsername(ctx context.Context, username stri
 		}
 	}
 
-	apiProfile := apitypes.GetUserProfile(profile, friendIDs, friendshipStatus)
+	apiProfile := apitypes.GetUserProfile(*profile, friendIDs, friendshipStatus)
 
 	return &apiProfile, nil
 }

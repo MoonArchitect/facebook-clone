@@ -152,7 +152,7 @@ func main() {
 	api.GET("/profiles/me", authRequired, profileController.GetMe)
 	// api.PATCH("/profiles/me", authRequired, profileController.UpdateMe)
 	api.GET("/profiles/get", profileController.GetProfile)
-	// api.GET("/profiles/:userID/friends", profileController.GetUserFriends)
+	api.GET("/profiles/:userID/friends", profileController.GetUserFriends)
 	api.POST("/profiles/:userID/accept-friendship", authRequired, profileController.AcceptFriendRequest)
 	api.POST("/profiles/:userID/request-friendship", authRequired, profileController.CreateFriendRequest)
 	api.GET("/profiles/posts", feedController.GetUserPosts) // TODO: authRequired might not be required

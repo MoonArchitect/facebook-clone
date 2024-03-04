@@ -1,4 +1,5 @@
 import {
+  APIMiniUserProfile,
   APIPostData,
   APIUserProfile,
   CreateCommentRequest,
@@ -18,6 +19,7 @@ export const queryKeys = {
   // todo: check if userID = undefined can be a problem
   getHistoricUserPosts: (userID?: string) => ["get-historic-user-posts", userID ?? "undefined"],
   post: (postID: string) => ["post", postID],
+  friendList: (userID: string) => ["friend-list", userID],
   me: ["get-me-query"],
   profile: (username: string) => ["get-profile-query", username],
 } as const
@@ -130,6 +132,17 @@ export const useGetPostDataQuey = (postID: string) => {
         return mainApiClient.getPost({postID})
       },
       staleTime: 5 * 60 * 1000, // TODO: do it in queryClient config maybe
+    }
+  )
+}
+
+export const useGetAllFriendsQuery = (userID: string) => {
+  return useQuery<APIMiniUserProfile[], AxiosError>(
+    {
+      queryKey: queryKeys.friendList(userID),
+      queryFn: () => {
+        return mainApiClient.getAllFriends({userID})
+      },
     }
   )
 }

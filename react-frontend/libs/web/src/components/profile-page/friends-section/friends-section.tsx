@@ -1,49 +1,40 @@
 "use client"
 
-import { APIUserProfile, getImageURLFromId } from "@facebook-clone/api_client/src"
+import { APIMiniUserProfile, APIUserProfile, getImageURLFromId } from "@facebook-clone/api_client/src"
 import Link from "next/link"
 import { useMemo } from "react"
+import { useGetAllFriendsQuery } from "../../../query-hooks/profile-query-hooks"
 import { OptionMenuButton } from "../../ui/options-popup/option-menu-buttons"
 import { OptionsButton } from "../../ui/options-popup/options-popup"
-import { useSession } from "../../utils/session-context"
+
 import styles from "./friends-section.module.scss"
 
-export const ProfileFriendsSection = () => {
-  const {userData} = useSession()
+type ProfileFriendsSectionProps = {
+  profile: APIUserProfile
+}
 
-  if (userData === undefined)
-    return "loading"
+export const ProfileFriendsSection = (props: ProfileFriendsSectionProps) => {
+  const { profile } = props
+  const {data, isLoading} = useGetAllFriendsQuery(profile.id)
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Friends</h1>
       <div className={styles.friendList}>
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
-        <FriendTile profile={userData} />
+        {isLoading
+          ? ""
+          : data === undefined
+            ? ""
+            : data.map((p) =>
+              <FriendTile profile={p} />
+            )}
       </div>
     </div>
   )
 }
 
 type FriendTileProps = {
-  profile: APIUserProfile
+  profile: APIMiniUserProfile
 }
 
 const FriendTile = (props: FriendTileProps) => {

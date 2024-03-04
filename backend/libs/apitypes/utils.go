@@ -71,7 +71,7 @@ func BuildApiComments(dbComments []repositories.Comment, profiles map[string]rep
 		}
 
 		apiComments[c.PostId] = append(apiComments[c.PostId], Comment{
-			Owner:     GetMiniUserProfile(&ownerProfile),
+			Owner:     GetMiniUserProfile(ownerProfile),
 			Text:      c.Text,
 			Responds:  []Comment{},
 			CreatedAt: JSONTime(c.CreatedAt),
@@ -112,7 +112,7 @@ func BuildApiPosts(profiles []repositories.Profile, postLikes []repositories.Pos
 
 		apiPosts[i] = Post{
 			Id:                 p.Id,
-			Owner:              GetMiniUserProfile(&ownerProfile),
+			Owner:              GetMiniUserProfile(ownerProfile),
 			PostText:           p.PostText,
 			PostImages:         p.PostImages,
 			Comments:           comments,
@@ -126,7 +126,7 @@ func BuildApiPosts(profiles []repositories.Profile, postLikes []repositories.Pos
 	return apiPosts, nil
 }
 
-func GetMiniUserProfile(p *repositories.Profile) MiniUserProfile {
+func GetMiniUserProfile(p repositories.Profile) MiniUserProfile {
 	return MiniUserProfile{
 		Id:          p.Id,
 		Name:        p.Name,
@@ -136,7 +136,7 @@ func GetMiniUserProfile(p *repositories.Profile) MiniUserProfile {
 	}
 }
 
-func GetUserProfile(p *repositories.Profile, friendIDs []string, friendshipStatus FriendshipStatus) UserProfile {
+func GetUserProfile(p repositories.Profile, friendIDs []string, friendshipStatus FriendshipStatus) UserProfile {
 	return UserProfile{
 		Id:               p.Id,
 		Name:             p.Name,

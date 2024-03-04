@@ -1,5 +1,5 @@
 import axios, { AxiosInstance } from 'axios'
-import { APIPostData, APIUserProfile } from './types'
+import { APIMiniUserProfile, APIPostData, APIUserProfile } from './types'
 
 export type SignInRequestData = {
   email: string
@@ -115,6 +115,10 @@ const createMainApiClient = (client: AxiosInstance) => {
     },
     acceptFriendRequest: async (data: FriendRequestData) => {
       await client.post(`/profiles/${data.userID}/accept-friendship`)
+    },
+    getAllFriends: async (data: FriendRequestData) => {
+      const resp = await client.get<APIMiniUserProfile[]>(`/profiles/${data.userID}/friends`)
+      return resp.data
     },
   }
 }
