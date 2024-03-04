@@ -1,10 +1,22 @@
-import { APIPostData, APIUserProfile, CreateCommentRequest, CreatePostRequestData, CreatePostResponse, DeletePostRequest, FriendRequestData, LikePostRequest, SharePostRequest, mainApiClient } from "@facebook-clone/api_client/src";
+import {
+  APIPostData,
+  APIUserProfile,
+  CreateCommentRequest,
+  CreatePostRequestData,
+  CreatePostResponse,
+  DeletePostRequest,
+  FriendRequestData,
+  LikePostRequest,
+  SharePostRequest,
+  mainApiClient
+} from "@facebook-clone/api_client/src";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
 
 export const queryKeys = {
-  getHistoricUserPosts: (userID?: string) => ["get-historic-user-posts", userID ?? "undefined"], // todo: check if userID = undefined can be a problem
+  // todo: check if userID = undefined can be a problem
+  getHistoricUserPosts: (userID?: string) => ["get-historic-user-posts", userID ?? "undefined"],
   post: (postID: string) => ["post", postID],
   me: ["get-me-query"],
   profile: (username: string) => ["get-profile-query", username],
@@ -54,7 +66,9 @@ export const useGetHistoricUserPostsQuery = (userID?: string) => {
         return data.pages.flatMap((page) => page.map((post) => post.id))
       },
       enabled: userID !== undefined,
-      getNextPageParam: (lastPage, _, lastPageParam) => lastPage.length === 0 ? undefined : lastPageParam + lastPage.length,
+      getNextPageParam: (lastPage, _, lastPageParam) => {
+        return lastPage.length === 0 ? undefined : lastPageParam + lastPage.length
+      },
       initialPageParam: 0,
     }
   )
@@ -76,7 +90,9 @@ export const useGetHomePageFeedQuery = () => {
       select(data) {
         return data.pages.flatMap((page) => page.map((post) => post.id))
       },
-      getNextPageParam: (lastPage, _, lastPageParam) => lastPage.length === 0 ? undefined : lastPageParam + lastPage.length,
+      getNextPageParam: (lastPage, _, lastPageParam) => {
+        return lastPage.length === 0 ? undefined : lastPageParam + lastPage.length
+      },
       initialPageParam: 0,
     }
   )
@@ -98,7 +114,9 @@ export const useGetGroupsPageFeedQuery = () => {
       select(data) {
         return data.pages.flatMap((page) => page.map((post) => post.id))
       },
-      getNextPageParam: (lastPage, _, lastPageParam) => lastPage.length === 0 ? undefined : lastPageParam + lastPage.length,
+      getNextPageParam: (lastPage, _, lastPageParam) => {
+        return lastPage.length === 0 ? undefined : lastPageParam + lastPage.length
+      },
       initialPageParam: 0,
     }
   )

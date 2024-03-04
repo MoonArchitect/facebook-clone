@@ -12,10 +12,11 @@ import { useCreatePostMutation, useMeQuery } from "../../../query-hooks/profile-
 import { ProfilePreview } from "../../ui/profile-preview/profile-preview"
 import styles from "./create-post-modal.module.scss"
 
-const VideoIcon = () => <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yE/r/epGAMnVkMsy.png?_nc_eui2=AeEWIj5mBPtRos9zMCvBhTVaLvvaxKiLzcEu-9rEqIvNwfYUTcGeuxPQhNVdLjIQuwtmbeI1ofts_EOPCEp0FDXe" className={styles.iconImage} alt="" />
-const ImageIcon = () => <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yQ/r/74AG-EvEtBm.png?_nc_eui2=AeGI40qt-sq_wGIC4IbLAolPjLWb3nZ8TcaMtZvednxNxgiThUktEHGM1pQHJkQpPaRBfsdk7-DjbJuY7UPxeJqS" className={styles.iconImage} alt="" />
-const PeopleIcon = () => <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yT/r/bvcq83GzJ4T.png?_nc_eui2=AeE_xlCQlDTHyUqxeAFJbLn43Uog0xyj1YXdSiDTHKPVhY7G5GBjUWsDSFcxAl9oRnh65Da1kQyz40GfbTaOhJL4" className={styles.iconImage} alt="" />
-const EmojiIcon = () => <img src="https://static.xx.fbcdn.net/rsrc.php/v3/y7/r/_RWOIsUgWGL.png?_nc_eui2=AeHmi-iv8VZdJfcOM62FJDJopRYQ3zWJHxilFhDfNYkfGEnjqhDZHzk2okn4tVs7Grha0kA7UXm2IPfHq24AIBoW" className={styles.iconImage} alt="" />
+
+const VideoIcon = () => <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yE/r/epGAMnVkMsy.png?_nc_eui2=AeEWIj5mBPtRos9zMCvBhTVaLvvaxKiLzcEu-9rEqIvNwfYUTcGeuxPQhNVdLjIQuwtmbeI1ofts_EOPCEp0FDXe" className={styles.iconImage} alt="" /> // eslint-disable-line
+const ImageIcon = () => <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yQ/r/74AG-EvEtBm.png?_nc_eui2=AeGI40qt-sq_wGIC4IbLAolPjLWb3nZ8TcaMtZvednxNxgiThUktEHGM1pQHJkQpPaRBfsdk7-DjbJuY7UPxeJqS" className={styles.iconImage} alt="" /> // eslint-disable-line
+const PeopleIcon = () => <img src="https://static.xx.fbcdn.net/rsrc.php/v3/yT/r/bvcq83GzJ4T.png?_nc_eui2=AeE_xlCQlDTHyUqxeAFJbLn43Uog0xyj1YXdSiDTHKPVhY7G5GBjUWsDSFcxAl9oRnh65Da1kQyz40GfbTaOhJL4" className={styles.iconImage} alt="" /> // eslint-disable-line
+const EmojiIcon = () => <img src="https://static.xx.fbcdn.net/rsrc.php/v3/y7/r/_RWOIsUgWGL.png?_nc_eui2=AeHmi-iv8VZdJfcOM62FJDJopRYQ3zWJHxilFhDfNYkfGEnjqhDZHzk2okn4tVs7Grha0kA7UXm2IPfHq24AIBoW" className={styles.iconImage} alt="" /> // eslint-disable-line
 
 export type CreatePostModalProps = {
   isOpen: boolean
@@ -30,7 +31,9 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
   const [imagePreviewURL, setImagePreviewURL] = useState<string | undefined>(undefined)
   const editableDivRef = useRef<HTMLDivElement>(null)
   const coverImageUploadRef = useRef<HTMLInputElement>(null)
-  const {mutate: createPost, isPending: isCreatingPost} = useCreatePostMutation(data?.id ?? "unknown") // TODO fix this nullish coalescing
+
+  // TODO fix this nullish coalescing
+  const {mutate: createPost, isPending: isCreatingPost} = useCreatePostMutation(data?.id ?? "unknown")
   const {mutate: uploadPostImage, isPending: isUploadingImage} = useUploadPostImage()
 
   const isPendingUpload = useMemo(() => isCreatingPost || isUploadingImage, [isCreatingPost, isUploadingImage])
@@ -78,7 +81,9 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
     e.stopPropagation()
   }, [])
 
-  const modalAppElement = useMemo(() => typeof window !== 'undefined' && document.getElementById('root') || undefined, [])
+  const modalAppElement = useMemo(
+    () => typeof window !== 'undefined' && document.getElementById('root') || undefined,
+    [])
 
   return (
     <Modal
@@ -124,7 +129,10 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
 
         <div className={styles.menuContainer}>
           <p>Add to your post</p>
-          <div className={clsx(styles.iconContainer, isImageAttached && styles.selected)} onClick={() => setIsImageAttached(!isImageAttached)}>
+          <div
+            className={clsx(styles.iconContainer, isImageAttached && styles.selected)}
+            onClick={() => setIsImageAttached(!isImageAttached)}
+          >
             <ImageIcon />
           </div>
           <div className={styles.iconContainer}>

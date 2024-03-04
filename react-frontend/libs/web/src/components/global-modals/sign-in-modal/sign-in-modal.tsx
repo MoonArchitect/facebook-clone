@@ -35,7 +35,9 @@ export const SignInModal = (props: SignInModalProps) => {
     close()
   }, [showSignupModal, close])
 
-  const modalAppElement = useMemo(() => typeof window !== 'undefined' && document.getElementById('root') || undefined, [])
+  const modalAppElement = useMemo(
+    () => typeof window !== 'undefined' && document.getElementById('root') || undefined,
+    [])
 
   return (
     <Modal

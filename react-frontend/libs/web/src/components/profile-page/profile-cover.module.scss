@@ -177,6 +177,17 @@
         background-color: var(--accent);
     }
 
+    .friendsButton {
+        background-color: var(--bg);
+        cursor: not-allowed;
+    }
+
+    .sendMessegeButton {
+        background-color: var(--accent);
+        fill: white;
+        cursor: not-allowed;
+    }
+
     .pendingFriendRequest {
         background-color: var(--accent);
         cursor: not-allowed;

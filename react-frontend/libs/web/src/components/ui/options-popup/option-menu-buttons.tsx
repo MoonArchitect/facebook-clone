@@ -12,7 +12,14 @@ export const OptionMenuButton = (props: OptionMenuButtonProps) => {
   const {title, accent, onClick} = props
 
   return (
-    <div className={clsx(styles.buttonContainer, accent === "red" && styles.redAccent, accent === "blue" && styles.blueAccent)} onClick={onClick}>
+    <div
+      className={clsx(
+        styles.buttonContainer,
+        accent === "red" && styles.redAccent,
+        accent === "blue" && styles.blueAccent
+      )}
+      onClick={onClick}
+    >
       {title}
     </div>
   )

@@ -27,7 +27,10 @@ export const DropdownItem = (props: PropsWithChildren<DropdownItemProps>) => {
   }, [activeId, goToMenu, onClick, setActiveId, setPreviousId])
 
   return (
-    <div className={clsx(commonStyles.menuItem, goToMenu === undefined && onClick === undefined && commonStyles.disabled)} onClick={handleClick}>
+    <div
+      className={clsx(commonStyles.menuItem, goToMenu === undefined && onClick === undefined && commonStyles.disabled)}
+      onClick={handleClick}
+    >
       <div className={commonStyles.menuIconButton}>{leftIcon}</div>
       {children}
       <div

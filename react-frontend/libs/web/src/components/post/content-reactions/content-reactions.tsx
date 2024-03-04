@@ -51,7 +51,10 @@ export const ContentReactions = (props: ContentReactionsProps) => {
       <LineDivider />
 
       <div className={styles.menu}>
-        <div className={clsx(styles.button, likedByCurrentUser && styles.activeButton)} onClick={() => likePost({postID})}>
+        <div
+          className={clsx(styles.button, likedByCurrentUser && styles.activeButton)}
+          onClick={() => likePost({postID})}
+        >
           <LikeIcon /> &thinsp; Like
         </div>
         <div

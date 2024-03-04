@@ -26,7 +26,8 @@ export type UseClickOutsideSubscriber = {
   domRef: RefObject<HTMLElement>
 }
 
-// Used to allow this to be unmounted with the popup that it closes to avoid event handler staying subscribed after popup it closes is unmounted
+// Used to allow this to be unmounted with the popup that it closes to avoid
+//  event handler staying subscribed after popup it closes is unmounted
 export const UseClickOutsideSubscriber = (props: UseClickOutsideSubscriber) => {
   const {domRef, effect} = props
 

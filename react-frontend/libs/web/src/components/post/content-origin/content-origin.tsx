@@ -37,7 +37,9 @@ export const ContentOrigin = (props: ContentOriginProps) => {
 
   return (
     <div className={styles.container}>
-      <Link href={getLinkToProfile(postOwner.username)} className={styles.icon}><img src={getImageURLFromId(postOwner.thumbnailID)} alt="profile thumbnail" /></Link>
+      <Link href={getLinkToProfile(postOwner.username)} className={styles.icon}>
+        <img src={getImageURLFromId(postOwner.thumbnailID)} alt="profile thumbnail" />
+      </Link>
       <div className={styles.infoContainer}>
         <Link href={getLinkToProfile(postOwner.username)} className={styles.links}>{postOwner.name}</Link>
         <div className={styles.info}>
@@ -52,7 +54,8 @@ export const ContentOrigin = (props: ContentOriginProps) => {
         <OptionMenuButton accent="no" title="Info" />
         <RequireAuthenticated>
           <OptionMenuButton accent="blue" title="Report" />
-          {postOwner.id === userData?.id && <OptionMenuButton accent="red" title="Delete" onClick={deletePostHandler} />}
+          {postOwner.id === userData?.id
+            && <OptionMenuButton accent="red" title="Delete" onClick={deletePostHandler} />}
         </RequireAuthenticated>
       </OptionsButton>
     </div>

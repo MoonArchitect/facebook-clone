@@ -28,7 +28,9 @@ export const SignUpModal = (props: SignUpModalProps) => {
       signupMutation({email, password, firstName, lastName}, {onSuccess: close})
   }, [close, signupMutation])
 
-  const modalAppElement = useMemo(() => typeof window !== 'undefined' && document.getElementById('root') || undefined, [])
+  const modalAppElement = useMemo(
+    () => typeof window !== 'undefined' && document.getElementById('root') || undefined,
+    [])
 
   return (
     <Modal
@@ -89,7 +91,8 @@ export const SignUpModal = (props: SignUpModalProps) => {
           People who use our service may have uploaded your contact information to Facebook. Learn more.
         </p>
         <p className={styles.smallText}>
-          By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy. You may receive SMS notifications from us and can opt out at any time.
+          By clicking Sign Up, you agree to our Terms, Privacy Policy and Cookies Policy.
+          You may receive SMS notifications from us and can opt out at any time.
         </p>
 
         <button className={styles.submitButton}>Submit</button>

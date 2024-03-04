@@ -45,7 +45,11 @@ export const Post = (props: PostProps) => {
         onFocusComment={() => setIsCommentFocused(!isCommentFocused)}
       />
 
-      <CommentsSection comments={post.comments ?? []} isCommentFocused={isCommentFocused} focusComment={() => setIsCommentFocused(true)} postID={postID} />
+      <CommentsSection
+        comments={post.comments ?? []}
+        isCommentFocused={isCommentFocused}
+        focusComment={() => setIsCommentFocused(true)}
+        postID={postID} />
     </div>
   )
 }

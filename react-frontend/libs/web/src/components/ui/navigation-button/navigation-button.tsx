@@ -16,7 +16,12 @@ export const NavigationButton = (props: NavigationButtonProps) => {
   const { title, icon, href, justifyCenter, onClick } = props
 
   return (
-    <Link href={href ?? ""} className={clsx(styles.navigationButton, (onClick === undefined && href === undefined) && styles.disabled)} onClick={onClick} style={{justifyContent: justifyCenter ? "center" : "flex-start"}}>
+    <Link
+      href={href ?? ""}
+      className={clsx(styles.navigationButton, (onClick === undefined && href === undefined) && styles.disabled)}
+      onClick={onClick}
+      style={{justifyContent: justifyCenter ? "center" : "flex-start"}}
+    >
       <div className={styles.icon}>
         {/* <img src={iconSrc} alt="" /> */}
         {icon}

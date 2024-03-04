@@ -60,7 +60,9 @@ export const CommentsSection = (props: CommentsSectionProps) => {
     <div className={styles.commentsSectionContainer}>
 
       {comments[0] !== undefined &&
-        comments.map((comment, i) => i < commentsVisible ? <Comment key={`comment-${comment.createdAt}-${comment.owner.id}`} comment={comment} /> : null)}
+        comments.map((comment, i) => i < commentsVisible
+          ? <Comment key={`comment-${comment.createdAt}-${comment.owner.id}`} comment={comment} />
+          : null)}
       {/* TODO: use comment id as key */}
 
       {comments.length > commentsVisible &&
@@ -127,8 +129,15 @@ const CreateCommentSection = (props: Pick<CommentsSectionProps, "isCommentFocuse
       </Link>
       <div className={clsx(styles.inputContainer, isCommentFocused && styles.expandedInput)} onFocus={focusComment}>
         {isEmptyText && <div className={styles.inputPlaceholder}>Submit your first comment</div>}
-        <div ref={editableDivRef} className={styles.input} contentEditable onInput={updateIsEmptyText} onKeyDown={handleKeyDown}></div>
-        <ArrowIcon className={clsx(styles.arrowIcon, isCommentFocused && styles.visible)} onClick={createCommentCallback} />
+        <div
+          ref={editableDivRef}
+          className={styles.input}
+          contentEditable
+          onInput={updateIsEmptyText}
+          onKeyDown={handleKeyDown}></div>
+        <ArrowIcon
+          className={clsx(styles.arrowIcon, isCommentFocused && styles.visible)}
+          onClick={createCommentCallback} />
       </div>
     </div>
   )
