@@ -47,17 +47,7 @@ export const ProfileFriendsPage = (props: ProfileFriendsSectionProps) => {
           : data === undefined
             ? ""
             : data.map((p) =>
-              <>
-                <FriendTile profile={p} />
-                <FriendTile profile={p} />
-                <FriendTile profile={p} />
-                <FriendTile profile={p} />
-                <FriendTile profile={p} />
-                <FriendTile profile={p} />
-                <FriendTile profile={p} />
-                <FriendTile profile={p} />
-                <FriendTile profile={p} />
-              </>
+              <FriendTile profile={p} />
             )}
       </div>
     </div>
