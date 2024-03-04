@@ -33,6 +33,37 @@ export const ProfileFriendsSection = (props: ProfileFriendsSectionProps) => {
   )
 }
 
+// TODO: this is temp, move to a different file
+export const ProfileFriendsPage = (props: ProfileFriendsSectionProps) => {
+  const { profile } = props
+  const {data, isLoading} = useGetAllFriendsQuery(profile.id)
+
+  return (
+    <div className={styles.pageContainer}>
+      {/* <h1 className={styles.title}>Friends</h1> */}
+      <div className={styles.friendList}>
+        {isLoading
+          ? ""
+          : data === undefined
+            ? ""
+            : data.map((p) =>
+              <>
+                <FriendTile profile={p} />
+                <FriendTile profile={p} />
+                <FriendTile profile={p} />
+                <FriendTile profile={p} />
+                <FriendTile profile={p} />
+                <FriendTile profile={p} />
+                <FriendTile profile={p} />
+                <FriendTile profile={p} />
+                <FriendTile profile={p} />
+              </>
+            )}
+      </div>
+    </div>
+  )
+}
+
 type FriendTileProps = {
   profile: APIMiniUserProfile
 }

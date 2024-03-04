@@ -8,6 +8,11 @@
   background-color: var(--primary);
 }
 
+.pageContainer {
+  flex: 1;
+  padding: 12px 24px;
+}
+
 .title {
   margin: 0;
   margin-bottom: 12px;
