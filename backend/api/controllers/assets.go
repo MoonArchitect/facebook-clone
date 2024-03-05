@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"bytes"
+	"fb-clone/libs/apierror"
 	"fb-clone/libs/config"
 	"fb-clone/libs/middleware"
 	"fb-clone/services/user"
@@ -39,12 +40,12 @@ const ImageSizeLimit = 10 * 1024 * 1024 // 10 MB
 func (pc assetsController) UploadProfileThumbnail(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	if ctx.Request.ContentLength > ImageSizeLimit {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("image size exceeded"))
+		apierror.HandleGinError(ctx, ErrorValidationFailed, fmt.Errorf("image size exceeded"))
 		return
 	}
 
@@ -53,32 +54,32 @@ func (pc assetsController) UploadProfileThumbnail(ctx *gin.Context) {
 	buff := make([]byte, 512)
 	_, err := ctx.Request.Body.Read(buff)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to read 512 bytes: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to read 512 bytes: %w", err))
 		return
 	}
 
 	mimeType := http.DetectContentType(buff)
 	if mimeType != "image/jpeg" && mimeType != "image/png" && mimeType != "image/webp" {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("image format is unsupported"))
+		apierror.HandleGinError(ctx, ErrorValidationFailed, fmt.Errorf("image format is unsupported"))
 		return
 	}
 
 	rest, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to read rest: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to read rest: %w", err))
 		return
 	}
 
 	fullImage := append(buff, rest...) // TODO: find a better way to handle a file
 	fullImage, err = resizeImageToThumbnail(fullImage)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed edit image: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed edit image: %w", err))
 		return
 	}
 
 	thumbnailID, err := uuid.NewRandom()
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed generate image uuid: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed generate image uuid: %w", err))
 		return
 	}
 
@@ -91,13 +92,13 @@ func (pc assetsController) UploadProfileThumbnail(ctx *gin.Context) {
 		Body:        bytes.NewReader(fullImage),
 	})
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to upload image: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to upload image: %w", err))
 		return
 	}
 
 	err = pc.userService.EditProfileThumbnail(ctx, *uid, thumbnailIDString)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to update profile: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to update profile: %w", err))
 		return
 	}
 
@@ -107,12 +108,12 @@ func (pc assetsController) UploadProfileThumbnail(ctx *gin.Context) {
 func (pc assetsController) UploadProfileCover(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	if ctx.Request.ContentLength > ImageSizeLimit {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("image size exceeded"))
+		apierror.HandleGinError(ctx, ErrorValidationFailed, fmt.Errorf("image size exceeded"))
 		return
 	}
 
@@ -121,32 +122,32 @@ func (pc assetsController) UploadProfileCover(ctx *gin.Context) {
 	buff := make([]byte, 512)
 	_, err := ctx.Request.Body.Read(buff)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to read 512 bytes: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to read 512 bytes: %w", err))
 		return
 	}
 
 	mimeType := http.DetectContentType(buff)
 	if mimeType != "image/jpeg" && mimeType != "image/png" && mimeType != "image/webp" {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("image format is unsupported"))
+		apierror.HandleGinError(ctx, ErrorValidationFailed, fmt.Errorf("image format is unsupported"))
 		return
 	}
 
 	rest, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to read rest: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to read rest: %w", err))
 		return
 	}
 
 	fullImage := append(buff, rest...) // TODO: find a better way to handle a file
 	fullImage, err = resizeImageToCover(fullImage)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed edit image: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed edit image: %w", err))
 		return
 	}
 
 	thumbnailID, err := uuid.NewRandom()
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed generate image uuid: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed generate image uuid: %w", err))
 		return
 	}
 	thumbnailIDString := thumbnailID.String()
@@ -159,13 +160,13 @@ func (pc assetsController) UploadProfileCover(ctx *gin.Context) {
 		Body:        bytes.NewReader(fullImage),
 	})
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to upload image: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to upload image: %w", err))
 		return
 	}
 
 	err = pc.userService.EditProfileCover(ctx, *uid, thumbnailIDString)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to update profile: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to update profile: %w", err))
 		return
 	}
 
@@ -176,7 +177,7 @@ func (pc assetsController) UploadPostImage(ctx *gin.Context) {
 	imageID := ctx.Param("id")
 
 	if ctx.Request.ContentLength > ImageSizeLimit {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("image size exceeded"))
+		apierror.HandleGinError(ctx, ErrorValidationFailed, fmt.Errorf("image size exceeded"))
 		return
 	}
 
@@ -185,26 +186,26 @@ func (pc assetsController) UploadPostImage(ctx *gin.Context) {
 	buff := make([]byte, 512)
 	_, err := ctx.Request.Body.Read(buff)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to read 512 bytes: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to read 512 bytes: %w", err))
 		return
 	}
 
 	mimeType := http.DetectContentType(buff)
 	if mimeType != "image/jpeg" && mimeType != "image/png" && mimeType != "image/webp" {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("image format is unsupported"))
+		apierror.HandleGinError(ctx, ErrorValidationFailed, fmt.Errorf("image format is unsupported"))
 		return
 	}
 
 	rest, err := io.ReadAll(ctx.Request.Body)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to read rest: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to read rest: %w", err))
 		return
 	}
 
 	fullImage := append(buff, rest...) // TODO: find a better way to handle a file
 	fullImage, err = resizePostImage(fullImage)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed edit image: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed edit image: %w", err))
 		return
 	}
 
@@ -217,7 +218,7 @@ func (pc assetsController) UploadPostImage(ctx *gin.Context) {
 		Body:        bytes.NewReader(fullImage),
 	})
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to upload image: %w", err))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to upload image: %w", err))
 		return
 	}
 

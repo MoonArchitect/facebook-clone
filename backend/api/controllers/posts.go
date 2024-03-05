@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	"fb-clone/libs/apierror"
 	"fb-clone/libs/middleware"
 	"fb-clone/services/user"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -41,14 +41,14 @@ type CreatePostResponse struct {
 func (pc postsController) CreatePost(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req CreatePostRequest
 	err := ctx.BindJSON(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
@@ -56,7 +56,7 @@ func (pc postsController) CreatePost(ctx *gin.Context) {
 	if req.AttachImage {
 		uuid, err := uuid.NewRandom()
 		if err != nil {
-			_ = ctx.AbortWithError(http.StatusBadRequest, err)
+			apierror.HandleGinError(ctx, ErrorInternal, err)
 			return
 		}
 		id := uuid.String()
@@ -65,7 +65,7 @@ func (pc postsController) CreatePost(ctx *gin.Context) {
 
 	err = pc.userService.CreateUserPost(ctx, *uid, req.Text, imageID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -83,20 +83,20 @@ type DeletePostRequest struct {
 func (pc postsController) DeletePost(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req DeletePostRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.DeleteUserPost(ctx, *uid, req.PostID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -110,7 +110,7 @@ type CreateCommentRequest struct {
 func (pc postsController) CreateComment(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
@@ -118,39 +118,23 @@ func (pc postsController) CreateComment(ctx *gin.Context) {
 	postID := ctx.Param("postid")
 	err := uuid.Validate(postID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	var req CreateCommentRequest
 	err = ctx.BindJSON(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
-
-	// var imageID *string
-	// if req.AttachImage {
-	// 	uuid, err := uuid.NewRandom()
-	// 	if err != nil {
-	// 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
-	// 		return
-	// 	}
-	// 	id := uuid.String()
-	// 	imageID = &id
-	// }
 
 	err = pc.userService.CreateComment(ctx, *uid, req.Text, postID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
-	// resp := CreatePostResponse{}
-	// if imageID != nil {
-	// 	resp.ImageID = *imageID
-	// }
-	// ctx.JSON(http.StatusOK, resp)
 	ctx.Status(http.StatusOK)
 }
 
@@ -162,7 +146,7 @@ func (pc postsController) GetPost(ctx *gin.Context) {
 	var req GetPostRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
@@ -171,7 +155,7 @@ func (pc postsController) GetPost(ctx *gin.Context) {
 
 	posts, err := pc.userService.GetPost(ctx, uid, req.PostID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -185,20 +169,20 @@ type LikePostRequest struct {
 func (pc postsController) LikePost(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req LikePostRequest
 	err := ctx.BindJSON(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.LikePost(ctx, *uid, req.PostID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -212,20 +196,20 @@ type SharePostRequest struct {
 func (pc postsController) SharePost(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req SharePostRequest
 	err := ctx.BindJSON(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.SharePost(ctx, req.PostID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 

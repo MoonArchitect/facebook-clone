@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fb-clone/libs/apierror"
 	"fb-clone/libs/apitypes"
 	"fb-clone/libs/middleware"
 	"fb-clone/services/feed"
@@ -34,14 +35,14 @@ type GetUserPostsRequest struct {
 func (fc feedController) GetUserPosts(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	// if uid == nil {
-	// 	_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+	//  apierror.HandleGinError(ctx, UnauthorizedAccess)
 	// 	return
 	// }
 
 	var req GetUserPostsRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
@@ -49,7 +50,7 @@ func (fc feedController) GetUserPosts(ctx *gin.Context) {
 
 	posts, err := fc.feedService.GetHistoricUserPosts(ctx, uid, req.UserID, req.Skip)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -66,7 +67,7 @@ func (fc feedController) GetHomeFeed(ctx *gin.Context) {
 	var req GetHomeFeedRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
@@ -78,7 +79,7 @@ func (fc feedController) GetHomeFeed(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get home feed"))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to get home feed"))
 		return
 	}
 
@@ -92,20 +93,20 @@ type GetGroupsFeedRequest struct {
 func (fc feedController) GetGroupsFeed(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req GetGroupsFeedRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	apiPosts, err := fc.feedService.GetPersonalGroupFeed(ctx, *uid, req.Skip)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, fmt.Errorf("failed to get groups feed"))
+		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to get groups feed"))
 		return
 	}
 

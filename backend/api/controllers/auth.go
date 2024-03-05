@@ -2,11 +2,11 @@ package controllers
 
 import (
 	"errors"
+	"fb-clone/libs/apierror"
 	"fb-clone/libs/config"
 	"fb-clone/postgresql/repositories"
 	"fb-clone/services/auth"
 	"fb-clone/services/user"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,13 +37,13 @@ type EmailPassword struct {
 func (c authController) Signin(ctx *gin.Context) {
 	var ep EmailPassword
 	if err := ctx.BindJSON(&ep); err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	token, err := c.authService.Signin(ctx, ep.Email, ep.Password)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -60,22 +60,22 @@ type SignUpRequest struct {
 func (c authController) Signup(ctx *gin.Context) {
 	var ep SignUpRequest
 	if err := ctx.BindJSON(&ep); err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	uid, err := c.userService.CreateNewUser(ctx, ep.Email, ep.FirstName, ep.FirstName)
 	if errors.Is(err, repositories.EmailAlreadyRegistered) {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	} else if err != nil {
-		_ = ctx.AbortWithError(http.StatusInternalServerError, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
 	token, err := c.authService.CreateCredentials(ctx, ep.Email, ep.Password, uid)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 

@@ -1,10 +1,10 @@
 package controllers
 
 import (
+	"fb-clone/libs/apierror"
 	"fb-clone/libs/apitypes"
 	"fb-clone/libs/middleware"
 	"fb-clone/services/user"
-	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -35,13 +35,13 @@ func NewProfileController(userService user.UserService) ProfileController {
 func (pc profileController) GetMe(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	apiProfile, err := pc.userService.GetUserProfileByID(ctx, *uid, *uid)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -65,13 +65,13 @@ func (pc profileController) GetProfile(ctx *gin.Context) {
 	var req GetProfileRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	apiProfile, err := pc.userService.GetUserProfileByUsername(ctx, req.Username, uid)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -86,13 +86,13 @@ type GetUserFriendRequestsResponse struct {
 func (pc profileController) GetUserFriendRequests(ctx *gin.Context) {
 	requesterID := middleware.GetContextData(ctx).UID
 	if requesterID == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	friendshipRequests, friendshipPending, err := pc.userService.GetUserFriendRequests(ctx, *requesterID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -105,20 +105,20 @@ func (pc profileController) GetUserFriendRequests(ctx *gin.Context) {
 func (pc profileController) GetUserFriends(ctx *gin.Context) {
 	// requesterID := middleware.GetContextData(ctx).UID
 	// if requesterID == nil {
-	// 	_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+	// 	apierror.HandleGinError(ctx, UnauthorizedAccess)
 	// 	return
 	// }
 
 	userID := ctx.Param("userID")
 	err := uuid.Validate(userID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	friends, err := pc.userService.GetUserFriends(ctx, userID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -128,20 +128,20 @@ func (pc profileController) GetUserFriends(ctx *gin.Context) {
 func (pc profileController) CreateFriendRequest(ctx *gin.Context) {
 	requesterID := middleware.GetContextData(ctx).UID
 	if requesterID == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	userID := ctx.Param("userID")
 	err := uuid.Validate(userID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.CreateFriendRequest(ctx, *requesterID, userID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -151,20 +151,20 @@ func (pc profileController) CreateFriendRequest(ctx *gin.Context) {
 func (pc profileController) AcceptFriendRequest(ctx *gin.Context) {
 	requesterID := middleware.GetContextData(ctx).UID
 	if requesterID == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	userID := ctx.Param("userID")
 	err := uuid.Validate(userID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.AcceptFriendRequest(ctx, *requesterID, userID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
@@ -174,20 +174,20 @@ func (pc profileController) AcceptFriendRequest(ctx *gin.Context) {
 func (pc profileController) UnfriendRequest(ctx *gin.Context) {
 	requesterID := middleware.GetContextData(ctx).UID
 	if requesterID == nil {
-		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	userID := ctx.Param("userID")
 	err := uuid.Validate(userID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.UnfriendRequest(ctx, *requesterID, userID)
 	if err != nil {
-		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		apierror.HandleGinError(ctx, ErrorInternal, err)
 		return
 	}
 
