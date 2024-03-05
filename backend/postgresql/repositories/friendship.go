@@ -3,6 +3,7 @@ package repositories
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -11,14 +12,17 @@ import (
 )
 
 type Friendship struct {
-	UserID   string `db:"user_id"`
-	FriendID string `db:"friend_id"`
+	ID        string    `db:"id"`
+	UserID    string    `db:"user_id"`
+	FriendID  string    `db:"friend_id"`
+	CreatedAt time.Time `db:"created_at"`
 }
 
 type FriendshipRepository interface {
 	GetAllFriends(ctx context.Context, uid string) ([]Friendship, error)
 	AreFriends(ctx context.Context, uid1, uid2 string) (bool, error)
 	AddFriendship(ctx context.Context, requesterID, userID string) error
+	DeleteFriendship(ctx context.Context, requesterID, userID string) error
 }
 
 type friendshipRepository struct {
@@ -93,6 +97,27 @@ func (r friendshipRepository) AddFriendship(ctx context.Context, requesterID, us
 
 	if err != nil {
 		return errors.Errorf("failed to create insert query: %w", err)
+	}
+
+	_, err = r.dbPool.Exec(ctx, sql, args...)
+	if err != nil {
+		return errors.Errorf("failed to exec: %w", err)
+	}
+
+	return nil
+}
+
+func (r friendshipRepository) DeleteFriendship(ctx context.Context, requesterID, userID string) error {
+	sql, args, err := sq.
+		Delete(friendshipsTable).
+		Where(squirrel.Or{
+			squirrel.Eq{"user_id": requesterID, "friend_id": userID},
+			squirrel.Eq{"user_id": userID, "friend_id": requesterID},
+		}).
+		ToSql()
+
+	if err != nil {
+		return errors.Errorf("failed to create delete query: %w", err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)

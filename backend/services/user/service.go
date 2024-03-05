@@ -30,8 +30,10 @@ type UserService interface {
 	EditProfileCover(ctx context.Context, uid, coverID string) error
 
 	GetUserFriends(ctx context.Context, userID string) ([]apitypes.MiniUserProfile, error)
+	GetUserFriendRequests(ctx context.Context, userID string) ([]apitypes.MiniUserProfile, []apitypes.MiniUserProfile, error)
 	CreateFriendRequest(ctx context.Context, requesterID, userID string) error
 	AcceptFriendRequest(ctx context.Context, requesterID, userID string) error
+	UnfriendRequest(ctx context.Context, requesterID, userID string) error
 
 	CreateUserPost(ctx context.Context, uid, text string, imageID *string) error
 	DeleteUserPost(ctx context.Context, uid, postID string) error
@@ -90,6 +92,7 @@ func (s userService) GetUserFriends(ctx context.Context, userID string) ([]apity
 	if err != nil {
 		return nil, err
 	}
+
 	friendIDs := make([]string, len(friends))
 	for i, f := range friends {
 		friendIDs[i] = f.FriendID
@@ -106,6 +109,49 @@ func (s userService) GetUserFriends(ctx context.Context, userID string) ([]apity
 	}
 
 	return apiProfiles, nil
+}
+
+// Returns mini profiles of FriendRequests, PendingRequests
+func (s userService) GetUserFriendRequests(ctx context.Context, userID string) ([]apitypes.MiniUserProfile, []apitypes.MiniUserProfile, error) {
+	requestedFriendships, err := s.friendshipRequestsRepository.GetAllUserRequests(ctx, userID)
+	if err != nil {
+		return nil, nil, err
+	}
+	pendingFriendships, err := s.friendshipRequestsRepository.GetAllPendingRequests(ctx, userID)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	friendIDs := make([]string, len(requestedFriendships)+len(pendingFriendships))
+	i := 0
+	requestedFriendshipsSet := map[string]struct{}{}
+	for _, f := range requestedFriendships {
+		friendIDs[i] = f.FriendID
+		requestedFriendshipsSet[f.FriendID] = struct{}{}
+		i += 1
+	}
+
+	for _, f := range pendingFriendships {
+		friendIDs[i] = f.UserID
+		i += 1
+	}
+
+	profiles, err := s.profileRepository.GetManyByID(ctx, friendIDs)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	apiFriendRequests := make([]apitypes.MiniUserProfile, 0, len(requestedFriendships))
+	apiFriendsPending := make([]apitypes.MiniUserProfile, 0, len(pendingFriendships))
+	for _, p := range profiles {
+		if _, ok := requestedFriendshipsSet[p.Id]; ok {
+			apiFriendRequests = append(apiFriendRequests, apitypes.GetMiniUserProfile(p))
+		} else {
+			apiFriendsPending = append(apiFriendsPending, apitypes.GetMiniUserProfile(p))
+		}
+	}
+
+	return apiFriendRequests, apiFriendsPending, nil
 }
 
 func (s userService) CreateFriendRequest(ctx context.Context, requesterID, userID string) error {
@@ -126,6 +172,16 @@ func (s userService) AcceptFriendRequest(ctx context.Context, requesterID, userI
 	}
 
 	return s.friendshipRepository.AddFriendship(ctx, requesterID, userID)
+}
+
+func (s userService) UnfriendRequest(ctx context.Context, requesterID, userID string) error {
+	// TODO: first check that they are friends or remove err from repository if users are not friends
+	err := s.friendshipRepository.DeleteFriendship(ctx, requesterID, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s userService) CreateUserPost(ctx context.Context, uid, text string, imageID *string) error {

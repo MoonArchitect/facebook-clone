@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fb-clone/libs/apitypes"
 	"fb-clone/libs/middleware"
 	"fb-clone/services/user"
 	"fmt"
@@ -20,7 +21,9 @@ type ProfileController interface {
 	GetProfile(ctx *gin.Context)
 	CreateFriendRequest(ctx *gin.Context)
 	AcceptFriendRequest(ctx *gin.Context)
+	UnfriendRequest(ctx *gin.Context)
 	GetUserFriends(ctx *gin.Context)
+	GetUserFriendRequests(ctx *gin.Context)
 }
 
 func NewProfileController(userService user.UserService) ProfileController {
@@ -73,6 +76,30 @@ func (pc profileController) GetProfile(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, apiProfile)
+}
+
+type GetUserFriendRequestsResponse struct {
+	FriendshipsRequested []apitypes.MiniUserProfile `json:"friendshipsRequested"`
+	FriendshipsPending   []apitypes.MiniUserProfile `json:"friendshipsPending"`
+}
+
+func (pc profileController) GetUserFriendRequests(ctx *gin.Context) {
+	requesterID := middleware.GetContextData(ctx).UID
+	if requesterID == nil {
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		return
+	}
+
+	friendshipRequests, friendshipPending, err := pc.userService.GetUserFriendRequests(ctx, *requesterID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, GetUserFriendRequestsResponse{
+		FriendshipsRequested: friendshipRequests,
+		FriendshipsPending:   friendshipPending,
+	})
 }
 
 func (pc profileController) GetUserFriends(ctx *gin.Context) {
@@ -136,6 +163,29 @@ func (pc profileController) AcceptFriendRequest(ctx *gin.Context) {
 	}
 
 	err = pc.userService.AcceptFriendRequest(ctx, *requesterID, userID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.Status(http.StatusOK)
+}
+
+func (pc profileController) UnfriendRequest(ctx *gin.Context) {
+	requesterID := middleware.GetContextData(ctx).UID
+	if requesterID == nil {
+		_ = ctx.AbortWithError(http.StatusUnauthorized, fmt.Errorf("unauthorized access"))
+		return
+	}
+
+	userID := ctx.Param("userID")
+	err := uuid.Validate(userID)
+	if err != nil {
+		_ = ctx.AbortWithError(http.StatusBadRequest, err)
+		return
+	}
+
+	err = pc.userService.UnfriendRequest(ctx, *requesterID, userID)
 	if err != nil {
 		_ = ctx.AbortWithError(http.StatusBadRequest, err)
 		return

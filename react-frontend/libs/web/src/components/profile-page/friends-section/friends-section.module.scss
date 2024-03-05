@@ -79,3 +79,49 @@
   flex-direction: column;
   justify-content: center;
 }
+
+.actionButtonContainer {
+  position: absolute;
+  right: 20px;
+  top: 0;
+  bottom: 0;
+  margin-top: auto;
+  margin-bottom: auto;
+  height: fit-content;
+
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 8px;
+
+  user-select: none;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--segoeui-semibold);
+
+  .button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: filter ease var(--fastest-speed);
+
+    &:hover{
+      filter: brightness(1.1);
+    }
+  }
+
+  .accept {
+    background-color: var(--green-accent);
+  }
+
+  .ignoreRequest {
+    background-color: var(--primary);
+    cursor: not-allowed;
+  }
+  
+  .undoRequest {
+    background-color: var(--red-accent);
+    cursor: not-allowed;
+  }
+}

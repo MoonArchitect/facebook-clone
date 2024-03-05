@@ -52,6 +52,11 @@ export type CreateCommentRequest = {
   text: string
 }
 
+export type GetFriendRequestsResponse = {
+  friendshipsRequested: APIMiniUserProfile[],
+  friendshipsPending: APIMiniUserProfile[],
+}
+
 // TODO: check if this is shared between all users on server side
 const mainApiAxiosClient = axios.create({
   baseURL: 'http://localhost:8080/api/v1',
@@ -116,8 +121,15 @@ const createMainApiClient = (client: AxiosInstance) => {
     acceptFriendRequest: async (data: FriendRequestData) => {
       await client.post(`/profiles/${data.userID}/accept-friendship`)
     },
+    sendUnfriendRequest: async (data: FriendRequestData) => {
+      await client.post(`/profiles/${data.userID}/unfriend`)
+    },
     getAllFriends: async (data: FriendRequestData) => {
       const resp = await client.get<APIMiniUserProfile[]>(`/profiles/${data.userID}/friends`)
+      return resp.data
+    },
+    getFriendRequests: async () => {
+      const resp = await client.get<GetFriendRequestsResponse>(`/profiles/me/friend-requests`)
       return resp.data
     },
   }

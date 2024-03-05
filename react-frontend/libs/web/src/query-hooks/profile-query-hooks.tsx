@@ -7,6 +7,7 @@ import {
   CreatePostResponse,
   DeletePostRequest,
   FriendRequestData,
+  GetFriendRequestsResponse,
   LikePostRequest,
   SharePostRequest,
   mainApiClient
@@ -20,7 +21,9 @@ export const queryKeys = {
   getHistoricUserPosts: (userID?: string) => ["get-historic-user-posts", userID ?? "undefined"],
   post: (postID: string) => ["post", postID],
   friendList: (userID: string) => ["friend-list", userID],
+  friendRequests: (userID: string) => ["friend-requests", userID],
   me: ["get-me-query"],
+  myFriendRequests: ["my-friend-requests"],
   profile: (username: string) => ["get-profile-query", username],
 } as const
 
@@ -147,6 +150,17 @@ export const useGetAllFriendsQuery = (userID: string) => {
   )
 }
 
+export const useGetFriendRequestsQuery = () => {
+  return useQuery<GetFriendRequestsResponse, AxiosError>(
+    {
+      queryKey: queryKeys.myFriendRequests,
+      queryFn: () => {
+        return mainApiClient.getFriendRequests()
+      },
+    }
+  )
+}
+
 export const useCreatePostMutation = (userID: string) => {
   const queryClient = useQueryClient()
 
@@ -237,13 +251,37 @@ export const useSendFriendRequestMutation = (username?: string) => {
         return mainApiClient.sendFriendRequest(data)
       },
       onSuccess: (data, req) => {
-        if (username) queryClient.invalidateQueries({queryKey: queryKeys.profile(username)})
+        if (username) {
+          queryClient.invalidateQueries({queryKey: queryKeys.myFriendRequests})
+          queryClient.invalidateQueries({queryKey: queryKeys.profile(username)})
+        }
       }
     }
   )
 }
 
-export const useAcceptFriendRequestMutation = (username?: string) => {
+export const useUnFriendMutation = (username?: string, clientUserID?: string) => {
+  const queryClient = useQueryClient()
+
+  return useMutation<void, AxiosError, FriendRequestData>(
+    {
+      mutationKey: ["unfriend-request"],
+      mutationFn: (data) => {
+        return mainApiClient.sendUnfriendRequest(data)
+      },
+      onSuccess: (data, req) => {
+        if (username && clientUserID) {
+          queryClient.invalidateQueries({queryKey: queryKeys.me})
+          queryClient.invalidateQueries({queryKey: queryKeys.friendList(clientUserID)})
+          queryClient.invalidateQueries({queryKey: queryKeys.profile(username)})
+        }
+      }
+    }
+  )
+}
+
+// invalidate client and user's cache
+export const useAcceptFriendRequestMutation = (username?: string, clientUserID?: string) => {
   const queryClient = useQueryClient()
 
   return useMutation<void, AxiosError, FriendRequestData>(
@@ -253,7 +291,12 @@ export const useAcceptFriendRequestMutation = (username?: string) => {
         return mainApiClient.acceptFriendRequest(data)
       },
       onSuccess: (data, req) => {
-        if (username) queryClient.invalidateQueries({queryKey: queryKeys.profile(username)})
+        if (username && clientUserID) {
+          queryClient.invalidateQueries({queryKey: queryKeys.me})
+          queryClient.invalidateQueries({queryKey: queryKeys.myFriendRequests})
+          queryClient.invalidateQueries({queryKey: queryKeys.friendList(clientUserID)})
+          queryClient.invalidateQueries({queryKey: queryKeys.profile(username)})
+        }
       }
     }
   )

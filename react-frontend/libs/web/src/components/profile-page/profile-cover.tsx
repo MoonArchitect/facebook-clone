@@ -15,7 +15,11 @@ import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.sv
 import { APIUserProfile, getImageURLFromId } from "@facebook-clone/api_client/src"
 import ReactModal from "react-modal"
 import { useUploadProfileCover, useUploadProfileThumbnail } from "../../query-hooks/asset-query-hooks"
-import { useAcceptFriendRequestMutation, useSendFriendRequestMutation } from "../../query-hooks/profile-query-hooks"
+import {
+  useAcceptFriendRequestMutation,
+  useSendFriendRequestMutation,
+  useUnFriendMutation
+} from "../../query-hooks/profile-query-hooks"
 import { useSession } from "../utils/session-context"
 import styles from "./profile-cover.module.scss"
 
@@ -208,13 +212,21 @@ type ProfileActionsProps = {
 const ProfileActions = (props: ProfileActionsProps) => {
   const {profile} = props
 
+  const {userData} = useSession()
+
   const {mutate: sendFriendRequest} = useSendFriendRequestMutation(profile.username)
   const {mutate: acceptFriendRequest} = useAcceptFriendRequestMutation(profile.username)
+  const {mutate: unfriendRequest} = useUnFriendMutation(profile.username, userData?.id)
 
   if (profile.friendshipStatus === 'friends')
     return (
       <>
-        <button className={clsx(styles.friendsButton, styles.buttonText)}><FriendsIcon/>Friends</button>
+        <button
+          className={clsx(styles.unfriendButton, styles.buttonText)}
+          onClick={() => unfriendRequest({userID: profile.id})}
+        >
+          <FriendsIcon/>Unfriend
+        </button>
         <button className={clsx(styles.sendMessegeButton, styles.buttonText)}><MessengerIcon/>Messege</button>
       </>
     )

@@ -149,12 +149,14 @@ func main() {
 	api.POST("/auth/signout", authRequired, authController.Signout)
 	api.POST("/auth/signup", authController.Signup)
 
-	api.GET("/profiles/me", authRequired, profileController.GetMe)
 	// api.PATCH("/profiles/me", authRequired, profileController.UpdateMe)
+	api.GET("/profiles/me", authRequired, profileController.GetMe)
+	api.GET("/profiles/me/friend-requests", authRequired, profileController.GetUserFriendRequests)
 	api.GET("/profiles/get", profileController.GetProfile)
 	api.GET("/profiles/:userID/friends", profileController.GetUserFriends)
 	api.POST("/profiles/:userID/accept-friendship", authRequired, profileController.AcceptFriendRequest)
 	api.POST("/profiles/:userID/request-friendship", authRequired, profileController.CreateFriendRequest)
+	api.POST("/profiles/:userID/unfriend", authRequired, profileController.UnfriendRequest)
 	api.GET("/profiles/posts", feedController.GetUserPosts) // TODO: authRequired might not be required
 
 	api.GET("/posts", postsController.GetPost)
