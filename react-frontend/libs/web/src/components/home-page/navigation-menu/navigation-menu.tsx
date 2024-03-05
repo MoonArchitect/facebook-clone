@@ -28,7 +28,7 @@ const UserProfileNavigationButton = () => {
         icon={
           <img
             style={{objectFit: "cover", height: "100%", width: "100%" }}
-            src={getImageURLFromId(data?.thumbnailID)}
+            src={data?.thumbnailID ? getImageURLFromId(data.thumbnailID) : ""}
             alt="Your profile" />
         }
         title={data?.name ?? "not available"} />

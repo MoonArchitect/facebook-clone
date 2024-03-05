@@ -5,7 +5,6 @@ import Modal from "react-modal"
 
 import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.svg"
 
-import { getImageURLFromId } from "@facebook-clone/api_client/src"
 import clsx from "clsx"
 import { useUploadPostImage } from "../../../query-hooks/asset-query-hooks"
 import { useCreatePostMutation, useMeQuery } from "../../../query-hooks/profile-query-hooks"
@@ -107,7 +106,7 @@ export const CreatePostModal = (props: CreatePostModalProps) => {
         <div className={styles.lineDivider} />
 
         <div className={styles.profilePreviewContainer}>
-          <ProfilePreview link="/profile" thumbnailURL={getImageURLFromId(data?.thumbnailID)} name={data?.name} />
+          <ProfilePreview link="/profile" thumbnailID={data?.thumbnailID} name={data?.name} />
         </div>
 
         <div className={styles.inputContainer}>

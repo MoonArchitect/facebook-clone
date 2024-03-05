@@ -2,7 +2,6 @@ import { useGlobalModal } from "../../global-modals/global-modals"
 import { LineDivider, NavigationButton } from "../../ui"
 import { ProfilePreview } from "../../ui/profile-preview/profile-preview"
 
-import { getImageURLFromId } from "@facebook-clone/api_client/src"
 import { useMeQuery } from "../../../query-hooks/profile-query-hooks"
 import { RequireAuthenticated } from "../../utils/require-auth"
 import styles from "./create-post-section.module.scss"
@@ -20,7 +19,7 @@ export const CreatePostSection = () => {
       <div className={styles.container}>
         <div className={styles.firstRow}>
           <div className={styles.thumbnailContainer}>
-            <ProfilePreview thumbnailURL={getImageURLFromId(data?.thumbnailID)} link="/profile" />
+            <ProfilePreview thumbnailID={data?.thumbnailID} link="/profile" />
           </div>
           <div className={styles.createButton} onClick={showCreatePostModal}>Create Post</div>
         </div>

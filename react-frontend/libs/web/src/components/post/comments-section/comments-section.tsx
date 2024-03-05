@@ -125,7 +125,10 @@ const CreateCommentSection = (props: Pick<CommentsSectionProps, "isCommentFocuse
       <div className={clsx(styles.loadingCover, isPending && styles.loading)} />
 
       <Link className={styles.userLink} href="/profile">
-        <img className={styles.userThumbnail} src={getImageURLFromId(userData?.thumbnailID)} alt="profile thumbnail"/>
+        <img
+          className={styles.userThumbnail}
+          src={userData?.thumbnailID ? getImageURLFromId(userData.thumbnailID) : ""}
+          alt="profile thumbnail"/>
       </Link>
       <div className={clsx(styles.inputContainer, isCommentFocused && styles.expandedInput)} onFocus={focusComment}>
         {isEmptyText && <div className={styles.inputPlaceholder}>Submit your first comment</div>}

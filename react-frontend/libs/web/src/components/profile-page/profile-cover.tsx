@@ -166,7 +166,7 @@ export const ProfileCover = (props: ProfileCoverProps) => {
         className={clsx(styles.coverImage, isOwner && styles.interactive)}
         onClick={isOwner ? selectNewCoverImage : emptyCallback}
       >
-        <img src={getImageURLFromId(profile?.bannerID ?? "")} alt={"profile cover"}/>
+        {profile?.bannerID && <img src={getImageURLFromId(profile.bannerID)} alt={"profile cover"}/>}
         {isOwner && <button className={clsx(styles.coverImageButton, styles.interactive)} onClick={selectNewCoverImage}>
           <CameraIcon/> Add Cover Photo
         </button>

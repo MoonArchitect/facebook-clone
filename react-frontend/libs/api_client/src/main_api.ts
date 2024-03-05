@@ -137,9 +137,9 @@ const createMainApiClient = (client: AxiosInstance) => {
 
 export const mainApiClient = createMainApiClient(mainApiAxiosClient)
 
-export function getImageURLFromId(imageID?: string): string {
-  if (imageID === undefined)
-    return ""
+export function getImageURLFromId(imageID: string): string {
+  // if (imageID === undefined)
+  //   return ""
 
   return "https://test-facebook-public.s3.ap-southeast-1.amazonaws.com/" + imageID
 }
