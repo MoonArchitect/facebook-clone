@@ -2,11 +2,11 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/v2/pgxscan"
+	"github.com/go-errors/errors"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -39,7 +39,7 @@ func NewCommentsRepository(dbPool *pgxpool.Pool) CommentsRepository {
 func (r commentsRepository) CreateComment(ctx context.Context, userID, text, postID string) error {
 	uuid, err := uuid.NewRandom() // TODO: generate uuid in database
 	if err != nil {
-		return fmt.Errorf("failed generate uuid: %w", err)
+		return errors.Errorf("failed generate uuid: %w", err)
 	}
 
 	sql, args, err := sq.
@@ -49,12 +49,12 @@ func (r commentsRepository) CreateComment(ctx context.Context, userID, text, pos
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create insert post query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to insert post: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
@@ -67,12 +67,12 @@ func (r commentsRepository) DeletePostComments(ctx context.Context, postID strin
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create delete comments query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to delete comments: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
@@ -87,18 +87,18 @@ func (r commentsRepository) GetFromManyPosts(ctx context.Context, postIDs []stri
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		return nil, dbError(ErrorQueryRows, err)
 	}
 
 	var res []Comment
 	err = pgxscan.ScanAll(&res, rows)
 	if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return res, nil

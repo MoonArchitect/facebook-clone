@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -47,12 +46,12 @@ func (r profileRepository) CreateProfile(ctx context.Context, p Profile) error {
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create insert profile query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to insert profile: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 	// TODO if duplicate, or foreign key is not satisfied
 	// else if pgerr := err.(*pgconn.PgError); pgerr.Code == "23505" {
@@ -70,20 +69,20 @@ func (r profileRepository) GetByID(ctx context.Context, uid string) (*Profile, e
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		return nil, dbError(ErrorQueryRows, err)
 	}
 
 	var res Profile
 	err = pgxscan.ScanOne(&res, rows)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("no profile found")
+		return nil, dbError(ErrorNoRows, err)
 	} else if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return &res, nil
@@ -97,18 +96,18 @@ func (r profileRepository) GetManyByID(ctx context.Context, uids []string) ([]Pr
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		return nil, dbError(ErrorQueryRows, err)
 	}
 
 	var res []Profile
 	err = pgxscan.ScanAll(&res, rows)
 	if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return res, nil
@@ -122,20 +121,20 @@ func (r profileRepository) GetByUsername(ctx context.Context, username string) (
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		return nil, dbError(ErrorQueryRows, err)
 	}
 
 	var res Profile
 	err = pgxscan.ScanOne(&res, rows)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("no profile found")
+		return nil, dbError(ErrorNoRows, err)
 	} else if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return &res, nil
@@ -149,12 +148,12 @@ func (r profileRepository) EditProfileThumbnail(ctx context.Context, uid, thumbn
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create update query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to update: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
@@ -168,12 +167,12 @@ func (r profileRepository) EditProfileCover(ctx context.Context, uid, coverID st
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create update query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to update: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil

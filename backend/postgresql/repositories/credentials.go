@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -44,20 +43,20 @@ func (cr credentialsRepository) GetCredentials(ctx context.Context, email string
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select creds query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	var creds Credentials
 	rows, err := cr.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	err = pgxscan.ScanOne(&creds, rows)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, fmt.Errorf("no creds")
+		return nil, dbError(ErrorNoRows, err)
 	} else if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return &creds, nil
@@ -71,17 +70,17 @@ func (cr credentialsRepository) InsertCredentials(ctx context.Context, creds Cre
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create insert creds query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
-	_, err = cr.dbPool.Exec(ctx, sql, args...)
+	res, err := cr.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to insert creds: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
-	// if res.RowsAffected() != 0 {
-	// 	return fmt.Errorf("did not insert creds")
-	// }
+	if res.RowsAffected() != 0 {
+		return dbError(ErrorNoRowsAffected, nil)
+	}
 
 	return nil
 }
@@ -93,16 +92,16 @@ func (cr credentialsRepository) DeleteCredentials(ctx context.Context, email str
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create delete creds query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	res, err := cr.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to delete creds: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	if res.RowsAffected() != 0 {
-		return fmt.Errorf("did not delete creds")
+		return dbError(ErrorNoRowsAffected, nil)
 	}
 
 	return nil

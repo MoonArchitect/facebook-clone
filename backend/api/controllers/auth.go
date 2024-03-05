@@ -65,8 +65,8 @@ func (c authController) Signup(ctx *gin.Context) {
 	}
 
 	uid, err := c.userService.CreateNewUser(ctx, ep.Email, ep.FirstName, ep.FirstName)
-	if errors.Is(err, repositories.EmailAlreadyRegistered) {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+	if errors.Is(err, repositories.ErrorDuplicateUserEmail) {
+		apierror.HandleGinError(ctx, ErrorUserEmailAlredyRegistered, err)
 		return
 	} else if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, err)

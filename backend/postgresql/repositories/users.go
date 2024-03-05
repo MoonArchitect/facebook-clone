@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -21,10 +20,6 @@ type User struct {
 type UserRepository interface {
 	CreateUser(ctx context.Context, email string) (string, error)
 }
-
-var (
-	EmailAlreadyRegistered = errors.Errorf("email already exists")
-)
 
 type userRepository struct {
 	dbPool *pgxpool.Pool
@@ -45,12 +40,12 @@ func (r userRepository) CreateUser(ctx context.Context, email string) (string, e
 		ToSql()
 
 	if err != nil {
-		return "", fmt.Errorf("failed to create insert creds query: %w", err)
+		return "", dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return "", fmt.Errorf("failed to insert user: %w", err)
+		return "", dbError(ErrorQueryExec, err)
 	}
 
 	var res struct {
@@ -60,11 +55,11 @@ func (r userRepository) CreateUser(ctx context.Context, email string) (string, e
 
 	var pgErr *pgconn.PgError
 	if errors.Is(err, pgx.ErrNoRows) {
-		return "", fmt.Errorf("no creds")
+		return "", dbError(ErrorNoRows, err)
 	} else if ok := errors.As(err, &pgErr); ok && pgErr.Code == "23505" && pgErr.ConstraintName == "users_email_key" {
-		return "", errors.New(EmailAlreadyRegistered)
+		return "", dbError(ErrorDuplicateUserEmail, err)
 	} else if err != nil {
-		return "", fmt.Errorf("failed to scan rows: %w", err)
+		return "", dbError(ErrorScanRows, err)
 	}
 
 	return res.UID, nil

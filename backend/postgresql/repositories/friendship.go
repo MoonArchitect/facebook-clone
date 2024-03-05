@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/Masterminds/squirrel"
@@ -43,18 +42,18 @@ func (r friendshipRepository) GetAllFriends(ctx context.Context, uid string) ([]
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		return nil, dbError(ErrorQueryRows, err)
 	}
 
 	var res []Friendship
 	err = pgxscan.ScanAll(&res, rows)
 	if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return res, nil
@@ -68,18 +67,18 @@ func (r friendshipRepository) AreFriends(ctx context.Context, uid1, uid2 string)
 		ToSql()
 
 	if err != nil {
-		return false, fmt.Errorf("failed to create select query: %w", err)
+		return false, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return false, fmt.Errorf("failed to select: %w", err)
+		return false, dbError(ErrorQueryRows, err)
 	}
 
 	var res int
 	err = pgxscan.ScanOne(&res, rows)
 	if err != nil {
-		return false, fmt.Errorf("failed to scan rows: %w", err)
+		return false, dbError(ErrorScanRows, err)
 	}
 
 	// if res > 1 LOG

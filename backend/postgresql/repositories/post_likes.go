@@ -2,7 +2,6 @@ package repositories
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/georgysavva/scany/v2/pgxscan"
@@ -46,12 +45,12 @@ func (r postLikesRepository) IsPostLikedByUser(ctx context.Context, userID, post
 		ToSql()
 
 	if err != nil {
-		return false, fmt.Errorf("failed to create select query: %w", err)
+		return false, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return false, fmt.Errorf("failed to select: %w", err)
+		return false, dbError(ErrorQueryRows, err)
 	}
 
 	var res PostLike
@@ -59,7 +58,7 @@ func (r postLikesRepository) IsPostLikedByUser(ctx context.Context, userID, post
 	if errors.Is(err, pgx.ErrNoRows) {
 		return false, nil
 	} else if err != nil {
-		return false, fmt.Errorf("failed to scan rows: %w", err)
+		return false, dbError(ErrorScanRows, err)
 	}
 
 	return true, nil
@@ -72,12 +71,12 @@ func (r postLikesRepository) DeletePostLikes(ctx context.Context, postID string)
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create delete comments query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to delete comments: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
@@ -94,18 +93,18 @@ func (r postLikesRepository) GetUserLikesForPosts(ctx context.Context, userID st
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		return nil, dbError(ErrorQueryRows, err)
 	}
 
 	var res []PostLike
 	err = pgxscan.ScanAll(&res, rows)
 	if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return res, nil
@@ -119,12 +118,12 @@ func (r postLikesRepository) LikePost(ctx context.Context, userID, postID string
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create select query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to select: %w", err)
+		return dbError(ErrorQueryRows, err)
 	}
 
 	return nil
@@ -137,12 +136,12 @@ func (r postLikesRepository) UnlikePost(ctx context.Context, userID, postID stri
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create select query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to select: %w", err)
+		return dbError(ErrorQueryRows, err)
 	}
 
 	return nil

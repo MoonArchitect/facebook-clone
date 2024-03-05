@@ -64,12 +64,12 @@ func (r postsRepository) CreatePost(ctx context.Context, userID, text string, im
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create insert post query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to insert post: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
@@ -82,12 +82,12 @@ func (r postsRepository) DeletePost(ctx context.Context, postID string) error {
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create delete post query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to delete post: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
@@ -104,18 +104,18 @@ func (r postsRepository) GetUserPostsByDate(ctx context.Context, userID string, 
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		return nil, dbError(ErrorQueryRows, err)
 	}
 
 	var res []Post
 	err = pgxscan.ScanAll(&res, rows)
 	if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return res, nil
@@ -132,18 +132,18 @@ func (r postsRepository) GetMostPopularPosts(ctx context.Context, skip, limit ui
 		ToSql()
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to create select query: %w", err)
+		return nil, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return nil, fmt.Errorf("failed to select: %w", err)
+		return nil, dbError(ErrorQueryRows, err)
 	}
 
 	var res []Post
 	err = pgxscan.ScanAll(&res, rows)
 	if err != nil {
-		return nil, fmt.Errorf("failed to scan rows: %w", err)
+		return nil, dbError(ErrorScanRows, err)
 	}
 
 	return res, nil
@@ -157,20 +157,20 @@ func (r postsRepository) GetPostByID(ctx context.Context, postID string) (Post, 
 		ToSql()
 
 	if err != nil {
-		return Post{}, fmt.Errorf("failed to create select query: %w", err)
+		return Post{}, dbError(ErrorBuildQuery, err)
 	}
 
 	rows, err := r.dbPool.Query(ctx, sql, args...)
 	if err != nil {
-		return Post{}, fmt.Errorf("failed to select: %w", err)
+		return Post{}, dbError(ErrorQueryRows, err)
 	}
 
 	var res Post
 	err = pgxscan.ScanOne(&res, rows)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return Post{}, fmt.Errorf("did not find any rows: %w", err)
+		return Post{}, dbError(ErrorNoRows, err)
 	} else if err != nil {
-		return Post{}, fmt.Errorf("failed to scan rows: %w", err)
+		return Post{}, dbError(ErrorScanRows, err)
 	}
 
 	return res, nil
@@ -184,12 +184,12 @@ func (r postsRepository) IncrementPostLikeCount(ctx context.Context, postID stri
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create update query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to update: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
@@ -203,12 +203,12 @@ func (r postsRepository) DecrementPostLikeCount(ctx context.Context, postID stri
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create update query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to update: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
@@ -222,12 +222,12 @@ func (r postsRepository) IncrementPostShareCount(ctx context.Context, postID str
 		ToSql()
 
 	if err != nil {
-		return fmt.Errorf("failed to create update query: %w", err)
+		return dbError(ErrorBuildQuery, err)
 	}
 
 	_, err = r.dbPool.Exec(ctx, sql, args...)
 	if err != nil {
-		return fmt.Errorf("failed to update: %w", err)
+		return dbError(ErrorQueryExec, err)
 	}
 
 	return nil
