@@ -6,7 +6,10 @@ import { ReactComponent as ShareIcon } from "@facebook-clone/assets/icons/share.
 import { LineDivider } from "../../ui"
 
 import clsx from "clsx"
+import { useCallback } from "react"
 import { useLikePostMutation, useSharePostMutation } from "../../../query-hooks/profile-query-hooks"
+import { useGlobalModal } from "../../global-modals/global-modals"
+import { useSession } from "../../utils/session-context"
 import styles from "./content-reactions.module.scss"
 
 interface ContentReactionsProps {
@@ -20,8 +23,19 @@ interface ContentReactionsProps {
 
 export const ContentReactions = (props: ContentReactionsProps) => {
   const { postID, likedByCurrentUser, numberOfComments, reactionsCount, sharesCount, onFocusComment } = props
+
+  const {state: {isLoggedIn}} = useSession()
+
   const {mutate: likePost} = useLikePostMutation()
   const {mutate: sharePost} = useSharePostMutation()
+  const {showSigninModal} = useGlobalModal()
+
+  const requireAuthCallback = useCallback((func: () => void) => {
+    return () => {
+      if (isLoggedIn) func()
+      else showSigninModal()
+    }
+  }, [isLoggedIn, showSigninModal])
 
   return (
     <>
@@ -53,7 +67,7 @@ export const ContentReactions = (props: ContentReactionsProps) => {
       <div className={styles.menu}>
         <div
           className={clsx(styles.button, likedByCurrentUser && styles.activeButton)}
-          onClick={() => likePost({postID})}
+          onClick={requireAuthCallback(() => likePost({postID}))}
         >
           <LikeIcon /> &thinsp; Like
         </div>
@@ -63,7 +77,7 @@ export const ContentReactions = (props: ContentReactionsProps) => {
         >
           <CommentIcon /> &thinsp; Comment
         </div>
-        <div className={styles.button} onClick={() => sharePost({postID})}>
+        <div className={styles.button} onClick={requireAuthCallback(() => sharePost({postID}))}>
           <ShareIcon /> &thinsp; Share
         </div>
       </div>
