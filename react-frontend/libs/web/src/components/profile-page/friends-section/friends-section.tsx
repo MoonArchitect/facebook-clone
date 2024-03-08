@@ -114,7 +114,7 @@ const FriendTile = (props: FriendTileProps) => {
         {isClientLoggedIn &&
           <OptionsButton>
             <OptionMenuButton accent="no" title="Info" />
-            <OptionMenuButton accent="blue" title="Messege" />
+            <OptionMenuButton accent="blue" title="Message" />
             {isClientsProfile &&
               <OptionMenuButton accent="red" title="Unfriend" onClick={() => unfriendRequest({userID: profile.id})} />}
           </OptionsButton>

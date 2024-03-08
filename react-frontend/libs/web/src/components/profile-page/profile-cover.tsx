@@ -227,7 +227,7 @@ const ProfileActions = (props: ProfileActionsProps) => {
         >
           <FriendsIcon/>Unfriend
         </button>
-        <button className={clsx(styles.sendMessegeButton, styles.buttonText)}><MessengerIcon/>Messege</button>
+        <button className={clsx(styles.sendMessageButton, styles.buttonText)}><MessengerIcon/>Message</button>
       </>
     )
 
