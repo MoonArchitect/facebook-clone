@@ -5,7 +5,7 @@ import (
 	"fb-clone/api/controllers"
 	"fb-clone/libs/config"
 	"fb-clone/libs/middleware"
-	"fb-clone/postgresql/repositories"
+	"fb-clone/repositories"
 	"fb-clone/services/auth"
 	"fb-clone/services/feed"
 	"fb-clone/services/user"
@@ -84,13 +84,13 @@ func main() {
 		panic(fmt.Errorf("couldn't ping db %w", err))
 	}
 
-	// aws setup
-	aws, err := awsConfig.LoadDefaultConfig(ctx, awsConfig.WithRegion("ap-southeast-1"))
+	// AWS setup
+	awsCfg, err := awsConfig.LoadDefaultConfig(ctx, awsConfig.WithRegion("ap-southeast-1"))
 	if err != nil {
 		panic(err)
 	}
 
-	s3Clint := s3.NewFromConfig(aws)           // TODO: setup config
+	s3Clint := s3.NewFromConfig(awsCfg)        // TODO: setup config
 	s3Uploader := manager.NewUploader(s3Clint) // TODO: setup config
 
 	// Repositories
@@ -168,9 +168,6 @@ func main() {
 
 	api.GET("/feed/groups", authRequired, feedController.GetGroupsFeed)
 	api.GET("/feed/home", feedController.GetHomeFeed)
-	// api.POST("/comment", profileController.GetProfile)
-	// api.POST("/reply", profileController.GetProfile)
-	// api.GET("/user/friends", profileController.GetProfile)
 
 	assetAPI := router.Group("/asset_api/v1")
 	assetAPI.POST("/profile/thumbnail", authRequired, assetsController.UploadProfileThumbnail)
@@ -191,6 +188,3 @@ func main() {
 		panic(fmt.Errorf("failed to start a server: %w", err))
 	}
 }
-
-// if profile is private only friends can view that profile
-// if public or areFriends(userID, friendID)

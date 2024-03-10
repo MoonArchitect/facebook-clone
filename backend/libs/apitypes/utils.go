@@ -1,7 +1,7 @@
 package apitypes
 
 import (
-	"fb-clone/postgresql/repositories"
+	"fb-clone/repositories"
 
 	"github.com/go-errors/errors"
 )

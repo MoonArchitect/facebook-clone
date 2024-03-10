@@ -3,7 +3,7 @@ package feed
 import (
 	"context"
 	"fb-clone/libs/apitypes"
-	"fb-clone/postgresql/repositories"
+	"fb-clone/repositories"
 )
 
 type feedService struct {

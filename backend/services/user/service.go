@@ -3,7 +3,7 @@ package user
 import (
 	"context"
 	"fb-clone/libs/apitypes"
-	"fb-clone/postgresql/repositories"
+	"fb-clone/repositories"
 	"fmt"
 	"strings"
 	"time"

@@ -9,7 +9,7 @@ import (
 	"encoding/pem"
 	"fb-clone/libs/auth_validator"
 	"fb-clone/libs/config"
-	"fb-clone/postgresql/repositories"
+	"fb-clone/repositories"
 	"fmt"
 	"log"
 	"os"

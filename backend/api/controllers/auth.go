@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fb-clone/libs/apierror"
 	"fb-clone/libs/config"
-	"fb-clone/postgresql/repositories"
+	"fb-clone/repositories"
 	"fb-clone/services/auth"
 	"fb-clone/services/user"
 
