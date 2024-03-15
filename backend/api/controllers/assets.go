@@ -1,25 +1,20 @@
 package controllers
 
 import (
-	"bytes"
 	"fb-clone/libs/apierror"
-	"fb-clone/libs/config"
 	"fb-clone/libs/middleware"
+	"fb-clone/services/assets"
 	"fb-clone/services/user"
 	"fmt"
 	"io"
 	"net/http"
 
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/davidbyttow/govips/v2/vips"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 type assetsController struct {
-	userService user.UserService
-	s3Uploader  *manager.Uploader
+	userService  user.UserService
+	assetService assets.AssetService
 }
 
 type AssetsController interface {
@@ -28,10 +23,10 @@ type AssetsController interface {
 	UploadPostImage(ctx *gin.Context)
 }
 
-func NewAssetsController(userService user.UserService, s3Uploader *manager.Uploader) AssetsController {
+func NewAssetsController(userService user.UserService, assetService assets.AssetService) AssetsController {
 	return &assetsController{
 		userService,
-		s3Uploader,
+		assetService,
 	}
 }
 
@@ -71,32 +66,19 @@ func (pc assetsController) UploadProfileThumbnail(ctx *gin.Context) {
 	}
 
 	fullImage := append(buff, rest...) // TODO: find a better way to handle a file
-	fullImage, err = resizeImageToThumbnail(fullImage)
+	fullImage, err = pc.assetService.ResizeImageToThumbnail(fullImage)
 	if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed edit image: %w", err))
 		return
 	}
 
-	thumbnailID, err := uuid.NewRandom()
-	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed generate image uuid: %w", err))
-		return
-	}
-
-	thumbnailIDString := thumbnailID.String()
-	bucket := config.Cfg.Aws.S3
-	_, err = pc.s3Uploader.Upload(ctx, &s3.PutObjectInput{
-		Bucket:      &bucket,
-		Key:         &thumbnailIDString,
-		ContentType: &mimeType,
-		Body:        bytes.NewReader(fullImage),
-	})
+	imageID, err := pc.assetService.UploadImage(ctx, fullImage, mimeType)
 	if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to upload image: %w", err))
 		return
 	}
 
-	err = pc.userService.EditProfileThumbnail(ctx, *uid, thumbnailIDString)
+	err = pc.userService.EditProfileThumbnail(ctx, *uid, imageID)
 	if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to update profile: %w", err))
 		return
@@ -139,32 +121,19 @@ func (pc assetsController) UploadProfileCover(ctx *gin.Context) {
 	}
 
 	fullImage := append(buff, rest...) // TODO: find a better way to handle a file
-	fullImage, err = resizeImageToCover(fullImage)
+	fullImage, err = pc.assetService.ResizeImageToCover(fullImage)
 	if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed edit image: %w", err))
 		return
 	}
 
-	thumbnailID, err := uuid.NewRandom()
-	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed generate image uuid: %w", err))
-		return
-	}
-	thumbnailIDString := thumbnailID.String()
-	bucket := config.Cfg.Aws.S3
-
-	_, err = pc.s3Uploader.Upload(ctx, &s3.PutObjectInput{
-		Bucket:      &bucket,
-		Key:         &thumbnailIDString,
-		ContentType: &mimeType,
-		Body:        bytes.NewReader(fullImage),
-	})
+	imageID, err := pc.assetService.UploadImage(ctx, fullImage, mimeType)
 	if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to upload image: %w", err))
 		return
 	}
 
-	err = pc.userService.EditProfileCover(ctx, *uid, thumbnailIDString)
+	err = pc.userService.EditProfileCover(ctx, *uid, imageID)
 	if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to update profile: %w", err))
 		return
@@ -203,134 +172,17 @@ func (pc assetsController) UploadPostImage(ctx *gin.Context) {
 	}
 
 	fullImage := append(buff, rest...) // TODO: find a better way to handle a file
-	fullImage, err = resizePostImage(fullImage)
+	fullImage, err = pc.assetService.ResizePostImage(fullImage)
 	if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed edit image: %w", err))
 		return
 	}
 
-	bucket := config.Cfg.Aws.S3
-
-	_, err = pc.s3Uploader.Upload(ctx, &s3.PutObjectInput{
-		Bucket:      &bucket,
-		Key:         &imageID,
-		ContentType: &mimeType,
-		Body:        bytes.NewReader(fullImage),
-	})
+	_, err = pc.assetService.UploadImageWithID(ctx, fullImage, mimeType, imageID)
 	if err != nil {
 		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to upload image: %w", err))
 		return
 	}
 
 	ctx.Status(http.StatusOK)
-}
-
-const thumbnailSize = 300
-
-// temporary
-// crops square center of image and resizes it to (thumbnailSize x thumbnailSize), compresses to 75quality jpeg
-func resizeImageToThumbnail(fullImage []byte) ([]byte, error) {
-	imgRef, err := vips.NewImageFromBuffer(fullImage)
-	if err != nil {
-		return nil, err
-	}
-
-	xSize, ySize := imgRef.Width(), imgRef.Height()
-	if xSize < ySize {
-		err = imgRef.ExtractArea(0, int((ySize-xSize)/2), int(xSize), int(xSize))
-	} else if xSize >= ySize {
-		err = imgRef.ExtractArea(int((xSize-ySize)/2), 0, int(ySize), int(ySize))
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	minSize := min(xSize, ySize)
-	if minSize > thumbnailSize {
-		err = imgRef.Resize(thumbnailSize/float64(minSize), vips.KernelAuto)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	fullImage, _, err = imgRef.Export(&vips.ExportParams{
-		Format:     vips.ImageTypeJPEG,
-		Quality:    75,
-		Interlaced: true,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return fullImage, nil
-}
-
-const coverImageAspectRation = 4 // width / height
-const coverHeightSize = 360
-
-// temporary
-// crops section center of image and resizes it to (thumbnailSize x thumbnailSize), compresses to 75quality jpeg
-func resizeImageToCover(fullImage []byte) ([]byte, error) {
-	imgRef, err := vips.NewImageFromBuffer(fullImage)
-	if err != nil {
-		return nil, err
-	}
-
-	xSize, ySize := imgRef.Width(), imgRef.Height()
-	if xSize < ySize*coverImageAspectRation {
-		err = imgRef.ExtractArea(0, int((ySize-xSize/coverImageAspectRation)/2), int(xSize), int(xSize/coverImageAspectRation))
-	} else if xSize >= ySize*coverImageAspectRation {
-		err = imgRef.ExtractArea(int((xSize-ySize*coverImageAspectRation)/2), 0, int(ySize*coverImageAspectRation), int(ySize))
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	height := imgRef.Height()
-	if height > coverHeightSize {
-		err = imgRef.Resize(coverHeightSize/float64(height), vips.KernelAuto)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	fullImage, _, err = imgRef.Export(&vips.ExportParams{
-		Format:     vips.ImageTypeJPEG,
-		Quality:    75,
-		Interlaced: true,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return fullImage, nil
-}
-
-const maxPostImageSize = 540
-
-// temporary
-func resizePostImage(fullImage []byte) ([]byte, error) {
-	imgRef, err := vips.NewImageFromBuffer(fullImage)
-	if err != nil {
-		return nil, err
-	}
-
-	height := min(imgRef.Height(), imgRef.Width())
-	if height > maxPostImageSize {
-		err = imgRef.Resize(maxPostImageSize/float64(height), vips.KernelAuto)
-	}
-	if err != nil {
-		return nil, err
-	}
-
-	fullImage, _, err = imgRef.Export(&vips.ExportParams{
-		Format:     vips.ImageTypeJPEG,
-		Quality:    75,
-		Interlaced: true,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	return fullImage, nil
 }

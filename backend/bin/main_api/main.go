@@ -6,6 +6,7 @@ import (
 	"fb-clone/libs/config"
 	"fb-clone/libs/middleware"
 	"fb-clone/repositories"
+	"fb-clone/services/assets"
 	"fb-clone/services/auth"
 	"fb-clone/services/feed"
 	"fb-clone/services/user"
@@ -114,6 +115,7 @@ func main() {
 		friendshipRequestsRepository,
 	)
 	feedService := feed.NewFeedService(postsRepository, profileRepository, postLikesRepository, commentsRepository)
+	assetService := assets.NewAssetService(s3Uploader)
 	authService, err := auth.NewAuthService(credentialsRepository) // TODO: auth service should be a separate binary
 	if err != nil {
 		panic(err)
@@ -122,7 +124,7 @@ func main() {
 	// Controllers
 	postsController := controllers.NewPostsController(userService)
 	profileController := controllers.NewProfileController(userService)
-	assetsController := controllers.NewAssetsController(userService, s3Uploader)
+	assetsController := controllers.NewAssetsController(userService, assetService)
 	authController := controllers.NewAuthController(authService, userService)
 	feedController := controllers.NewFeedController(feedService)
 
