@@ -27,7 +27,7 @@ export const useSession = () => {
 
   return {
     state,
-    userData,
+    userData, // TODO: rename this to client to avoid confusion as to which user this belongs
     signout: () => {
       setState({isLoggedIn: false})
       window.location.reload() // TODO: temp solution to clear most of the state

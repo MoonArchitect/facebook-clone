@@ -15,6 +15,7 @@ import { ReactComponent as PlusIcon } from "@facebook-clone/assets/icons/plus.sv
 import { APIUserProfile, getImageURLFromId } from "@facebook-clone/api_client/src"
 import ReactModal from "react-modal"
 import { useUploadProfileCover, useUploadProfileThumbnail } from "../../query-hooks/asset-query-hooks"
+import { useCreateChatMutation } from "../../query-hooks/chat-query-hooks"
 import {
   useAcceptFriendRequestMutation,
   useSendFriendRequestMutation,
@@ -217,6 +218,12 @@ const ProfileActions = (props: ProfileActionsProps) => {
   const {mutate: sendFriendRequest} = useSendFriendRequestMutation(profile.username)
   const {mutate: acceptFriendRequest} = useAcceptFriendRequestMutation(profile.username)
   const {mutate: unfriendRequest} = useUnFriendMutation(profile.username, userData?.id)
+  const {mutateAsync: createChat} = useCreateChatMutation()
+
+  const createChatCallback = useCallback(async () => {
+    createChat({userID: profile.id})
+      .then((resp) => console.log("chat created with id: ", resp.chatID))
+  }, [profile.id, createChat])
 
   if (profile.friendshipStatus === 'friends')
     return (
@@ -227,7 +234,12 @@ const ProfileActions = (props: ProfileActionsProps) => {
         >
           <FriendsIcon/>Unfriend
         </button>
-        <button className={clsx(styles.sendMessageButton, styles.buttonText)}><MessengerIcon/>Message</button>
+        <button
+          className={clsx(styles.sendMessageButton, styles.buttonText)}
+          onClick={createChatCallback}
+        >
+          <MessengerIcon/>Message
+        </button>
       </>
     )
 

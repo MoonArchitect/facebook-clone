@@ -42,7 +42,7 @@ func (fc feedController) GetUserPosts(ctx *gin.Context) {
 	var req GetUserPostsRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
@@ -50,7 +50,7 @@ func (fc feedController) GetUserPosts(ctx *gin.Context) {
 
 	posts, err := fc.feedService.GetHistoricUserPosts(ctx, uid, req.UserID, req.Skip)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 
@@ -67,7 +67,7 @@ func (fc feedController) GetHomeFeed(ctx *gin.Context) {
 	var req GetHomeFeedRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
@@ -79,7 +79,7 @@ func (fc feedController) GetHomeFeed(ctx *gin.Context) {
 	}
 
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to get home feed"))
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, fmt.Errorf("failed to get home feed"))
 		return
 	}
 
@@ -93,20 +93,20 @@ type GetGroupsFeedRequest struct {
 func (fc feedController) GetGroupsFeed(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
+		apierror.HandleGinError(ctx, apierror.ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req GetGroupsFeedRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
 	apiPosts, err := fc.feedService.GetPersonalGroupFeed(ctx, *uid, req.Skip)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to get groups feed"))
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, fmt.Errorf("failed to get groups feed"))
 		return
 	}
 

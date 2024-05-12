@@ -1,8 +1,5 @@
 FROM golang:1.22.0-bookworm
 
-RUN apt update
-RUN apt install -y libvips42 libvips-dev
-
 VOLUME /src
 
 COPY ./go.mod ./go.mod
@@ -13,5 +10,5 @@ RUN go install github.com/bokwoon95/wgo@latest
 USER root
 
 WORKDIR /src
-EXPOSE 8080
-CMD cfg=local.yml wgo run bin/main_api/main.go
+EXPOSE 8081
+CMD cfg=local.yml wgo run bin/chat_api/main.go

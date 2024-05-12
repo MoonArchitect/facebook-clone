@@ -8,6 +8,28 @@ services:
     volumes:
       - .:/src:ro
       - ~/.aws/credentials:/root/.aws/credentials:ro
+
+  chat_api:
+    build:
+      context: .
+      dockerfile: bin/chat_api/Dockerfile
+    ports:
+      - "8081:8081"
+    volumes:
+      - .:/src:ro
+      - ~/.aws/credentials:/root/.aws/credentials:ro
+  
+  dynamodb-local:
+   command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+   image: "amazon/dynamodb-local:latest"
+   container_name: dynamodb-local
+   ports:
+     - "8000:8000"
+   user: root
+   volumes:
+     - dynamodb-data:/home/dynamodblocal/data
+   working_dir: /home/dynamodblocal
+
   postgres_db:
     image: postgres:latest
     environment:
@@ -21,3 +43,4 @@ services:
 
 volumes:
   db-data:
+  dynamodb-data:

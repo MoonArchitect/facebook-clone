@@ -11,11 +11,13 @@ export const NavItem = ({
   children,
   hintMessage = "",
   shiftLeft = false,
+  onClick,
 }: {
   icon: ReactNode
   children?: ReactNode
   hintMessage?: string
   shiftLeft?: boolean
+  onClick?: () => void
 }) => {
   const [isHovered, setIsHovered] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -30,6 +32,7 @@ export const NavItem = ({
         onClick={() => {
           setIsOpen(!isOpen)
           setIsHovered(false)
+          onClick?.()
         }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}

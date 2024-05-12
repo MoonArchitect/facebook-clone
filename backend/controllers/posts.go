@@ -41,14 +41,14 @@ type CreatePostResponse struct {
 func (pc postsController) CreatePost(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
+		apierror.HandleGinError(ctx, apierror.ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req CreatePostRequest
 	err := ctx.BindJSON(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
@@ -56,7 +56,7 @@ func (pc postsController) CreatePost(ctx *gin.Context) {
 	if req.AttachImage {
 		uuid, err := uuid.NewRandom()
 		if err != nil {
-			apierror.HandleGinError(ctx, ErrorInternal, err)
+			apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 			return
 		}
 		id := uuid.String()
@@ -65,7 +65,7 @@ func (pc postsController) CreatePost(ctx *gin.Context) {
 
 	err = pc.userService.CreateUserPost(ctx, *uid, req.Text, imageID)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 
@@ -83,20 +83,20 @@ type DeletePostRequest struct {
 func (pc postsController) DeletePost(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
+		apierror.HandleGinError(ctx, apierror.ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req DeletePostRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.DeleteUserPost(ctx, *uid, req.PostID)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 
@@ -110,7 +110,7 @@ type CreateCommentRequest struct {
 func (pc postsController) CreateComment(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
+		apierror.HandleGinError(ctx, apierror.ErrorUnauthorizedAccess, nil)
 		return
 	}
 
@@ -118,20 +118,20 @@ func (pc postsController) CreateComment(ctx *gin.Context) {
 	postID := ctx.Param("postid")
 	err := uuid.Validate(postID)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
 	var req CreateCommentRequest
 	err = ctx.BindJSON(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.CreateComment(ctx, *uid, req.Text, postID)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 
@@ -146,7 +146,7 @@ func (pc postsController) GetPost(ctx *gin.Context) {
 	var req GetPostRequest
 	err := ctx.BindQuery(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
@@ -155,7 +155,7 @@ func (pc postsController) GetPost(ctx *gin.Context) {
 
 	posts, err := pc.userService.GetPost(ctx, uid, req.PostID)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 
@@ -169,20 +169,20 @@ type LikePostRequest struct {
 func (pc postsController) LikePost(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
+		apierror.HandleGinError(ctx, apierror.ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req LikePostRequest
 	err := ctx.BindJSON(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.LikePost(ctx, *uid, req.PostID)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 
@@ -196,20 +196,20 @@ type SharePostRequest struct {
 func (pc postsController) SharePost(ctx *gin.Context) {
 	uid := middleware.GetContextData(ctx).UID
 	if uid == nil {
-		apierror.HandleGinError(ctx, ErrorUnauthorizedAccess, nil)
+		apierror.HandleGinError(ctx, apierror.ErrorUnauthorizedAccess, nil)
 		return
 	}
 
 	var req SharePostRequest
 	err := ctx.BindJSON(&req)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
 	err = pc.userService.SharePost(ctx, req.PostID)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 

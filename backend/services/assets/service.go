@@ -144,7 +144,7 @@ func (s assetService) ResizePostImage(fullImage []byte) ([]byte, error) {
 func (s assetService) UploadImage(ctx context.Context, image []byte, mimeType string) (string, error) {
 	imageID, err := uuid.NewRandom()
 	if err != nil {
-		// apierror.HandleGinError(ctx, ErrorInternal, )
+		// apierror.HandleGinError(ctx, apierror.ErrorInternal, )
 		return "", fmt.Errorf("failed generate image uuid: %w", err)
 	}
 
@@ -160,7 +160,7 @@ func (s assetService) UploadImageWithID(ctx context.Context, image []byte, mimeT
 		Body:        bytes.NewReader(image),
 	})
 	if err != nil {
-		// apierror.HandleGinError(ctx, ErrorInternal, fmt.Errorf("failed to upload image: %w", err))
+		// apierror.HandleGinError(ctx, apierror.ErrorInternal, fmt.Errorf("failed to upload image: %w", err))
 		return "", fmt.Errorf("failed to upload image: %w", err)
 	}
 

@@ -295,6 +295,7 @@ export const useAcceptFriendRequestMutation = (username?: string, clientUserID?:
           queryClient.invalidateQueries({queryKey: queryKeys.me})
           queryClient.invalidateQueries({queryKey: queryKeys.myFriendRequests})
           queryClient.invalidateQueries({queryKey: queryKeys.friendList(clientUserID)})
+          // TODO: this did not work once, test it again
           queryClient.invalidateQueries({queryKey: queryKeys.profile(username)})
         }
       }

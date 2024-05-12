@@ -37,13 +37,13 @@ type EmailPassword struct {
 func (c authController) Signin(ctx *gin.Context) {
 	var ep EmailPassword
 	if err := ctx.BindJSON(&ep); err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
 	token, err := c.authService.Signin(ctx, ep.Email, ep.Password)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 
@@ -60,22 +60,22 @@ type SignUpRequest struct {
 func (c authController) Signup(ctx *gin.Context) {
 	var ep SignUpRequest
 	if err := ctx.BindJSON(&ep); err != nil {
-		apierror.HandleGinError(ctx, ErrorValidationFailed, err)
+		apierror.HandleGinError(ctx, apierror.ErrorValidationFailed, err)
 		return
 	}
 
 	uid, err := c.userService.CreateNewUser(ctx, ep.Email, ep.FirstName, ep.FirstName)
 	if errors.Is(err, repositories.ErrorDuplicateUserEmail) {
-		apierror.HandleGinError(ctx, ErrorUserEmailAlredyRegistered, err)
+		apierror.HandleGinError(ctx, apierror.ErrorUserEmailAlredyRegistered, err)
 		return
 	} else if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 
 	token, err := c.authService.CreateCredentials(ctx, ep.Email, ep.Password, uid)
 	if err != nil {
-		apierror.HandleGinError(ctx, ErrorInternal, err)
+		apierror.HandleGinError(ctx, apierror.ErrorInternal, err)
 		return
 	}
 

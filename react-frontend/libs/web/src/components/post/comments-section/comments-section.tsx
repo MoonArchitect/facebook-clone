@@ -119,7 +119,6 @@ const CreateCommentSection = (props: Pick<CommentsSectionProps, "isCommentFocuse
     }
   }
 
-
   return (
     <div className={styles.createComment}>
       <div className={clsx(styles.loadingCover, isPending && styles.loading)} />

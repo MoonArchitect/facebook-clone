@@ -9,19 +9,25 @@ import (
 
 var Cfg ConfigType
 
+type ServerType struct {
+	Port                int `yaml:"port"`
+	ReadTimeoutSeconds  int `yaml:"readTimeoutSeconds"`
+	WriteTimeoutSeconds int `yaml:"writeTimeoutSeconds"`
+	MaxHeaderBytes      int `yaml:"maxHeaderBytes"`
+}
+
 type ConfigType struct {
-	Env string `yaml:"env"`
-	DB  struct {
+	Env        string `yaml:"env"`
+	PostgresDB struct {
 		PostgresURL    string `yaml:"postgresURL"`
 		MaxConnections int32  `yaml:"maxConnections"`
-	} `yaml:"db"`
-	Server struct {
-		Port                int `yaml:"port"`
-		ReadTimeoutSeconds  int `yaml:"readTimeoutSeconds"`
-		WriteTimeoutSeconds int `yaml:"writeTimeoutSeconds"`
-		MaxHeaderBytes      int `yaml:"maxHeaderBytes"`
-	} `yaml:"server"`
-	Auth struct {
+	} `yaml:"postgresDB"`
+	DynamoDB struct {
+		DynamodbURL string `yaml:"dynamodbURL"`
+	} `yaml:"dynamoDB"`
+	MainAPI ServerType `yaml:"mainAPI"`
+	ChatAPI ServerType `yaml:"chatAPI"`
+	Auth    struct {
 		CookieDomain    string `yaml:"cookieDomain"`
 		MaxAgeSeconds   int    `yaml:"maxAgeSeconds"`
 		RSAKeyFile      string `yaml:"rsaKeyFile"`

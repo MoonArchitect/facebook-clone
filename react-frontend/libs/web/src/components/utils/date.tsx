@@ -14,9 +14,9 @@ const monthNames: { [name: number]: string} = {
 }
 
 // takes unix epoch in seconds
-export function getDateString(unixEpoch: number): string {
+export function getDateString(unixEpochSec: number): string {
   const now = Date.now() / 1000
-  const diff = now - unixEpoch
+  const diff = now - unixEpochSec
 
   if (diff < 60) {
     return `${diff.toFixed(0)}s`
@@ -34,7 +34,7 @@ export function getDateString(unixEpoch: number): string {
     return `${(diff / 24 / 60 / 60).toFixed(0)}d`
   }
 
-  const date = new Date(unixEpoch * 1000)
+  const date = new Date(unixEpochSec * 1000)
 
   const day = date.getDate()
   const month = date.getMonth()

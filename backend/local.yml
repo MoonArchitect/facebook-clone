@@ -1,10 +1,19 @@
 env: local
-db:
+postgresDB:
   postgresURL: postgresql://postgres:mysecretpassword@postgres_db:5432/postgres
   maxConnections: 50
 
-server:
+dynamoDB:
+  dynamodbURL: http://dynamodb-local:8000
+
+mainAPI:
   port: 8080
+  readTimeoutSeconds: 10
+  writeTimeoutSeconds: 10
+  maxHeaderBytes: 1048576 # 1mb
+
+chatAPI:
+  port: 8081
   readTimeoutSeconds: 10
   writeTimeoutSeconds: 10
   maxHeaderBytes: 1048576 # 1mb

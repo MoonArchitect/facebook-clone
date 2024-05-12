@@ -8,6 +8,14 @@ import (
 	"github.com/go-errors/errors"
 )
 
+var (
+	ErrorUnauthorizedAccess        = DeclareAPIError("unauthorized access", http.StatusUnauthorized)
+	ErrorValidationFailed          = DeclareAPIError("validation failed", http.StatusBadRequest)
+	ErrorInternal                  = DeclareAPIError("internal error", http.StatusInternalServerError)
+	ErrorUserEmailAlredyRegistered = DeclareAPIError("given email is already registered", http.StatusBadRequest)
+	ErrorFailedWebsocketUpgrade    = DeclareAPIError("failed to upgrade to websocket", http.StatusInternalServerError)
+)
+
 type TemplateAPIError struct {
 	StatusCode int
 	Desc       string

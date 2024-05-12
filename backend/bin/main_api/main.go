@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"fb-clone/api/controllers"
+	"fb-clone/controllers"
 	"fb-clone/libs/config"
 	"fb-clone/libs/middleware"
 	"fb-clone/repositories"
@@ -67,11 +67,11 @@ func main() {
 	fmt.Println("Connecting to postgres")
 	ctx := context.TODO()
 
-	pgxCfg, err := pgxpool.ParseConfig(config.Cfg.DB.PostgresURL)
+	pgxCfg, err := pgxpool.ParseConfig(config.Cfg.PostgresDB.PostgresURL)
 	if err != nil {
 		panic(err)
 	}
-	pgxCfg.MaxConns = config.Cfg.DB.MaxConnections
+	pgxCfg.MaxConns = config.Cfg.PostgresDB.MaxConnections
 
 	db, err := pgxpool.NewWithConfig(ctx, pgxCfg)
 	if err != nil {
@@ -177,11 +177,11 @@ func main() {
 	assetAPI.POST("/post/images/:id", authRequired, assetsController.UploadPostImage) // TODO: attack vector since image is uploaded by client provided ID
 
 	s := &http.Server{
-		Addr:           fmt.Sprintf(":%d", config.Cfg.Server.Port),
+		Addr:           fmt.Sprintf(":%d", config.Cfg.MainAPI.Port),
 		Handler:        router,
-		ReadTimeout:    time.Duration(config.Cfg.Server.ReadTimeoutSeconds) * time.Second,
-		WriteTimeout:   time.Duration(config.Cfg.Server.WriteTimeoutSeconds) * time.Second,
-		MaxHeaderBytes: config.Cfg.Server.MaxHeaderBytes,
+		ReadTimeout:    time.Duration(config.Cfg.MainAPI.ReadTimeoutSeconds) * time.Second,
+		WriteTimeout:   time.Duration(config.Cfg.MainAPI.WriteTimeoutSeconds) * time.Second,
+		MaxHeaderBytes: config.Cfg.MainAPI.MaxHeaderBytes,
 	}
 
 	fmt.Println("Starting server")

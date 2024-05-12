@@ -1,4 +1,5 @@
 import { HydrationBoundary, QueryClient, dehydrate } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import axios from "axios"
 import clsx from "clsx"
 import { cookies } from "next/headers"
@@ -52,6 +53,8 @@ export default async function IndexLayout(props: PropsWithChildren) {
               <GlobalModals>
                 <Navbar />
                 {children}
+
+                <ReactQueryDevtools  />
               </GlobalModals>
             </body>
           </SessionContextProvider>
